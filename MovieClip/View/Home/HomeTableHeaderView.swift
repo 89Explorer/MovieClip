@@ -56,32 +56,14 @@ class HomeTableHeaderView: UIView {
         return stackView
     }()
     
-    private let scoreLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14, weight: .bold)
-        label.textColor = .white
-        label.backgroundColor = .black
-        label.layer.cornerRadius = 20
-        label.clipsToBounds = true
-        
-        // ✅ "55%"에서 "%"만 크기 줄이기
-        let fullText = "55%"
-        let attributedString = NSMutableAttributedString(string: fullText)
-        
-        // "%"만 작은 크기로 변경
-        let smallerFont = UIFont.systemFont(ofSize: 10, weight: .bold) // % 크기 줄이기
-        attributedString.addAttribute(.font, value: smallerFont, range: NSRange(location: 2, length: 1)) // "55%" 중 "%"의 위치 변경
-        
-        label.attributedText = attributedString
-        return label
-    }()
+    private let scoreLabel: ScoreLabel = ScoreLabel()
     
     
     // MARK: - Life cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
+        backgroundColor = .clear
+        scoreLabel.configure(with: 55)
         configureConstraints()
     }
     
