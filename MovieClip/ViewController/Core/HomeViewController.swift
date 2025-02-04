@@ -8,7 +8,6 @@
 import UIKit
 
 class HomeViewController: UIViewController {
-
     
     // MARK: - UI Component
     private let homeFeedTableView: UITableView = {
@@ -31,7 +30,10 @@ class HomeViewController: UIViewController {
     private func setupTableView() {
         homeFeedTableView.delegate = self
         homeFeedTableView.dataSource = self
-        homeFeedTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        homeFeedTableView.register(HomeFeedTableViewCell.self, forCellReuseIdentifier: HomeFeedTableViewCell.reuseIdentifier)
+        
+        homeFeedTableView.rowHeight = UITableView.automaticDimension
+        homeFeedTableView.estimatedRowHeight = 350
     }
     
     // MARK: - Layouts
@@ -55,13 +57,25 @@ class HomeViewController: UIViewController {
 // MARK: - Extension: TableView Delegate
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 5
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Test"
-        return cell 
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeFeedTableViewCell.reuseIdentifier, for: indexPath) as? HomeFeedTableViewCell else { return UITableViewCell() }
+        cell.backgroundColor = .clear
+        return cell
+    }
+    
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return UITableView.automaticDimension
+//    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
     }
 }

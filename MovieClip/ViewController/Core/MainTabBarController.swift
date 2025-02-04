@@ -37,11 +37,11 @@ class MainTabBarController: UITabBarController {
         searchVC.tabBarItem.title = "검색"
         
         let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
+        appearance.configureWithDefaultBackground()
         
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = tabBar.standardAppearance
-        tabBar.tintColor = .systemYellow
+        tabBar.tintColor = .black
         
         self.setViewControllers([homeVC, movieVC, seriesVC, searchVC], animated: true)
         
