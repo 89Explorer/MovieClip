@@ -38,7 +38,6 @@ class HomeFeedTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     // MARK: - Functions
     /// 컬렉션뷰 델리게이트 설정
     private func setupCollectionView() {

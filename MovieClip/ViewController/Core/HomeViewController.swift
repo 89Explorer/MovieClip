@@ -17,17 +17,29 @@ class HomeViewController: UIViewController {
         return tableView
     }()
     
+    private var headerView: HomeTableHeaderView?
+    
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        configureConstraints()
-        setupTableView()
+        view.addSubview(homeFeedTableView)
+        
+        setupTableViewDelegate()
+        homeFeedTableHeaderView()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // 테이블 뷰 적용
+        homeFeedTableView.frame = view.bounds
+    }
+    
     
     // MARK: - Functions
     /// 테이블뷰 델리게이트 설정
-    private func setupTableView() {
+    private func setupTableViewDelegate() {
         homeFeedTableView.delegate = self
         homeFeedTableView.dataSource = self
         homeFeedTableView.register(HomeFeedTableViewCell.self, forCellReuseIdentifier: HomeFeedTableViewCell.reuseIdentifier)
@@ -36,22 +48,12 @@ class HomeViewController: UIViewController {
         homeFeedTableView.estimatedRowHeight = 350
     }
     
-    // MARK: - Layouts
-    /// 제약조건
-    private func configureConstraints() {
-        view.addSubview(homeFeedTableView)
-        
-        homeFeedTableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            
-            homeFeedTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            homeFeedTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            homeFeedTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            homeFeedTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
-            
-        ])
+    /// 테이블 헤더뷰 설정
+    private func homeFeedTableHeaderView() {
+        headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 400))
+        homeFeedTableView.tableHeaderView = headerView
     }
+
 }
 
 // MARK: - Extension: TableView Delegate

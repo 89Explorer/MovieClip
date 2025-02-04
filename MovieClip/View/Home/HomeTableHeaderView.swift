@@ -1,5 +1,5 @@
 //
-//  HomeFeedCollectionViewCell.swift
+//  HomeTableHeaderView.swift
 //  MovieClip
 //
 //  Created by 권정근 on 2/4/25.
@@ -7,10 +7,7 @@
 
 import UIKit
 
-class HomeFeedCollectionViewCell: UICollectionViewCell {
-    
-    // MARK: - Variable
-    static let reuseIdentifier: String = "HomeFeedCollectionViewCell"
+class HomeTableHeaderView: UIView {
     
     // MARK: - UI Component
     private let posterImageView: UIImageView = {
@@ -62,10 +59,10 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     private let scoreLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 12, weight: .bold)
+        label.font = .systemFont(ofSize: 14, weight: .bold)
         label.textColor = .white
         label.backgroundColor = .black
-        label.layer.cornerRadius = 17
+        label.layer.cornerRadius = 20
         label.clipsToBounds = true
         
         // ✅ "55%"에서 "%"만 크기 줄이기
@@ -73,7 +70,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         let attributedString = NSMutableAttributedString(string: fullText)
         
         // "%"만 작은 크기로 변경
-        let smallerFont = UIFont.systemFont(ofSize: 8, weight: .bold) // % 크기 줄이기
+        let smallerFont = UIFont.systemFont(ofSize: 10, weight: .bold) // % 크기 줄이기
         attributedString.addAttribute(.font, value: smallerFont, range: NSRange(location: 2, length: 1)) // "55%" 중 "%"의 위치 변경
         
         label.attributedText = attributedString
@@ -81,12 +78,12 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     }()
     
     
-    // MARK: - Life Cycle
+    // MARK: - Life cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = .black
         configureConstraints()
     }
-
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -95,29 +92,28 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Layouts
     private func configureConstraints() {
-        contentView.addSubview(totalStackView)
-        contentView.addSubview(scoreLabel)
+        
+        addSubview(totalStackView)
+        addSubview(scoreLabel)
         
         totalStackView.translatesAutoresizingMaskIntoConstraints = false
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
-            totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-            totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
-            totalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            totalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
+            totalStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            totalStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            totalStackView.topAnchor.constraint(equalTo: topAnchor),
+            totalStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        
+            posterImageView.heightAnchor.constraint(equalToConstant: 350),
             
-            posterImageView.heightAnchor.constraint(equalToConstant: 300),
-            
-            scoreLabel.leadingAnchor.constraint(equalTo: totalStackView.leadingAnchor, constant: 10),
-            scoreLabel.topAnchor.constraint(equalTo: totalStackView.topAnchor, constant: 15),
-            scoreLabel.heightAnchor.constraint(equalToConstant: 34),
-            scoreLabel.widthAnchor.constraint(equalToConstant: 34)
+            scoreLabel.leadingAnchor.constraint(equalTo: totalStackView.leadingAnchor, constant: 85),
+            scoreLabel.bottomAnchor.constraint(equalTo: totalStackView.topAnchor, constant: 50),
+            scoreLabel.heightAnchor.constraint(equalToConstant: 40),
+            scoreLabel.widthAnchor.constraint(equalToConstant: 40)
             
         ])
-        
-        totalStackView.setCustomSpacing(5, after: posterImageView)
     }
     
 }
