@@ -47,8 +47,24 @@ class HomeViewController: UIViewController {
     private func fetchMediaData() {
         Task {
             do {
-                let trendingMovies = try await NetworkManager.shared.getTrendingMovies()
+                // 1. 트렌딩 영화 목록 가져오기
+                var trendingMovies = try await NetworkManager.shared.getTrendingMovies()
                 
+                // 2. 영화 장르 목록 가져오기
+                let movieGenres = try await NetworkManager.shared.getMovieGenre()
+                
+                // 3. 각 영화의 genreIds를 genreNames로 변환
+                for i in 0..<trendingMovies.count {
+                    let movie = trendingMovies[i]
+                    let matchedGenres = movie.genreIDS.compactMap { genreId in
+                        movieGenres.first(where: { $0.id == genreId })?.name
+                    }
+                    
+                    // 장르 이름 저장
+                    trendingMovies[i].genreNames = matchedGenres
+                }
+                
+                // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies)
                 ]

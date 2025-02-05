@@ -56,6 +56,33 @@ class NetworkManager {
         return results.results
     }
     
+    
+    func getMovieGenre() async throws -> [MovieGenre] {
+        let url = URL(string: "https://api.themoviedb.org/3/genre/movie/list")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "ko"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+          "accept": "application/json",
+          "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else { throw APIError.failedToGetData }
+        
+        let results = try JSONDecoder().decode(MovieGenreWelcome.self, from: data)
+        
+        return results.genres
+    }
+    
 }
 
 

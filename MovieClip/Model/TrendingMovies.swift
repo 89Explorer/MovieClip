@@ -35,6 +35,7 @@ struct MovieResult: Codable {
     let video: Bool
     let voteAverage: Double
     let voteCount: Int
+    var genreNames: [String]?    // 장르 이름을 저장하는 필드 추가
 
     enum CodingKeys: String, CodingKey {
         case backdropPath = "backdrop_path"

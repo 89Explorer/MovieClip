@@ -94,8 +94,14 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         
         let posterPath = movie.posterPath
         guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
-        
         posterImageView.sd_setImage(with: url, completed: nil)
+        
+        // 장르를 " / " 로 구분하여 표시
+        if let genres = movie.genreNames, !genres.isEmpty {
+            genreLabel.text = genres.joined(separator: " / ")    // "스릴러 / 액션 / 공포" 로 표시
+        } else {
+            genreLabel.text = "장르 없음"
+        }
     }
     
     func formatDateString(_ dateString: String) -> String {
