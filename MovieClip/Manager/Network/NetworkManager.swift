@@ -31,7 +31,7 @@ class NetworkManager {
     static let shared = NetworkManager()
         
     func getTrendingMovies() async throws -> [MovieResult] {
-        let url = URL(string: "\(Constants.baseURL)trending/movie/day")!
+        let url = URL(string: "\(Constants.baseURL)trending/movie/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
           URLQueryItem(name: "language", value: "ko-KR"),

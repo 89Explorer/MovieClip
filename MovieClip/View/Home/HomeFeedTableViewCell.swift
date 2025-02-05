@@ -12,6 +12,8 @@ class HomeFeedTableViewCell: UITableViewCell {
     // MARK: - Variable
     static let reuseIdentifier: String = "HomeFeedTableViewCell"
     
+    /// 테이블뷰의 섹션 인덱스 저장
+    var sectionIndex: Int = 0
     
     // MARK: - UI Components
     private let homeCollectionView: UICollectionView = {
@@ -29,7 +31,7 @@ class HomeFeedTableViewCell: UITableViewCell {
     // MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .clear
+        contentView.backgroundColor = .black
         configureConstraints()
         setupCollectionView()
     }
@@ -69,11 +71,25 @@ class HomeFeedTableViewCell: UITableViewCell {
 extension HomeFeedTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        
+        // 테이블뷰의 섹션에 해당하는 데이터 가져오기
+        let sectionData = HomeViewController.homeSections[sectionIndex]
+        switch sectionData {
+        case .trendingMovies(let movies):
+            return movies.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeFeedCollectionViewCell.reuseIdentifier, for: indexPath) as? HomeFeedCollectionViewCell else { return UICollectionViewCell() }
+        
+        // 테이블뷰의 섹션에 해당하는 데이터 가져오기
+        let sectionData = HomeViewController.homeSections[sectionIndex]
+        switch sectionData {
+        case .trendingMovies(let movies):
+            let movie = movies[indexPath.item]
+            cell.configureCollectionView(with: movie)
+        }
         
         return cell
     }
