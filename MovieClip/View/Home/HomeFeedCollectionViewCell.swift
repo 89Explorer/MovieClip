@@ -18,6 +18,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "poster")
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         return imageView
     }()
@@ -53,8 +54,9 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     }()
     
     private lazy var totalStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [posterImageView, titleLabel, genreLabel, releasedDateLabel])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, genreLabel, releasedDateLabel])
         stackView.axis = .vertical
+        stackView.spacing = 5
         stackView.alignment = .fill
         stackView.distribution = .fill
         return stackView
@@ -121,29 +123,32 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Layouts
     private func configureConstraints() {
+        contentView.addSubview(posterImageView)
         contentView.addSubview(totalStackView)
         contentView.addSubview(scoreLabel)
         
+        posterImageView.translatesAutoresizingMaskIntoConstraints = false
         totalStackView.translatesAutoresizingMaskIntoConstraints = false
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
-            totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-            totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
-            totalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            totalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
-            
+            posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+            posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
             posterImageView.heightAnchor.constraint(equalToConstant: 280),
             
-            scoreLabel.leadingAnchor.constraint(equalTo: totalStackView.leadingAnchor, constant: 10),
-            scoreLabel.topAnchor.constraint(equalTo: totalStackView.topAnchor, constant: 15),
+            totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+            totalStackView.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 10),
+            totalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
+            
+            scoreLabel.leadingAnchor.constraint(equalTo: posterImageView.leadingAnchor, constant: 10),
+            scoreLabel.topAnchor.constraint(equalTo: posterImageView.topAnchor, constant: 15),
             scoreLabel.heightAnchor.constraint(equalToConstant: 34),
             scoreLabel.widthAnchor.constraint(equalToConstant: 34)
             
         ])
-        
-        totalStackView.setCustomSpacing(5, after: posterImageView)
     }
     
 }
