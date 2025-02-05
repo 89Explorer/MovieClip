@@ -28,6 +28,15 @@ class HomeViewController: UIViewController {
         
         setupTableViewDelegate()
         homeFeedTableHeaderView()
+        
+        Task {
+            do {
+                let movies = try await NetworkManager.shared.getTrendingMovies()
+                dump("Movies: \(movies)")
+            } catch {
+                print("error: \(error)")
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
