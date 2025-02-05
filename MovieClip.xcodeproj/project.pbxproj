@@ -6,11 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		9D890FC62D53044A00EFE9D6 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9D890FC52D53044A00EFE9D6 /* SDWebImage */; };
-		9D890FC82D53044A00EFE9D6 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9D890FC72D53044A00EFE9D6 /* SDWebImageMapKit */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		9D890E0F2D51534E00EFE9D6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -70,8 +65,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D890FC82D53044A00EFE9D6 /* SDWebImageMapKit in Frameworks */,
-				9D890FC62D53044A00EFE9D6 /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,8 +125,6 @@
 			);
 			name = MovieClip;
 			packageProductDependencies = (
-				9D890FC52D53044A00EFE9D6 /* SDWebImage */,
-				9D890FC72D53044A00EFE9D6 /* SDWebImageMapKit */,
 			);
 			productName = MovieClip;
 			productReference = 9D890DF52D51534D00EFE9D6 /* MovieClip.app */;
@@ -217,9 +208,6 @@
 			);
 			mainGroup = 9D890DEC2D51534D00EFE9D6;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				9D890FC42D53044A00EFE9D6 /* XCRemoteSwiftPackageReference "SDWebImage" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9D890DF62D51534D00EFE9D6 /* Products */;
 			projectDirPath = "";
@@ -593,30 +581,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		9D890FC42D53044A00EFE9D6 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.20.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		9D890FC52D53044A00EFE9D6 /* SDWebImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9D890FC42D53044A00EFE9D6 /* XCRemoteSwiftPackageReference "SDWebImage" */;
-			productName = SDWebImage;
-		};
-		9D890FC72D53044A00EFE9D6 /* SDWebImageMapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9D890FC42D53044A00EFE9D6 /* XCRemoteSwiftPackageReference "SDWebImage" */;
-			productName = SDWebImageMapKit;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9D890DED2D51534D00EFE9D6 /* Project object */;
 }
