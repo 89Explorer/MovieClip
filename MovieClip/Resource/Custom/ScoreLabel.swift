@@ -22,9 +22,11 @@ class ScoreLabel: UILabel {
     
     private func setupLabel() {
         textAlignment = .center
-        font = .systemFont(ofSize: 12, weight: .bold) // 기본 폰트 크기
+        font = .systemFont(ofSize: 10, weight: .bold) // 기본 폰트 크기
         backgroundColor = .black
         layer.cornerRadius = 20
+        layer.borderWidth = 2
+        layer.borderColor = UIColor.gray.cgColor
         clipsToBounds = true
     }
 

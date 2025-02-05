@@ -144,7 +144,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             totalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
             
             scoreLabel.leadingAnchor.constraint(equalTo: posterImageView.leadingAnchor, constant: 10),
-            scoreLabel.topAnchor.constraint(equalTo: posterImageView.topAnchor, constant: 15),
+            scoreLabel.topAnchor.constraint(equalTo: posterImageView.topAnchor, constant: 10),
             scoreLabel.heightAnchor.constraint(equalToConstant: 34),
             scoreLabel.widthAnchor.constraint(equalToConstant: 34)
             
