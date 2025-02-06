@@ -138,6 +138,32 @@ class NetworkManager {
         return results.genres
     }
     
+    /// 🚗 배우 목록을 가져오는 함수
+    func getTrendingPeoples() async throws -> [PeopleResult] {
+        let url = URL(string: "\(Constants.baseURL)/trending/person/week")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+          "accept": "application/json",
+          "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else { throw APIError.failedToGetData }
+        
+        let resultes = try JSONDecoder().decode(PeopleWelcome.self, from: data)
+        
+        return resultes.results
+    }
     
 }
 

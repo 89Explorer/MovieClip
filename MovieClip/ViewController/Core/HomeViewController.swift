@@ -34,6 +34,15 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         self.fetchMediaData()
         
+        Task {
+            do {
+                let peoples = try await NetworkManager.shared.getTrendingPeoples()
+                dump(peoples)
+            } catch {
+                print("error")
+            }
+        }
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -60,7 +69,6 @@ class HomeViewController: UIViewController {
                     let matchedGenres = movie.genreIDS.compactMap { genreId in
                         movieGenres.first(where: { $0.id == genreId })?.name
                     }
-                    
                     // 장르 이름 저장
                     trendingMovies[i].genreNames = matchedGenres
                 }
@@ -81,21 +89,11 @@ class HomeViewController: UIViewController {
                         }
                         return nil
                     }
-                    
                     // 장르 이름 저장
                     trendingTVs[i].genreNames = matchedGenres
                 }
                 
-//                for i in 0..<trendingTVs.count {
-//                    let tv = trendingTVs[i]
-//                    let matchedGenres = tv.genreIDS.compactMap { genreId in
-//                        tvGenres.first(where: { $0.id == genreId })?.name
-//                    }
-//                    
-//                    // 장르 이름 저장
-//                    trendingTVs[i].genreNames = matchedGenres
-//                }
-                
+            
                 // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies),

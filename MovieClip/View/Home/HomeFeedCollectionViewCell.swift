@@ -56,7 +56,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     private lazy var totalStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [genreLabel, releasedDateLabel])
         stackView.axis = .vertical
-        stackView.spacing = 2
+        stackView.spacing = 5
         stackView.alignment = .fill
         stackView.distribution = .fill
         return stackView
@@ -161,7 +161,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            posterImageView.heightAnchor.constraint(equalToConstant: 300),
+            posterImageView.heightAnchor.constraint(equalToConstant: 290),
             
             totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
