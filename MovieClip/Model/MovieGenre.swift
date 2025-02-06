@@ -7,12 +7,12 @@
 
 import Foundation
 
-// MARK: - Welcome
+// MARK: - MovieGenreWelcome
 struct MovieGenreWelcome: Codable {
     let genres: [MovieGenre]
 }
 
-// MARK: - Genre
+// MARK: - MovieGenre
 struct MovieGenre: Codable {
     let id: Int
     let name: String

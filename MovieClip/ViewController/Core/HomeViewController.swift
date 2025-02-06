@@ -67,7 +67,34 @@ class HomeViewController: UIViewController {
                 
                 
                 // 트렌딩 TV 목록 가져오기
-                let trendingTVs = try await NetworkManager.shared.getTrendingTVs()
+                var trendingTVs = try await NetworkManager.shared.getTrendingTVs()
+                
+                // 트렌딩 TV 장르 목록 가져오기
+                let tvGenres = try await NetworkManager.shared.getTVGenre()
+                
+                // 각 TV의 genreIds를 genreNames로 변환
+                for i in 0..<trendingTVs.count {
+                    let tv = trendingTVs[i]
+                    let matchedGenres = tv.genreIDS.compactMap { genreId in
+                        if let genre = tvGenres.first(where: { $0.id == genreId }) {
+                            return genreTranslation[genre.name] ?? genre.name   // ✅ 한글 변환 적용
+                        }
+                        return nil
+                    }
+                    
+                    // 장르 이름 저장
+                    trendingTVs[i].genreNames = matchedGenres
+                }
+                
+//                for i in 0..<trendingTVs.count {
+//                    let tv = trendingTVs[i]
+//                    let matchedGenres = tv.genreIDS.compactMap { genreId in
+//                        tvGenres.first(where: { $0.id == genreId })?.name
+//                    }
+//                    
+//                    // 장르 이름 저장
+//                    trendingTVs[i].genreNames = matchedGenres
+//                }
                 
                 // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [

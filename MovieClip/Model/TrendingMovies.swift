@@ -8,7 +8,7 @@
 import Foundation
 
 
-// MARK: - Welcome
+// MARK: - MovieWelcome
 struct MovieWelcome: Codable {
     let page: Int
     let results: [MovieResult]
@@ -21,7 +21,7 @@ struct MovieWelcome: Codable {
     }
 }
 
-// MARK: - Result
+// MARK: - MovieResult
 struct MovieResult: Codable {
     let backdropPath: String
     let id: Int

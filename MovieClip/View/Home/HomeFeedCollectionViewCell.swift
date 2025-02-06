@@ -26,7 +26,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "캡틴 아메리카"
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.font = .systemFont(ofSize: 14, weight: .bold)
         label.textColor = .white
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -36,9 +36,9 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     private let genreLabel: UILabel = {
         let label = UILabel()
         label.text = "캡틴 아메리카 영화"
-        label.font = .systemFont(ofSize: 12, weight: .bold)
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
         label.textColor = .white
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         label.textAlignment = .center
         return label
     }()
@@ -46,7 +46,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     private let releasedDateLabel: UILabel = {
         let label = UILabel()
         label.text = "1월 25일, 2025년"
-        label.font = .systemFont(ofSize: 12, weight: .bold)
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
         label.textColor = .white
         label.numberOfLines = 1
         label.textAlignment = .center
@@ -54,9 +54,9 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     }()
     
     private lazy var totalStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, genreLabel, releasedDateLabel])
+        let stackView = UIStackView(arrangedSubviews: [genreLabel, releasedDateLabel])
         stackView.axis = .vertical
-        stackView.spacing = 5
+        stackView.spacing = 2
         stackView.alignment = .fill
         stackView.distribution = .fill
         return stackView
@@ -84,7 +84,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     // MARK: - Functions
     // 개별 데이터 정보를 받아서 UI설정 
     func configureCollectionView(_ movie: MovieResult) {
-        titleLabel.text = movie.title
+        // titleLabel.text = movie.title
         releasedDateLabel.text = formatDateString(movie.releaseDate)
         
         let score = (movie.voteAverage)
@@ -122,11 +122,11 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         posterImageView.sd_setImage(with: url, completed: nil)
         
         // 장르를 " / " 로 구분하여 표시
-//        if let genres = movie.genreNames, !genres.isEmpty {
-//            genreLabel.text = genres.joined(separator: " / ")    // "스릴러 / 액션 / 공포" 로 표시
-//        } else {
-//            genreLabel.text = "장르 없음"
-//        }
+        if let genres = tv.genreNames, !genres.isEmpty {
+            genreLabel.text = genres.joined(separator: " / ")    // "스릴러 / 액션 / 공포" 로 표시
+        } else {
+            genreLabel.text = "장르 없음"
+        }
     }
     
     
@@ -161,7 +161,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            posterImageView.heightAnchor.constraint(equalToConstant: 280),
+            posterImageView.heightAnchor.constraint(equalToConstant: 300),
             
             totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),

@@ -7,7 +7,7 @@
 
 import Foundation
 
-// MARK: - Welcome
+// MARK: - TVWelcome
 struct TVWelcome: Codable {
     let page: Int
     let results: [TVResult]
@@ -20,7 +20,7 @@ struct TVWelcome: Codable {
     }
 }
 
-// MARK: - Result
+// MARK: - TVResult
 struct TVResult: Codable {
     let backdropPath: String
     let id: Int
@@ -34,6 +34,7 @@ struct TVResult: Codable {
     let voteAverage: Double
     let voteCount: Int
     let originCountry: [String]
+    var genreNames: [String]?    // 장르 이름을 저장하는 필드 추가
 
     enum CodingKeys: String, CodingKey {
         case backdropPath = "backdrop_path"
