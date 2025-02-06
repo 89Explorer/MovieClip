@@ -26,7 +26,7 @@ struct MovieResult: Codable {
     let backdropPath: String
     let id: Int
     let title, originalTitle, overview, posterPath: String
-    let mediaType: MediaType
+    let mediaType: MovieMediaType
     let adult: Bool
     let originalLanguage: OriginalLanguage
     let genreIDS: [Int]
@@ -55,7 +55,7 @@ struct MovieResult: Codable {
     }
 }
 
-enum MediaType: String, Codable {
+enum MovieMediaType: String, Codable {
     case movie = "movie"
 }
 

@@ -33,6 +33,16 @@ class HomeViewController: UIViewController {
         setupTableViewDelegate()
         homeFeedTableHeaderView()
         self.fetchMediaData()
+        
+        Task {
+            do {
+                var trendingTV = try await NetworkManager.shared.getTrendingTVs()
+                dump(trendingTV)
+            }
+            catch {
+                print("error")
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
