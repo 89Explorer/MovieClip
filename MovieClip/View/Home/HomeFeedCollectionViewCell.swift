@@ -83,13 +83,13 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Functions
     // 개별 데이터 정보를 받아서 UI설정 
-    func configureCollectionView(with movie: MovieResult) {
+    func configureCollectionView(_ movie: MovieResult) {
         titleLabel.text = movie.title
         releasedDateLabel.text = formatDateString(movie.releaseDate)
         
         let score = (movie.voteAverage)
         if score != 0 {
-            scoreLabel.configure(with: Int(score) * 10)
+            scoreLabel.configure(with: Int(score * 10))
         } else {
             scoreLabel.configure(with: 100)
         }
@@ -105,6 +105,31 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             genreLabel.text = "장르 없음"
         }
     }
+    
+    func configureCollectionView(_ tv: TVResult) {
+        titleLabel.text = tv.name
+        releasedDateLabel.text = formatDateString(tv.firstAirDate)
+        
+        let score = (tv.voteAverage)
+        if score != 0 {
+            scoreLabel.configure(with: Int(score * 10))
+        } else {
+            scoreLabel.configure(with: 100)
+        }
+        
+        let posterPath = tv.posterPath
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+        posterImageView.sd_setImage(with: url, completed: nil)
+        
+        // 장르를 " / " 로 구분하여 표시
+//        if let genres = movie.genreNames, !genres.isEmpty {
+//            genreLabel.text = genres.joined(separator: " / ")    // "스릴러 / 액션 / 공포" 로 표시
+//        } else {
+//            genreLabel.text = "장르 없음"
+//        }
+    }
+    
+    
     
     func formatDateString(_ dateString: String) -> String {
         let inputFormatter = DateFormatter()

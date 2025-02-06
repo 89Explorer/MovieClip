@@ -34,15 +34,6 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         self.fetchMediaData()
         
-        Task {
-            do {
-                var trendingTV = try await NetworkManager.shared.getTrendingTVs()
-                dump(trendingTV)
-            }
-            catch {
-                print("error")
-            }
-        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -74,9 +65,14 @@ class HomeViewController: UIViewController {
                     trendingMovies[i].genreNames = matchedGenres
                 }
                 
+                
+                // 트렌딩 TV 목록 가져오기
+                let trendingTVs = try await NetworkManager.shared.getTrendingTVs()
+                
                 // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [
-                    .trendingMovies(trendingMovies)
+                    .trendingMovies(trendingMovies),
+                    .trendingTVs(trendingTVs)
                 ]
                 
                 DispatchQueue.main.async {
@@ -146,4 +142,5 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - Enum
 enum HomeSection {
     case trendingMovies([MovieResult])
+    case trendingTVs([TVResult])
 }

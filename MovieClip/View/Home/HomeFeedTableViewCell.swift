@@ -77,6 +77,8 @@ extension HomeFeedTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
         switch sectionData {
         case .trendingMovies(let movies):
             return movies.count
+        case .trendingTVs(let tvs):
+            return tvs.count
         }
     }
     
@@ -88,7 +90,10 @@ extension HomeFeedTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
         switch sectionData {
         case .trendingMovies(let movies):
             let movie = movies[indexPath.item]
-            cell.configureCollectionView(with: movie)
+            cell.configureCollectionView(movie)
+        case .trendingTVs(let tvs):
+            let tv = tvs[indexPath.item]
+            cell.configureCollectionView(tv)
         }
         
         return cell
