@@ -18,52 +18,12 @@ class HomeTableHeaderView: UIView {
         return imageView
     }()
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "캡틴 아메리카"
-        label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .white
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let genreLabel: UILabel = {
-        let label = UILabel()
-        label.text = "캡틴 아메리카 영화"
-        label.font = .systemFont(ofSize: 12, weight: .bold)
-        label.textColor = .white
-        label.numberOfLines = 1
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let releasedDateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "1월 25일, 2025년"
-        label.font = .systemFont(ofSize: 12, weight: .bold)
-        label.textColor = .white
-        label.numberOfLines = 1
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private lazy var totalStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [posterImageView, titleLabel, genreLabel, releasedDateLabel])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        return stackView
-    }()
-    
     private let scoreLabel: ScoreLabel = ScoreLabel()
-    
     
     // MARK: - Life cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
-        scoreLabel.configure(with: 55)
         configureConstraints()
     }
     
@@ -72,29 +32,47 @@ class HomeTableHeaderView: UIView {
     }
     
     
+    // MARK: - Function
+    // 영화, 티비 데이터를 받아와 UI 구성
+    func configure(_ content: MovieResult) {
+        
+        let score = (content.voteAverage)
+        scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
+    
+        // ✅ 포스터 설정 (nil 체크)
+//        if let posterPath = content.posterPath, !posterPath.isEmpty {
+//            guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+//            posterImageView.sd_setImage(with: url, completed: nil)
+//        } else {
+//            posterImageView.image = UIImage(systemName: "photo") // ✅ 기본 이미지
+//        }
+//        
+        let posterPath = content.posterPath
+        
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+        posterImageView.sd_setImage(with: url, completed: nil)
+    }
+
     // MARK: - Layouts
     private func configureConstraints() {
-        
-        addSubview(totalStackView)
+        addSubview(posterImageView)
         addSubview(scoreLabel)
         
-        totalStackView.translatesAutoresizingMaskIntoConstraints = false
+        posterImageView.translatesAutoresizingMaskIntoConstraints = false
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
-            totalStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            totalStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            totalStackView.topAnchor.constraint(equalTo: topAnchor),
-            totalStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        
-            posterImageView.heightAnchor.constraint(equalToConstant: 300),
+            posterImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            posterImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            posterImageView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            posterImageView.heightAnchor.constraint(equalToConstant: 350),
             
-            scoreLabel.leadingAnchor.constraint(equalTo: totalStackView.leadingAnchor, constant: 85),
-            scoreLabel.bottomAnchor.constraint(equalTo: totalStackView.topAnchor, constant: 50),
-            scoreLabel.heightAnchor.constraint(equalToConstant: 40),
-            scoreLabel.widthAnchor.constraint(equalToConstant: 40)
-            
+            scoreLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 90),
+            scoreLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            scoreLabel.widthAnchor.constraint(equalToConstant: 34),
+            scoreLabel.heightAnchor.constraint(equalToConstant: 34)
+
         ])
     }
 }

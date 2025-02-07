@@ -26,7 +26,7 @@ struct AllResult: Codable {
     let backdropPath: String?
     let id: Int
     let title, originalTitle: String?
-    let overview, posterPath: String
+    let overview, posterPath: String?
     let mediaType: AllMediaType
     let adult: Bool
     let originalLanguage: String
@@ -64,4 +64,6 @@ struct AllResult: Codable {
 enum AllMediaType: String, Codable {
     case movie = "movie"
     case tv = "tv"
+    case person = "person"
+
 }

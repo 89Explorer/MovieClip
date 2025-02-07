@@ -12,6 +12,7 @@ class HomeViewController: UIViewController {
     // MARK: - Variables
     /// 테이블의 섹션별 데이터를 static 프로퍼티로 선언
     static var homeSections: [HomeSection] = []
+    private var homeHeaderRandomItem: AllResult?
     
     // MARK: - UI Component
     private let homeFeedTableView: UITableView = {
@@ -33,16 +34,6 @@ class HomeViewController: UIViewController {
         setupTableViewDelegate()
         homeFeedTableHeaderView()
         self.fetchMediaData()
-        
-        Task {
-            do {
-                let randomAll = try await NetworkManager.shared.getRandomTrendingAll()
-                dump("랜덤 영화: \(randomAll.title)")
-            } catch {
-                print("랜덤 영화 가져오기 실패 \(error)")
-            }
-        }
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -92,22 +83,26 @@ class HomeViewController: UIViewController {
                     // 장르 이름 저장
                     trendingTVs[i].genreNames = matchedGenres
                 }
-                
+            
                 
                 // 트렌딩 배우 목록 가져오기
                 let trendingPeoples = try await NetworkManager.shared.getTrendingPeoples()
+                
+                
+                // 트렌딩 all 목록에서 랜덤 1개의 정보 가져오기
+                let trendingAll = try await NetworkManager.shared.getRandomTrendingMovie()
                 
             
                 // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies),
                     .trendingTVs(trendingTVs),
-                    .trendingPeoples(trendingPeoples)
+                    .trendingPeoples(trendingPeoples),
                 ]
-                
                 
                 DispatchQueue.main.async {
                     self.homeFeedTableView.reloadData()
+                    self.headerView?.configure(trendingAll)   // ✅ HeaderView 업데이트
                 }
             } catch {
                 print("Failed to fetch data: \(error)")
@@ -127,7 +122,7 @@ class HomeViewController: UIViewController {
     
     /// 테이블 헤더뷰 설정
     private func homeFeedTableHeaderView() {
-        headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300))
+        headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
         homeFeedTableView.tableHeaderView = headerView
     }
 

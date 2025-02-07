@@ -38,7 +38,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         label.text = "캡틴 아메리카 영화"
         label.font = .systemFont(ofSize: 12, weight: .semibold)
         label.textColor = .white
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.textAlignment = .center
         return label
     }()
@@ -218,7 +218,7 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            posterImageView.heightAnchor.constraint(equalToConstant: 280),
+            posterImageView.heightAnchor.constraint(equalToConstant: 300),
             
             totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
             totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),

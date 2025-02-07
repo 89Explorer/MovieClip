@@ -166,9 +166,9 @@ class NetworkManager {
         return resultes.results
     }
     
-    /// 🚗 trending All 의 전체 페이지 검색 결과 중에 총 페이지 수 반환 메서드
+    /// 🚗 trending moviel 의 전체 페이지 검색 결과 중에 총 페이지 수 반환 메서드
     func getTotalPages() async throws -> Int {
-        let url = URL(string: "\(Constants.baseURL)/trending/all/week")!
+        let url = URL(string: "\(Constants.baseURL)/trending/movie/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
             URLQueryItem(name: "language", value: "ko-KR"),
@@ -189,44 +189,44 @@ class NetworkManager {
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else { throw APIError.failedToGetData }
         
-        let result = try JSONDecoder().decode(AllWelcome.self, from: data)
+        let result = try JSONDecoder().decode(MovieWelcome.self, from: data)
         return result.totalPages // ✅ 총 페이지 수 반환
     }
     
     
-    func getRandomTrendingAll() async throws -> AllResult {
+    func getRandomTrendingMovie() async throws -> MovieResult {
         let totalPages = try await getTotalPages() // ✅ 1. 총 페이지 수 가져오기
-            let randomPage = Int.random(in: 1...totalPages) // ✅ 2. 랜덤 페이지 선택
-
-            let url = URL(string: "\(Constants.baseURL)/trending/all/week")!
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-            let queryItems: [URLQueryItem] = [
-                URLQueryItem(name: "language", value: "ko-KR"),
-                URLQueryItem(name: "page", value: "\(randomPage)") // ✅ 3. 랜덤 페이지 요청
-            ]
-            components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
-
-            var request = URLRequest(url: components.url!)
-            request.httpMethod = "GET"
-            request.timeoutInterval = 10
-            request.allHTTPHeaderFields = [
-                "accept": "application/json",
-                "Authorization": "Bearer \(Constants.API_KEY)"
-            ]
-            
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else { throw APIError.failedToGetData }
-            
-            let results = try JSONDecoder().decode(AllWelcome.self, from: data)
-
-            // ✅ 랜덤으로 1개 선택
-            if let randomMovie = results.results.randomElement() {
-                return randomMovie
-            } else {
-                throw APIError.emptyResults // ✅ 결과가 없을 경우 에러 처리
-            }
+        let randomPage = Int.random(in: 1...totalPages) // ✅ 2. 랜덤 페이지 선택
+        
+        let url = URL(string: "\(Constants.baseURL)/trending/movie/week")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "page", value: "\(randomPage)") // ✅ 3. 랜덤 페이지 요청
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+        
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else { throw APIError.failedToGetData }
+        
+        let results = try JSONDecoder().decode(MovieWelcome.self, from: data)
+        
+        // ✅ 랜덤으로 1개 선택
+        if let randomMovie = results.results.randomElement() {
+            return randomMovie
+        } else {
+            throw APIError.emptyResults // ✅ 결과가 없을 경우 에러 처리
+        }
     }
     
 }
