@@ -47,6 +47,14 @@ enum KnownForDepartment: String, Codable {
     case writing = "Writing"
     case directing = "Directing"
     case creator = "Creator"
+    case camera = "Camera"
+    case unknown  // ✅ 새로운 값이 들어오면 기본적으로 unknown 처리
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let value = try? container.decode(String.self)
+        self = KnownForDepartment(rawValue: value ?? "") ?? .unknown
+    }
 }
 
 enum PeopleMediaType: String, Codable {

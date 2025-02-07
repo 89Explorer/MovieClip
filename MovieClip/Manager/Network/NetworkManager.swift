@@ -229,6 +229,33 @@ class NetworkManager {
         }
     }
     
+    // 🚗 상세 페이지, 영화 Id를 통해 상세 정보 가져오기
+    func getMovieDetailInfo(movieID: Int) async throws -> MovieDetailInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/\(movieID)")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "language", value: "ko-KR")
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieDetail = try JSONDecoder().decode(MovieDetailInfoWelcome.self, from: data)
+        return movieDetail
+    }
+    
 }
 
 

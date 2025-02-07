@@ -36,6 +36,19 @@ class HomeViewController: UIViewController {
         setupTableViewDelegate()
         homeFeedTableHeaderView()
         self.fetchMediaData()
+        
+        Task {
+            do {
+                let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: 1212142)
+                print("🎬 영화 제목: \(movieDetail.title)")
+                print("📅 개봉일: \(movieDetail.releaseDate)")
+                print("⭐ 평점: \(movieDetail.voteAverage)")
+            } catch {
+                print("🚨 영화 정보를 불러오는 데 실패했습니다: \(error)")
+            }
+        }
+        
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -150,13 +163,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    //        return UITableView.automaticDimension
-    //    }
     
-    //    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-    //        return 40
-    //    }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return section == 0 ? 50 : 40 // ✅ 첫 번째 섹션의 헤더 높이를 50으로 설정
