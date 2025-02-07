@@ -44,6 +44,8 @@ struct PeopleResult: Codable {
 enum KnownForDepartment: String, Codable {
     case acting = "Acting"
     case production = "Production"
+    case writing = "Writing"
+    case directing = "Directing"   
 }
 
 enum PeopleMediaType: String, Codable {

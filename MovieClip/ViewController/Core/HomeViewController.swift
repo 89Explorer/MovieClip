@@ -34,15 +34,6 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         self.fetchMediaData()
         
-        Task {
-            do {
-                let peoples = try await NetworkManager.shared.getTrendingPeoples()
-                dump(peoples)
-            } catch {
-                print("error")
-            }
-        }
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -93,12 +84,18 @@ class HomeViewController: UIViewController {
                     trendingTVs[i].genreNames = matchedGenres
                 }
                 
+                
+                // 트렌딩 배우 목록 가져오기
+                let trendingPeoples = try await NetworkManager.shared.getTrendingPeoples()
+                
             
                 // HomeViewController의 데이터 업데이트 
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies),
-                    .trendingTVs(trendingTVs)
+                    .trendingTVs(trendingTVs),
+                    .trendingPeoples(trendingPeoples)
                 ]
+                
                 
                 DispatchQueue.main.async {
                     self.homeFeedTableView.reloadData()
@@ -121,7 +118,7 @@ class HomeViewController: UIViewController {
     
     /// 테이블 헤더뷰 설정
     private func homeFeedTableHeaderView() {
-        headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 400))
+        headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 300))
         homeFeedTableView.tableHeaderView = headerView
     }
 
@@ -168,4 +165,5 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 enum HomeSection {
     case trendingMovies([MovieResult])
     case trendingTVs([TVResult])
+    case trendingPeoples([PeopleResult])
 }

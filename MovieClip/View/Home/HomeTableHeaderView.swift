@@ -88,7 +88,7 @@ class HomeTableHeaderView: UIView {
             totalStackView.topAnchor.constraint(equalTo: topAnchor),
             totalStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         
-            posterImageView.heightAnchor.constraint(equalToConstant: 350),
+            posterImageView.heightAnchor.constraint(equalToConstant: 300),
             
             scoreLabel.leadingAnchor.constraint(equalTo: totalStackView.leadingAnchor, constant: 85),
             scoreLabel.bottomAnchor.constraint(equalTo: totalStackView.topAnchor, constant: 50),
