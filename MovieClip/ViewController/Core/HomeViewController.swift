@@ -21,6 +21,7 @@ class HomeViewController: UIViewController {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        tableView.isUserInteractionEnabled = true
         return tableView
     }()
     
@@ -36,18 +37,6 @@ class HomeViewController: UIViewController {
         setupTableViewDelegate()
         homeFeedTableHeaderView()
         self.fetchMediaData()
-        
-        Task {
-            do {
-                let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: 1212142)
-                print("🎬 영화 제목: \(movieDetail.title)")
-                print("📅 개봉일: \(movieDetail.releaseDate)")
-                print("⭐ 평점: \(movieDetail.voteAverage)")
-            } catch {
-                print("🚨 영화 정보를 불러오는 데 실패했습니다: \(error)")
-            }
-        }
-        
         
     }
     
@@ -159,11 +148,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         // 섹션 인덱스 전달
         cell.sectionIndex = indexPath.section
+        cell.delegate = self // ✅ 델리게이트 설정
         
         return cell
     }
-    
-    
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return section == 0 ? 50 : 40 // ✅ 첫 번째 섹션의 헤더 높이를 50으로 설정
@@ -190,6 +178,33 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - Extension: HomeFeedTableViewCellDelegate
+extension HomeViewController: HomeFeedTableViewCellDelegate {
+    
+    func homeFeedTableViewCellDidSelectItem(_ cell: HomeFeedTableViewCell, section: Int, index: Int) {
+        let sectionData = HomeViewController.homeSections[section]
+        
+        switch sectionData {
+        case .trendingMovies(let movies):
+            let selectedMovie = movies[index]
+            let detailVC = DetailViewController(contentID: selectedMovie.id, contentType: .movie)
+            navigationController?.pushViewController(detailVC, animated: true)
+            
+        case .trendingTVs(let tvShows):
+            let selectedTV = tvShows[index]
+            let detailVC = DetailViewController(contentID: selectedTV.id, contentType: .tv)
+            navigationController?.pushViewController(detailVC, animated: true)
+            
+        case .trendingPeoples(let people):
+            let selectedPeople = people[index]
+            let detailVC = DetailViewController(contentID: selectedPeople.id, contentType: .people)
+            navigationController?.pushViewController(detailVC, animated: true)
+            
+        }
+    }
+}
+
+
 
 // MARK: - Enum
 enum HomeSection {
@@ -197,3 +212,5 @@ enum HomeSection {
     case trendingTVs([TVResult])
     case trendingPeoples([PeopleResult])
 }
+
+

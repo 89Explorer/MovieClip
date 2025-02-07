@@ -11,7 +11,8 @@ class HomeFeedTableViewCell: UITableViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier: String = "HomeFeedTableViewCell"
-    
+    weak var delegate: HomeFeedTableViewCellDelegate? // ✅ 델리게이트 선언
+
     /// 테이블뷰의 섹션 인덱스 저장
     var sectionIndex: Int = 0
     
@@ -103,4 +104,15 @@ extension HomeFeedTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
         
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.homeFeedTableViewCellDidSelectItem(self, section: sectionIndex, index: indexPath.item)
+    }
 }
+
+
+// MARK: - Protocol
+protocol HomeFeedTableViewCellDelegate: AnyObject {
+    func homeFeedTableViewCellDidSelectItem(_ cell: HomeFeedTableViewCell, section: Int, index: Int)
+}
+

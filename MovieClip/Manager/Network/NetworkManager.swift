@@ -256,6 +256,62 @@ class NetworkManager {
         return movieDetail
     }
     
+    // 🚗 상세 페이지, TV Id를 통해 상세 정보 가져오기
+    func getTVDetailInfo(tvID: Int) async throws -> TVDetailInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/tv/\(tvID)")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "language", value: "ko-KR")
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvDetail = try JSONDecoder().decode(TVDetailInfoWelcome.self, from: data)
+        return tvDetail
+    }
+    
+    
+    // 🚗 상세 페이지, People Id를 통해 상세 정보 가져오기
+    func getPeopleDetailInfo(peopleID: Int) async throws -> PeopleDetailInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "language", value: "ko-KR")
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let peopleDetail = try JSONDecoder().decode(PeopleDetailInfoWelcome.self, from: data)
+        return peopleDetail
+    }
+    
+    
 }
 
 
