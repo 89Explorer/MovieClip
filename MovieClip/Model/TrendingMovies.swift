@@ -23,7 +23,7 @@ struct MovieWelcome: Codable {
 
 // MARK: - MovieResult
 struct MovieResult: Codable {
-    let backdropPath: String
+    let backdropPath: String?
     let id: Int
     let title, originalTitle, overview, posterPath: String
     let mediaType: MovieMediaType

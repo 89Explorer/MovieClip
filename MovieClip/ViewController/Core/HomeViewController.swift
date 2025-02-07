@@ -12,7 +12,9 @@ class HomeViewController: UIViewController {
     // MARK: - Variables
     /// 테이블의 섹션별 데이터를 static 프로퍼티로 선언
     static var homeSections: [HomeSection] = []
-    private var homeHeaderRandomItem: AllResult?
+    private var homeHeaderRandomItem: MovieResult?
+    
+    private var homeFeedTableSection: [String] = ["Trending Movie", "Trending TV", "Trending People"]
     
     // MARK: - UI Component
     private let homeFeedTableView: UITableView = {
@@ -83,7 +85,7 @@ class HomeViewController: UIViewController {
                     // 장르 이름 저장
                     trendingTVs[i].genreNames = matchedGenres
                 }
-            
+                
                 
                 // 트렌딩 배우 목록 가져오기
                 let trendingPeoples = try await NetworkManager.shared.getTrendingPeoples()
@@ -92,8 +94,8 @@ class HomeViewController: UIViewController {
                 // 트렌딩 all 목록에서 랜덤 1개의 정보 가져오기
                 let trendingAll = try await NetworkManager.shared.getRandomTrendingMovie()
                 
-            
-                // HomeViewController의 데이터 업데이트 
+                
+                // HomeViewController의 데이터 업데이트
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies),
                     .trendingTVs(trendingTVs),
@@ -125,7 +127,7 @@ class HomeViewController: UIViewController {
         headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
         homeFeedTableView.tableHeaderView = headerView
     }
-
+    
 }
 
 // MARK: - Extension: TableView Delegate
@@ -148,13 +150,30 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return UITableView.automaticDimension
-//    }
+    //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    //        return UITableView.automaticDimension
+    //    }
     
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 40
+    //    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    //        return 40
+    //    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 50 : 40 // ✅ 첫 번째 섹션의 헤더 높이를 50으로 설정
     }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+        header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
+        header.textLabel?.textColor = .white
+        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return homeFeedTableSection[section]
+    }
+    
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let defaultOffset = view.safeAreaInsets.top

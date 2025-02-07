@@ -22,7 +22,7 @@ struct TVWelcome: Codable {
 
 // MARK: - TVResult
 struct TVResult: Codable {
-    let backdropPath: String
+    let backdropPath: String?
     let id: Int
     let name, originalName, overview, posterPath: String
     let mediaType: TVMediaType
