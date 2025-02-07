@@ -34,6 +34,15 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         self.fetchMediaData()
         
+        Task {
+            do {
+                let randomAll = try await NetworkManager.shared.getRandomTrendingAll()
+                dump("랜덤 영화: \(randomAll.title)")
+            } catch {
+                print("랜덤 영화 가져오기 실패 \(error)")
+            }
+        }
+        
     }
     
     override func viewDidLayoutSubviews() {

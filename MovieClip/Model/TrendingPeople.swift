@@ -45,7 +45,8 @@ enum KnownForDepartment: String, Codable {
     case acting = "Acting"
     case production = "Production"
     case writing = "Writing"
-    case directing = "Directing"   
+    case directing = "Directing"
+    case creator = "Creator"
 }
 
 enum PeopleMediaType: String, Codable {

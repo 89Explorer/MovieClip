@@ -90,11 +90,6 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         
         let score = (movie.voteAverage)
         scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
-        //        if score != 0 {
-        //            scoreLabel.configure(with: Int(score * 10))
-        //        } else {
-        //            scoreLabel.configure(with: 100)
-        //        }
         
         let posterPath = movie.posterPath
         guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
@@ -102,11 +97,6 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         
         // 장르를 " / " 로 구분하여 표시
         genreLabel.text = movie.genreNames?.joined(separator: " / ") ?? "장르 없음"
-        //        if let genres = movie.genreNames, !genres.isEmpty {
-        //            genreLabel.text = genres.joined(separator: " / ")    // "스릴러 / 액션 / 공포" 로 표시
-        //        } else {
-        //            genreLabel.text = "장르 없음"
-        //        }
         
         // ✅ Movie, TV에서는 genreLabel + releasedDateLabel
         totalStackView.addArrangedSubview(releasedDateLabel)
