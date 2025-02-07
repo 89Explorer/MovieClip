@@ -12,14 +12,17 @@ import Foundation
 struct PeopleDetailInfoWelcome: Codable {
     let adult: Bool
     let alsoKnownAs: [String]
-    let biography, birthday: String
-    let deathday: JSONNull?
+    let biography: String
+    let birthday: String?
+    let deathday: String? // ✅ JSONNull 대신 String? 적용
     let gender: Int
-    let homepage: JSONNull?
+    let homepage: String? // ✅ JSONNull 대신 String? 적용
     let id: Int
-    let imdbID, knownForDepartment, name, placeOfBirth: String
+    let imdbID: String?
+    let knownForDepartment, name: String
+    let placeOfBirth: String?
     let popularity: Double
-    let profilePath: String
+    let profilePath: String?
 
     enum CodingKeys: String, CodingKey {
         case adult
@@ -34,29 +37,3 @@ struct PeopleDetailInfoWelcome: Codable {
     }
 }
 
-// MARK: - Encode/decode helpers
-
-class PeopleDetailInfoJSONNull: Codable, Hashable {
-
-    public static func == (lhs: PeopleDetailInfoJSONNull, rhs: PeopleDetailInfoJSONNull) -> Bool {
-            return true
-    }
-
-    public var hashValue: Int {
-            return 0
-    }
-
-    public init() {}
-
-    public required init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if !container.decodeNil() {
-                    throw DecodingError.typeMismatch(PeopleDetailInfoJSONNull.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for JSONNull"))
-            }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-            var container = encoder.singleValueContainer()
-            try container.encodeNil()
-    }
-}

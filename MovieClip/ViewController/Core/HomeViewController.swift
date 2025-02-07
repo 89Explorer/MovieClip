@@ -54,6 +54,7 @@ class HomeViewController: UIViewController {
             do {
                 // 1. 트렌딩 영화 목록 가져오기
                 var trendingMovies = try await NetworkManager.shared.getTrendingMovies()
+                dump(trendingMovies)
                 
                 // 2. 영화 장르 목록 가져오기
                 let movieGenres = try await NetworkManager.shared.getMovieGenre()
@@ -170,18 +171,21 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let defaultOffset = view.safeAreaInsets.top
-        let offset = scrollView.contentOffset.y + defaultOffset
-        
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: -offset)
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let defaultOffset = view.safeAreaInsets.top
+//        let offset = scrollView.contentOffset.y + defaultOffset
+//        
+//        navigationController?.navigationBar.transform = .init(translationX: 0, y: -offset)
+//    }
 }
 
 // MARK: - Extension: HomeFeedTableViewCellDelegate
 extension HomeViewController: HomeFeedTableViewCellDelegate {
     
     func homeFeedTableViewCellDidSelectItem(_ cell: HomeFeedTableViewCell, section: Int, index: Int) {
+        
+        print("✅ [홈 뷰 컨트롤러] 선택된 섹션: \(section), 아이템: \(index)")
+        
         let sectionData = HomeViewController.homeSections[section]
         
         switch sectionData {
