@@ -91,10 +91,13 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         let score = (movie.voteAverage)
         scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
         
-        let posterPath = movie.posterPath
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
-        posterImageView.sd_setImage(with: url, completed: nil)
-        
+        if let posterPath = movie.posterPath, !posterPath.isEmpty {
+            guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+            posterImageView.sd_setImage(with: url, completed: nil)
+        } else {
+            posterImageView.image = UIImage(systemName: "photo.badge.exclamationmark")
+        }
+    
         // 장르를 " / " 로 구분하여 표시
         genreLabel.text = movie.genreNames?.joined(separator: " / ") ?? "장르 없음"
         
@@ -116,9 +119,12 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         let score = (tv.voteAverage)
         scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
         
-        let posterPath = tv.posterPath
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
-        posterImageView.sd_setImage(with: url, completed: nil)
+        if let posterPath = tv.posterPath, !posterPath.isEmpty {
+            guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+            posterImageView.sd_setImage(with: url, completed: nil)
+        } else {
+            posterImageView.image = UIImage(systemName: "photo.badge.exclamationmark")
+        }
         
         // 장르를 " / " 로 구분하여 표시
         genreLabel.text = tv.genreNames?.joined(separator: " / ") ?? "장르 없음"

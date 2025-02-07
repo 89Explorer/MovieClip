@@ -41,7 +41,7 @@ class MainTabBarController: UITabBarController {
         
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = tabBar.standardAppearance
-        tabBar.tintColor = .black
+        tabBar.tintColor = .systemBlue
         
         self.setViewControllers([homeVC, movieVC, seriesVC, searchVC], animated: true)
         

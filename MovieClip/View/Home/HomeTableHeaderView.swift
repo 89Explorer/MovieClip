@@ -38,10 +38,14 @@ class HomeTableHeaderView: UIView {
         let score = (content.voteAverage)
         scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
     
-        let posterPath = content.posterPath
+        if let posterPath = content.posterPath, !posterPath.isEmpty {
+            guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
+            posterImageView.sd_setImage(with: url, completed: nil)
+        } else {
+            posterImageView.image = UIImage(systemName: "photo.badge.exclamationmark")
+        }
         
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
-        posterImageView.sd_setImage(with: url, completed: nil)
+  
     }
 
     // MARK: - Layouts

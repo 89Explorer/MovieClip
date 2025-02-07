@@ -31,9 +31,10 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         configureConstraints()
-        
         fetchContentDetail()
         
+        navigationItem.title = "상세페이지"
+        navigationController?.navigationBar.tintColor = .white
     }
     
     // ✅ 생성자에서 `id`와 `type`을 전달받음
@@ -84,19 +85,19 @@ class DetailViewController: UIViewController {
     
     // ✅ UI를 업데이트하는 메서드
     private func configure(with movie: MovieDetailInfoWelcome) {
-        print("🎬 영화 제목: \(movie.title)")
+        //print("🎬 영화 제목: \(movie.title)")
         // 여기서 UI 업데이트
         self.detailView.configure(movie)
     }
     
     private func configure(with tv: TVDetailInfoWelcome) {
-        print("📺 TV 쇼 제목: \(tv.name)")
+        //print("📺 TV 쇼 제목: \(tv.name)")
         // 여기서 UI 업데이트
         self.detailView.configure(tv)
     }
     
     private func configure(with people: PeopleDetailInfoWelcome) {
-        print("🕺 배우 이름: \(people.name)")
+        //print("🕺 배우 이름: \(people.name)")
         // 여기서 UI 업데이트
     }
     
@@ -121,7 +122,6 @@ class DetailViewController: UIViewController {
     }
 
 }
-
 
 
 // ✅ 영화 및 TV 타입을 구분할 enum 추가

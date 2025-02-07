@@ -106,7 +106,8 @@ extension HomeFeedTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("✅ [컬렉션뷰] 선택된 셀 - section: \(sectionIndex), item: \(indexPath.item)")
+        // ✅ 셀이 눌리는 확인하기 위한 print() 문
+        // print("✅ [컬렉션뷰] 선택된 셀 - section: \(sectionIndex), item: \(indexPath.item)")
         delegate?.homeFeedTableViewCellDidSelectItem(self, section: sectionIndex, index: indexPath.item)
     }
 }

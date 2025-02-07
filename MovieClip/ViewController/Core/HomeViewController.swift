@@ -54,7 +54,7 @@ class HomeViewController: UIViewController {
             do {
                 // 1. 트렌딩 영화 목록 가져오기
                 var trendingMovies = try await NetworkManager.shared.getTrendingMovies()
-                dump(trendingMovies)
+                //dump(trendingMovies)
                 
                 // 2. 영화 장르 목록 가져오기
                 let movieGenres = try await NetworkManager.shared.getMovieGenre()
@@ -184,7 +184,8 @@ extension HomeViewController: HomeFeedTableViewCellDelegate {
     
     func homeFeedTableViewCellDidSelectItem(_ cell: HomeFeedTableViewCell, section: Int, index: Int) {
         
-        print("✅ [홈 뷰 컨트롤러] 선택된 섹션: \(section), 아이템: \(index)")
+        // ✅ 확인하기 위함
+        // print("✅ [홈 뷰 컨트롤러] 선택된 섹션: \(section), 아이템: \(index)")
         
         let sectionData = HomeViewController.homeSections[section]
         
