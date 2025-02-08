@@ -78,6 +78,15 @@ class HomeFeedCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // ✅ prepareForReuse() 추가 -> 셀 제사용 문제 해결
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        posterImageView.image = nil
+        titleLabel.text = nil
+        genreLabel.text = nil
+        releasedDateLabel.text = nil 
+    }
+    
     
     // MARK: - Function
     // 영화 데이터 정보를 받아서 UI설정
