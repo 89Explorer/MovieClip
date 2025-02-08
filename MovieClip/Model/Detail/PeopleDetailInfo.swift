@@ -19,7 +19,7 @@ struct PeopleDetailInfoWelcome: Codable {
     let homepage: String? // ✅ JSONNull 대신 String? 적용
     let id: Int
     let imdbID: String?
-    let knownForDepartment, name: String
+    let knownForDepartment, name: String?
     let placeOfBirth: String?
     let popularity: Double
     let profilePath: String?

@@ -15,6 +15,9 @@ class DetailViewController: UIViewController {
     
     // 영화, TV, 배우 데이터 저장
     private var contentDetail: ContentDetail?
+
+    // 상세페이지의 헤더뷰
+    private var detailHeaderView: DetailHeaderView?
     
     
     // MARK: - UI Component
@@ -23,11 +26,6 @@ class DetailViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         return tableView
-    }()
-    
-    private let detailView: DetailView = {
-        let view = DetailView()
-        return view
     }()
     
     private let activityIndicator: UIActivityIndicatorView = {
@@ -44,6 +42,7 @@ class DetailViewController: UIViewController {
         view.addSubview(detailTableView)
         fetchContentDetail()
         setupTableViewDelegate()
+        // detailTableHeaderView()
         
         navigationItem.title = "상세페이지"
         navigationController?.navigationBar.tintColor = .white
@@ -55,7 +54,7 @@ class DetailViewController: UIViewController {
         detailTableView.frame = view.bounds
     }
     
-    // ✅ 생성자에서 `id`와 `type`을 전달받음
+    /// ✅ 생성자에서 `id`와 `type`을 전달받음
     init(contentID: Int, contentType: ContentType) {
         self.contentID = contentID
         self.contentType = contentType
@@ -67,48 +66,97 @@ class DetailViewController: UIViewController {
     }
     
     // MARK: - Function
+    /// 테이블 헤더뷰 설정
+    private func detailTableHeaderView() {
+        detailHeaderView = DetailHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
+        detailTableView.tableHeaderView = detailHeaderView
+    }
     
-    
-    // 델리게이트 설정
+    /// 델리게이트 설정
     private func setupTableViewDelegate() {
         detailTableView.delegate = self
         detailTableView.dataSource = self
         detailTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
-    // init으로 받아온 데이터를 통해 API 요청
+    /// init으로 받아온 데이터를 통해 API 요청
     private func fetchContentDetail() {
         Task {
             do {
+                
+                // ✅ switch 문에서 데이터를 fetchedDetail 변수에 저장하고, 이후 한 번만 UI 업데이트를 수행
+                var fetchedDetail: ContentDetail?
+                var fetchedGenres: [String] = []  // 장르 저장 변수
+                
                 switch contentType {
                 case .movie:
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
-                    self.contentDetail = .movie(movieDetail)
-                    dump("현재 선택된 🎥 영화: \(movieDetail.title)")
+                    fetchedDetail = .movie(movieDetail)
+                    fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
-                    self.contentDetail = .tv(tvDetail)
-                    dump("현재 선택된 📺 tv: \(tvDetail.name)")
+                    fetchedDetail = .tv(tvDetail)
+                    fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    
                 case .people:
                     let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
-                    self.contentDetail = .people(peopleDetail)
-                    dump("현재 선택된 🧍 사람: \(peopleDetail.name)")
+                    fetchedDetail = .people(peopleDetail)
+                    fetchedGenres = getGenresFromHomeSection(for: contentID)
                 }
                 
                 DispatchQueue.main.async {
+                    
+                    // ✅ API 요청 실패 시 UI 업데이트 방지
+                    guard let contentDetail = fetchedDetail else { return }
+                    
+                    self.contentDetail = contentDetail
+                    self.detailTableHeaderView()   // 헤더뷰 생성
+                    
+                    switch contentDetail {
+                    case .movie(let movieDetail):
+                        
+                        self.detailHeaderView?.configure(movieDetail, genres: fetchedGenres)
+                    case .tv(let tvDetail):
+                        self.detailHeaderView?.configure(tvDetail, genres: fetchedGenres)
+                    case .people(let peopleDetail):
+                        self.detailHeaderView?.configure(peopleDetail, genres: fetchedGenres)
+                        
+                    }
+                    
                     self.detailTableView.reloadData()   // ✅ 데이터 로드되면 업데이트
+                    
                 }
             } catch {
                 print("❌ 데이터 로드 실패: \(error)")
             }
         }
     }
+    
+    /// 🚗 홈 뷰컨틀롤러 내 homeSection에서 genre 가져오기
+    private func getGenresFromHomeSection(for contentID: Int) -> [String] {
+        for section in HomeViewController.homeSections {
+            switch section {
+            case .trendingMovies(let movies):
+                if let movie = movies.first(where: { $0.id == contentID }) {
+                    return movie.genreNames ?? []  // ✅ 영화의 장르 변환
+                }
+            case .trendingTVs(let tv):
+                if let tv = tv.first(where: { $0.id == contentID}) {
+                    return tv.genreNames ?? []     // ✅ tv의 장르 변환
+                }
+            case .trendingPeoples:
+                return []   // ✅ 배우는 장르가 없으므로 패스
+            }
+        }
+        return []
+    }
 }
 
 extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return DetailSection.allCases.count
     }
     
     
@@ -139,4 +187,13 @@ enum ContentDetail {
     case movie(MovieDetailInfoWelcome)
     case tv(TVDetailInfoWelcome)
     case people(PeopleDetailInfoWelcome)
+}
+
+
+// 📌 detailTableView 섹션 관리 
+enum DetailSection: CaseIterable {
+    case overview
+    case actor
+    case media
+    case similar
 }

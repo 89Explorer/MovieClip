@@ -1,5 +1,5 @@
 //
-//  DetailView.swift
+//  DetailHeaderView.swift
 //  MovieClip
 //
 //  Created by 권정근 on 2/7/25.
@@ -8,22 +8,9 @@
 import UIKit
 import SDWebImage
 
-class DetailView: UIView {
+class DetailHeaderView: UIView {
     
     // MARK: - UI Component
-    
-    
-    
-    
-    private let basicScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.isScrollEnabled = true
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.bounces = true
-        return scrollView
-    }()
-    
     private let basicView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -40,15 +27,14 @@ class DetailView: UIView {
     
     private let posterImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "캡틴 아메리카"
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .white
         label.numberOfLines = 0
         label.textAlignment = .left
@@ -57,8 +43,7 @@ class DetailView: UIView {
     
     private let releasedDateLabel: UILabel = {
         let label = UILabel()
-        label.text = "2025-01-01"
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .white
         label.numberOfLines = 1
         label.textAlignment = .left
@@ -73,14 +58,21 @@ class DetailView: UIView {
     
     private let genreLabel: UILabel = {
         let label = UILabel()
-        label.text = "공포 / 스릴러"
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .white
         label.numberOfLines = 2
         label.textAlignment = .left
         return label
     }()
     
+    private let runtimeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .white
+        label.numberOfLines = 1
+        label.textAlignment = .left
+        return label
+    }()
     
     
     
@@ -98,7 +90,7 @@ class DetailView: UIView {
     
     // MARK: - Function
     // 🚗 movie 데이터를 받아 UI 전달 메서드
-    func configure(_ movie: MovieDetailInfoWelcome) {
+    func configure(_ movie: MovieDetailInfoWelcome, genres: [String]) {
         if let backdropPath = movie.backdropPath {
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(backdropPath)") else { return }
             backdropImage.sd_setImage(with: url, completed: nil)
@@ -115,13 +107,15 @@ class DetailView: UIView {
         let releaseDate = movie.releaseDate
         releasedDateLabel.text = releaseDate
         
-        let adult = movie.adult
-        print(adult)
-        self.toggleAdultSignImage(show: adult)
+        let genres = genres.joined(separator: " / ")
+        genreLabel.text = genres
+        
+        let runTime = movie.runtime
+        runtimeLabel.text = "\(runTime)분"
     }
     
     // 🚗 tv 데이터를 받아 UI 전달 메서드
-    func configure(_ tv: TVDetailInfoWelcome) {
+    func configure(_ tv: TVDetailInfoWelcome, genres: [String]) {
         if let backdropPath = tv.backdropPath {
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(backdropPath)") else { return }
             backdropImage.sd_setImage(with: url, completed: nil)
@@ -138,9 +132,25 @@ class DetailView: UIView {
         let releaseDate = tv.firstAirDate
         releasedDateLabel.text = releaseDate
         
-        let adult = tv.adult
-        print(adult)
-        self.toggleAdultSignImage(show: adult)
+        let genres = genres.joined(separator: " / ")
+        genreLabel.text = genres
+        
+        let countEpisodes = tv.numberOfEpisodes
+        runtimeLabel.text = "에피소드: \(countEpisodes)개"
+        
+    }
+    
+    func configure(_ people: PeopleDetailInfoWelcome, genres: [String]) {
+        backdropImage.backgroundColor = .systemGray
+        backdropImage.layer.opacity = 0.3
+        
+        if let profilePath = people.profilePath {
+            guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(profilePath)") else { return }
+            posterImage.sd_setImage(with: url, completed: nil)
+        }
+        
+        let name = people.name
+        titleLabel.text = name
         
     }
     
@@ -155,41 +165,32 @@ class DetailView: UIView {
     }
     
     
-    
     // MARK: - Layout
     private func configureConstraints() {
-        addSubview(basicScrollView)
-        basicScrollView.addSubview(basicView)
+        addSubview(basicView)
         basicView.addSubview(backdropImage)
         basicView.addSubview(posterImage)
         basicView.addSubview(titleLabel)
         basicView.addSubview(releasedDateLabel)
-        basicView.addSubview(adultSignImage)
+        basicView.addSubview(genreLabel)
+        basicView.addSubview(runtimeLabel)
+        // basicView.addSubview(adultSignImage)
         
-        basicScrollView.translatesAutoresizingMaskIntoConstraints = false
         basicView.translatesAutoresizingMaskIntoConstraints = false
         backdropImage.translatesAutoresizingMaskIntoConstraints = false
         posterImage.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         releasedDateLabel.translatesAutoresizingMaskIntoConstraints = false
-        adultSignImage.translatesAutoresizingMaskIntoConstraints = false
+        genreLabel.translatesAutoresizingMaskIntoConstraints = false
+        runtimeLabel.translatesAutoresizingMaskIntoConstraints = false
+        //adultSignImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
-            basicScrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            basicScrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            basicScrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            basicScrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            basicView.leadingAnchor.constraint(equalTo: basicScrollView.contentLayoutGuide.leadingAnchor),
-            basicView.trailingAnchor.constraint(equalTo: basicScrollView.contentLayoutGuide.trailingAnchor),
-            basicView.topAnchor.constraint(equalTo: basicScrollView.contentLayoutGuide.topAnchor),
-            basicView.bottomAnchor.constraint(equalTo: basicScrollView.contentLayoutGuide.bottomAnchor),
-            
-            basicView.widthAnchor.constraint(equalTo: basicScrollView.frameLayoutGuide.widthAnchor),
-            
-            //basicView.heightAnchor.constraint(equalToConstant: 1000),
-            
+            basicView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            basicView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            basicView.topAnchor.constraint(equalTo: topAnchor),
+            basicView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             backdropImage.leadingAnchor.constraint(equalTo: basicView.leadingAnchor, constant: 0),
             backdropImage.trailingAnchor.constraint(equalTo: basicView.trailingAnchor, constant: 0),
@@ -202,19 +203,30 @@ class DetailView: UIView {
             posterImage.topAnchor.constraint(equalTo: backdropImage.topAnchor, constant: 20),
             posterImage.bottomAnchor.constraint(equalTo: backdropImage.bottomAnchor, constant: -20),
             
-            titleLabel.leadingAnchor.constraint(equalTo: posterImage.trailingAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: posterImage.trailingAnchor, constant: 20),
             titleLabel.topAnchor.constraint(equalTo: posterImage.topAnchor, constant: 5),
             titleLabel.trailingAnchor.constraint(equalTo: backdropImage.trailingAnchor, constant: -10),
-            titleLabel.heightAnchor.constraint(equalToConstant: 40),
+            titleLabel.heightAnchor.constraint(equalToConstant: 50),
             
             releasedDateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
             releasedDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             releasedDateLabel.heightAnchor.constraint(equalToConstant: 20),
             
-            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
-            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
-            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
-            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
+            genreLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            genreLabel.topAnchor.constraint(equalTo: releasedDateLabel.bottomAnchor, constant: 5),
+            genreLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 0),
+            genreLabel.heightAnchor.constraint(equalToConstant: 40),
+            
+            runtimeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            runtimeLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 5),
+            runtimeLabel.heightAnchor.constraint(equalToConstant: 20)
+            
+            
+            
+//            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
+//            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
+//            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
+//            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
             
         ])
     }
