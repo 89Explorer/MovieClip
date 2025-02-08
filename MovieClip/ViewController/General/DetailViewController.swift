@@ -13,8 +13,18 @@ class DetailViewController: UIViewController {
     private let contentID: Int
     private let contentType: ContentType
     
+    // 영화, TV, 배우 데이터 저장
+    private var contentDetail: ContentDetail?
+    
     
     // MARK: - UI Component
+    private let detailTableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        return tableView
+    }()
+    
     private let detailView: DetailView = {
         let view = DetailView()
         return view
@@ -30,11 +40,19 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        configureConstraints()
+        
+        view.addSubview(detailTableView)
         fetchContentDetail()
+        setupTableViewDelegate()
         
         navigationItem.title = "상세페이지"
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // 테이블 뷰 적용
+        detailTableView.frame = view.bounds
     }
     
     // ✅ 생성자에서 `id`와 `type`을 전달받음
@@ -49,84 +67,76 @@ class DetailViewController: UIViewController {
     }
     
     // MARK: - Function
+    
+    
+    // 델리게이트 설정
+    private func setupTableViewDelegate() {
+        detailTableView.delegate = self
+        detailTableView.dataSource = self
+        detailTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    // init으로 받아온 데이터를 통해 API 요청
     private func fetchContentDetail() {
-        activityIndicator.startAnimating() // ✅ 로딩 시작
-        
         Task {
             do {
                 switch contentType {
                 case .movie:
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
-                    DispatchQueue.main.async {
-                        self.configure(with: movieDetail) // ✅ UI 업데이트
-                        self.activityIndicator.stopAnimating() // ✅ 데이터 로드 후 로딩 숨김
-                    }
+                    self.contentDetail = .movie(movieDetail)
+                    dump("현재 선택된 🎥 영화: \(movieDetail.title)")
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
-                    DispatchQueue.main.async {
-                        self.configure(with: tvDetail)
-                        self.activityIndicator.stopAnimating() // ✅ 데이터 로드 후 로딩 숨김
-                    }
+                    self.contentDetail = .tv(tvDetail)
+                    dump("현재 선택된 📺 tv: \(tvDetail.name)")
                 case .people:
                     let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
-                    DispatchQueue.main.async {
-                        self.configure(with: peopleDetail)
-                        self.activityIndicator.stopAnimating() // ✅ 데이터 로드 후 로딩 숨김
-                    }
+                    self.contentDetail = .people(peopleDetail)
+                    dump("현재 선택된 🧍 사람: \(peopleDetail.name)")
+                }
+                
+                DispatchQueue.main.async {
+                    self.detailTableView.reloadData()   // ✅ 데이터 로드되면 업데이트
                 }
             } catch {
-                DispatchQueue.main.async {
-                    self.activityIndicator.stopAnimating()
-                }
                 print("❌ 데이터 로드 실패: \(error)")
             }
         }
     }
-    
-    // ✅ UI를 업데이트하는 메서드
-    private func configure(with movie: MovieDetailInfoWelcome) {
-        //print("🎬 영화 제목: \(movie.title)")
-        // 여기서 UI 업데이트
-        self.detailView.configure(movie)
-    }
-    
-    private func configure(with tv: TVDetailInfoWelcome) {
-        //print("📺 TV 쇼 제목: \(tv.name)")
-        // 여기서 UI 업데이트
-        self.detailView.configure(tv)
-    }
-    
-    private func configure(with people: PeopleDetailInfoWelcome) {
-        //print("🕺 배우 이름: \(people.name)")
-        // 여기서 UI 업데이트
-    }
-    
-    
-    // MARK: - Layouts
-    private func configureConstraints() {
-        view.addSubview(detailView)
-        view.addSubview(activityIndicator)
+}
 
-        detailView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            detailView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            detailView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            detailView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
+extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 4
     }
-
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = "Test"
+        cell.backgroundColor = .white
+        return cell
+    }
 }
 
 
-// ✅ 영화 및 TV 타입을 구분할 enum 추가
+
+// 📌 사용자가 선택한 콘텐츠 유형을 구분 (API 요청용)
 enum ContentType {
     case movie
     case tv
     case people
+}
+
+
+// 📌 API 응답 데이터를 저장 (화면에 표시할 정보)
+enum ContentDetail {
+    case movie(MovieDetailInfoWelcome)
+    case tv(TVDetailInfoWelcome)
+    case people(PeopleDetailInfoWelcome)
 }

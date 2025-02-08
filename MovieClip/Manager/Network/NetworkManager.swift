@@ -37,6 +37,8 @@ class NetworkManager {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
             URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "adult", value: "true")
+            
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
         

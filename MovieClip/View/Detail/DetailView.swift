@@ -11,6 +11,10 @@ import SDWebImage
 class DetailView: UIView {
     
     // MARK: - UI Component
+    
+    
+    
+    
     private let basicScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = true
@@ -41,6 +45,44 @@ class DetailView: UIView {
         return imageView
     }()
     
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "캡틴 아메리카"
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let releasedDateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "2025-01-01"
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.textColor = .white
+        label.numberOfLines = 1
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let adultSignImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let genreLabel: UILabel = {
+        let label = UILabel()
+        label.text = "공포 / 스릴러"
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.textColor = .white
+        label.numberOfLines = 2
+        label.textAlignment = .left
+        return label
+    }()
+    
+    
+    
     
     // MARK: - Life Cycle
     override init(frame: CGRect) {
@@ -66,6 +108,16 @@ class DetailView: UIView {
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(posterPath)") else { return }
             posterImage.sd_setImage(with: url, completed: nil)
         }
+        
+        let title = movie.title
+        titleLabel.text = title
+        
+        let releaseDate = movie.releaseDate
+        releasedDateLabel.text = releaseDate
+        
+        let adult = movie.adult
+        print(adult)
+        self.toggleAdultSignImage(show: adult)
     }
     
     // 🚗 tv 데이터를 받아 UI 전달 메서드
@@ -80,7 +132,28 @@ class DetailView: UIView {
             posterImage.sd_setImage(with: url, completed: nil)
         }
         
+        let title = tv.name
+        titleLabel.text = title
+        
+        let releaseDate = tv.firstAirDate
+        releasedDateLabel.text = releaseDate
+        
+        let adult = tv.adult
+        print(adult)
+        self.toggleAdultSignImage(show: adult)
+        
     }
+    
+    private func toggleAdultSignImage(show: Bool) {
+        
+        adultSignImage.image = UIImage(systemName: "19.square")
+        if show {
+            adultSignImage.tintColor = .systemRed
+        } else {
+            adultSignImage.tintColor = .gray
+        }
+    }
+    
     
     
     // MARK: - Layout
@@ -89,11 +162,17 @@ class DetailView: UIView {
         basicScrollView.addSubview(basicView)
         basicView.addSubview(backdropImage)
         basicView.addSubview(posterImage)
+        basicView.addSubview(titleLabel)
+        basicView.addSubview(releasedDateLabel)
+        basicView.addSubview(adultSignImage)
         
         basicScrollView.translatesAutoresizingMaskIntoConstraints = false
         basicView.translatesAutoresizingMaskIntoConstraints = false
         backdropImage.translatesAutoresizingMaskIntoConstraints = false
         posterImage.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        releasedDateLabel.translatesAutoresizingMaskIntoConstraints = false
+        adultSignImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
@@ -121,7 +200,21 @@ class DetailView: UIView {
             //posterImage.centerYAnchor.constraint(equalTo: backdropImage.centerYAnchor),
             posterImage.widthAnchor.constraint(equalToConstant: 180),
             posterImage.topAnchor.constraint(equalTo: backdropImage.topAnchor, constant: 20),
-            posterImage.bottomAnchor.constraint(equalTo: backdropImage.bottomAnchor, constant: -20)
+            posterImage.bottomAnchor.constraint(equalTo: backdropImage.bottomAnchor, constant: -20),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: posterImage.trailingAnchor, constant: 10),
+            titleLabel.topAnchor.constraint(equalTo: posterImage.topAnchor, constant: 5),
+            titleLabel.trailingAnchor.constraint(equalTo: backdropImage.trailingAnchor, constant: -10),
+            titleLabel.heightAnchor.constraint(equalToConstant: 40),
+            
+            releasedDateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            releasedDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
+            releasedDateLabel.heightAnchor.constraint(equalToConstant: 20),
+            
+            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
+            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
+            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
+            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
             
         ])
     }
