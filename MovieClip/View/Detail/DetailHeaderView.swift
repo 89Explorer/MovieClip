@@ -10,6 +10,10 @@ import SDWebImage
 
 class DetailHeaderView: UIView {
     
+    // MARK: - variables
+    weak var delegate: DetailHeaderViewDelegate?
+    private var selectedTitle: String = ""
+    
     // MARK: - UI Component
     private let basicView: UIView = {
         let view = UIView()
@@ -74,6 +78,29 @@ class DetailHeaderView: UIView {
         return label
     }()
     
+    private let trailerButton: UIButton = {
+        var configuration = UIButton.Configuration.filled()
+        configuration.baseBackgroundColor = .systemCyan
+        configuration.baseForegroundColor = .white
+        configuration.cornerStyle = .medium
+        
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        
+        configuration.title = "트레일러 재생"
+        configuration.titleAlignment = .center
+        configuration.attributedTitle?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        
+        configuration.image = UIImage(systemName: "play.square")
+        configuration.imagePadding = 10
+        configuration.imagePlacement = .leading
+        
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold, scale: .large)
+        configuration.preferredSymbolConfigurationForImage = largeConfig
+        
+        let button = UIButton(configuration: configuration, primaryAction: nil)
+        button.addTarget(self, action: #selector(didTapTrailerButton), for: .touchUpInside)
+        return button
+    }()
     
     
     // MARK: - Life Cycle
@@ -102,6 +129,7 @@ class DetailHeaderView: UIView {
         }
         
         let title = movie.title
+        self.selectedTitle = title
         titleLabel.text = title
         
         let releaseDate = movie.releaseDate
@@ -112,6 +140,7 @@ class DetailHeaderView: UIView {
         
         let runTime = movie.runtime
         runtimeLabel.text = "\(runTime)분"
+
     }
     
     // 🚗 tv 데이터를 받아 UI 전달 메서드
@@ -127,6 +156,7 @@ class DetailHeaderView: UIView {
         }
         
         let title = tv.name
+        self.selectedTitle = title
         titleLabel.text = title
         
         let releaseDate = tv.firstAirDate
@@ -137,10 +167,10 @@ class DetailHeaderView: UIView {
         
         let countEpisodes = tv.numberOfEpisodes
         runtimeLabel.text = "에피소드: \(countEpisodes)개"
-        
+    
     }
     
-    func configure(_ people: PeopleDetailInfoWelcome, genres: [String]) {
+    func configure(_ people: PeopleDetailInfoWelcome) {
         backdropImage.backgroundColor = .systemGray
         backdropImage.layer.opacity = 0.3
         
@@ -152,7 +182,10 @@ class DetailHeaderView: UIView {
         let name = people.name
         titleLabel.text = name
         
+        trailerButton.isHidden = true
+        
     }
+    
     
     private func toggleAdultSignImage(show: Bool) {
         
@@ -165,6 +198,11 @@ class DetailHeaderView: UIView {
     }
     
     
+    // MARK: - Action
+    @objc private func didTapTrailerButton() {
+        delegate?.didTapTrailerButton(title: selectedTitle)
+    }
+    
     // MARK: - Layout
     private func configureConstraints() {
         addSubview(basicView)
@@ -174,6 +212,7 @@ class DetailHeaderView: UIView {
         basicView.addSubview(releasedDateLabel)
         basicView.addSubview(genreLabel)
         basicView.addSubview(runtimeLabel)
+        basicView.addSubview(trailerButton)
         // basicView.addSubview(adultSignImage)
         
         basicView.translatesAutoresizingMaskIntoConstraints = false
@@ -183,6 +222,7 @@ class DetailHeaderView: UIView {
         releasedDateLabel.translatesAutoresizingMaskIntoConstraints = false
         genreLabel.translatesAutoresizingMaskIntoConstraints = false
         runtimeLabel.translatesAutoresizingMaskIntoConstraints = false
+        trailerButton.translatesAutoresizingMaskIntoConstraints = false
         //adultSignImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -219,16 +259,27 @@ class DetailHeaderView: UIView {
             
             runtimeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
             runtimeLabel.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 5),
-            runtimeLabel.heightAnchor.constraint(equalToConstant: 20)
+            runtimeLabel.heightAnchor.constraint(equalToConstant: 20),
+            
+            trailerButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            trailerButton.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 5),
             
             
             
-//            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
-//            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
-//            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
-//            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
+            //            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
+            //            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
+            //            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
+            //            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
             
         ])
     }
     
+}
+
+
+
+// MARK: - Protocol: DetailHeaderViewDelegate
+/// detailHeaderView 내 trailterButton 눌렸을 때 동작할 메서드
+protocol DetailHeaderViewDelegate: AnyObject {
+    func didTapTrailerButton(title: String)
 }

@@ -286,7 +286,7 @@ class NetworkManager {
     }
     
     
-    // 🚗 상세 페이지, People Id를 통해 상세 정보 가져오기
+    /// 🚗 상세 페이지, People Id를 통해 상세 정보 가져오기
     func getPeopleDetailInfo(peopleID: Int) async throws -> PeopleDetailInfoWelcome {
         let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
@@ -313,6 +313,34 @@ class NetworkManager {
         return peopleDetail
     }
     
+    /// 🚗 contentId를 통해 영상정보 가져오기
+    func getVideoInfo(contentID: Int) async throws -> VideoInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/\(contentID)/videos")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieVideo = try JSONDecoder().decode(VideoInfoWelcome.self, from: data)
+        return movieVideo
+        
+    }
     
 }
 

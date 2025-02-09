@@ -18,7 +18,7 @@ class DetailViewController: UIViewController {
 
     // 상세페이지의 헤더뷰
     private var detailHeaderView: DetailHeaderView?
-    
+
     
     // MARK: - UI Component
     private let detailTableView: UITableView = {
@@ -42,7 +42,6 @@ class DetailViewController: UIViewController {
         view.addSubview(detailTableView)
         fetchContentDetail()
         setupTableViewDelegate()
-        // detailTableHeaderView()
         
         navigationItem.title = "상세페이지"
         navigationController?.navigationBar.tintColor = .white
@@ -70,6 +69,7 @@ class DetailViewController: UIViewController {
     private func detailTableHeaderView() {
         detailHeaderView = DetailHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
         detailTableView.tableHeaderView = detailHeaderView
+        detailHeaderView?.delegate = self
     }
     
     /// 델리게이트 설정
@@ -83,7 +83,6 @@ class DetailViewController: UIViewController {
     private func fetchContentDetail() {
         Task {
             do {
-                
                 // ✅ switch 문에서 데이터를 fetchedDetail 변수에 저장하고, 이후 한 번만 UI 업데이트를 수행
                 var fetchedDetail: ContentDetail?
                 var fetchedGenres: [String] = []  // 장르 저장 변수
@@ -93,6 +92,7 @@ class DetailViewController: UIViewController {
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
                     fetchedDetail = .movie(movieDetail)
                     fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    
                     
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
@@ -106,21 +106,20 @@ class DetailViewController: UIViewController {
                 }
                 
                 DispatchQueue.main.async {
+                    self.detailTableHeaderView()   // 헤더뷰 생성
                     
                     // ✅ API 요청 실패 시 UI 업데이트 방지
                     guard let contentDetail = fetchedDetail else { return }
                     
                     self.contentDetail = contentDetail
-                    self.detailTableHeaderView()   // 헤더뷰 생성
                     
                     switch contentDetail {
                     case .movie(let movieDetail):
-                        
                         self.detailHeaderView?.configure(movieDetail, genres: fetchedGenres)
                     case .tv(let tvDetail):
                         self.detailHeaderView?.configure(tvDetail, genres: fetchedGenres)
                     case .people(let peopleDetail):
-                        self.detailHeaderView?.configure(peopleDetail, genres: fetchedGenres)
+                        self.detailHeaderView?.configure(peopleDetail)
                         
                     }
                     
@@ -128,7 +127,7 @@ class DetailViewController: UIViewController {
                     
                 }
             } catch {
-                print("❌ 데이터 로드 실패: \(error)")
+                print("❌ 데이터 로드 실패1: \(error)")
             }
         }
     }
@@ -173,6 +172,13 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 
+extension DetailViewController: DetailHeaderViewDelegate {
+    func didTapTrailerButton(title: String) {
+        let trailerVC = TrailerViewController(trailerTitle: title)
+        present(trailerVC, animated: true)
+    }
+}
+
 
 // 📌 사용자가 선택한 콘텐츠 유형을 구분 (API 요청용)
 enum ContentType {
@@ -189,7 +195,6 @@ enum ContentDetail {
     case people(PeopleDetailInfoWelcome)
 }
 
-
 // 📌 detailTableView 섹션 관리 
 enum DetailSection: CaseIterable {
     case overview
@@ -197,3 +202,7 @@ enum DetailSection: CaseIterable {
     case media
     case similar
 }
+
+
+
+
