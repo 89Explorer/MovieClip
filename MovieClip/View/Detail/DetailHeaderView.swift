@@ -98,7 +98,7 @@ class DetailHeaderView: UIView {
         configuration.preferredSymbolConfigurationForImage = largeConfig
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.addTarget(self, action: #selector(didTapTrailerButton), for: .touchUpInside)
+        button.addTarget(DetailHeaderView.self, action: #selector(didTapTrailerButton), for: .touchUpInside)
         return button
     }()
     
@@ -199,6 +199,7 @@ class DetailHeaderView: UIView {
     
     
     // MARK: - Action
+    /// trailterButon을 누르면 title 정보 전달
     @objc private func didTapTrailerButton() {
         delegate?.didTapTrailerButton(title: selectedTitle)
     }

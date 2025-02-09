@@ -15,10 +15,12 @@ class DetailViewController: UIViewController {
     
     // 영화, TV, 배우 데이터 저장
     private var contentDetail: ContentDetail?
-
+    
     // 상세페이지의 헤더뷰
     private var detailHeaderView: DetailHeaderView?
-
+    
+    private var detailTableSection: [String] = ["Overview", "Top Billed Cast", "Media", "Recommendations"]
+    
     
     // MARK: - UI Component
     private let detailTableView: UITableView = {
@@ -43,8 +45,12 @@ class DetailViewController: UIViewController {
         fetchContentDetail()
         setupTableViewDelegate()
         
+        
+        // ✅ 높이 자동 조절 설정
+        detailTableView.estimatedRowHeight = 100  // 임의의 예상 높이 설정
+        
         navigationItem.title = "상세페이지"
-        navigationController?.navigationBar.tintColor = .white
+        navigationItem.titleView?.tintColor = .white
     }
     
     override func viewDidLayoutSubviews() {
@@ -77,6 +83,7 @@ class DetailViewController: UIViewController {
         detailTableView.delegate = self
         detailTableView.dataSource = self
         detailTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        detailTableView.register(OverviewTableViewCell.self, forCellReuseIdentifier: OverviewTableViewCell.reuseIdentifier)
     }
     
     /// init으로 받아온 데이터를 통해 API 요청
@@ -152,6 +159,8 @@ class DetailViewController: UIViewController {
     }
 }
 
+
+// MARK: - Extension: UITableViewDelegate, UITableViewDataSource
 extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -164,14 +173,51 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Test"
-        cell.backgroundColor = .white
-        return cell
+        
+        // ✅ 현재 섹션 타입 가져오기
+        let sectionType = DetailSection.allCases[indexPath.section]
+        
+        switch sectionType {
+        case .overview:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: OverviewTableViewCell.reuseIdentifier, for: indexPath) as? OverviewTableViewCell else { return UITableViewCell() }
+            if let contentDetail = contentDetail {
+                cell.configure(with: contentDetail)
+            }
+            
+            return cell
+            
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            cell.textLabel?.text = "Test"
+            cell.backgroundColor = .white
+            return cell
+        }
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 50 : 40 // ✅ 첫 번째 섹션의 헤더 높이를 50으로 설정
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+        header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
+        header.textLabel?.textColor = .white
+        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return detailTableSection[section]
+    }
+    
 }
 
 
+// MARK: - Extension: DetailHeaderViewDelegate
 extension DetailViewController: DetailHeaderViewDelegate {
     func didTapTrailerButton(title: String) {
         let trailerVC = TrailerViewController(trailerTitle: title)
