@@ -98,7 +98,7 @@ class DetailHeaderView: UIView {
         configuration.preferredSymbolConfigurationForImage = largeConfig
         
         let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.addTarget(DetailHeaderView.self, action: #selector(didTapTrailerButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapTrailerButton), for: .touchUpInside)
         return button
     }()
     
@@ -186,18 +186,6 @@ class DetailHeaderView: UIView {
         
     }
     
-    
-    private func toggleAdultSignImage(show: Bool) {
-        
-        adultSignImage.image = UIImage(systemName: "19.square")
-        if show {
-            adultSignImage.tintColor = .systemRed
-        } else {
-            adultSignImage.tintColor = .gray
-        }
-    }
-    
-    
     // MARK: - Action
     /// trailterButon을 누르면 title 정보 전달
     @objc private func didTapTrailerButton() {
@@ -214,7 +202,6 @@ class DetailHeaderView: UIView {
         basicView.addSubview(genreLabel)
         basicView.addSubview(runtimeLabel)
         basicView.addSubview(trailerButton)
-        // basicView.addSubview(adultSignImage)
         
         basicView.translatesAutoresizingMaskIntoConstraints = false
         backdropImage.translatesAutoresizingMaskIntoConstraints = false
@@ -224,8 +211,7 @@ class DetailHeaderView: UIView {
         genreLabel.translatesAutoresizingMaskIntoConstraints = false
         runtimeLabel.translatesAutoresizingMaskIntoConstraints = false
         trailerButton.translatesAutoresizingMaskIntoConstraints = false
-        //adultSignImage.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             
             basicView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -239,7 +225,6 @@ class DetailHeaderView: UIView {
             backdropImage.heightAnchor.constraint(equalToConstant: 350),
             
             posterImage.leadingAnchor.constraint(equalTo: basicView.leadingAnchor, constant: 20),
-            //posterImage.centerYAnchor.constraint(equalTo: backdropImage.centerYAnchor),
             posterImage.widthAnchor.constraint(equalToConstant: 180),
             posterImage.topAnchor.constraint(equalTo: backdropImage.topAnchor, constant: 20),
             posterImage.bottomAnchor.constraint(equalTo: backdropImage.bottomAnchor, constant: -20),
@@ -264,13 +249,6 @@ class DetailHeaderView: UIView {
             
             trailerButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
             trailerButton.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 5),
-            
-            
-            
-            //            adultSignImage.leadingAnchor.constraint(equalTo: releasedDateLabel.trailingAnchor, constant: 5),
-            //            adultSignImage.centerYAnchor.constraint(equalTo: releasedDateLabel.centerYAnchor),
-            //            adultSignImage.widthAnchor.constraint(equalToConstant: 20),
-            //            adultSignImage.heightAnchor.constraint(equalToConstant: 20)
             
         ])
     }

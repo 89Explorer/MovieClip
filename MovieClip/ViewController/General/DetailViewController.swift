@@ -84,6 +84,7 @@ class DetailViewController: UIViewController {
         detailTableView.dataSource = self
         detailTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         detailTableView.register(OverviewTableViewCell.self, forCellReuseIdentifier: OverviewTableViewCell.reuseIdentifier)
+        detailTableView.register(TopBilledCastTableViewCell.self, forCellReuseIdentifier: TopBilledCastTableViewCell.reuseIdentifier)
     }
     
     /// init으로 받아온 데이터를 통해 API 요청
@@ -183,6 +184,10 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             if let contentDetail = contentDetail {
                 cell.configure(with: contentDetail)
             }
+            
+            return cell
+        case .actor:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: TopBilledCastTableViewCell.reuseIdentifier, for: indexPath) as? TopBilledCastTableViewCell else { return UITableViewCell() }
             
             return cell
             
