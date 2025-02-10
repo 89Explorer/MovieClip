@@ -196,6 +196,7 @@ class NetworkManager {
     }
     
     
+    /// 트렌드 영화 전체에서 1개 영화 가져오기
     func getRandomTrendingMovie() async throws -> MovieResult {
         let totalPages = try await getTotalPages() // ✅ 1. 총 페이지 수 가져오기
         let randomPage = Int.random(in: 1...totalPages) // ✅ 2. 랜덤 페이지 선택
@@ -231,7 +232,7 @@ class NetworkManager {
         }
     }
     
-    // 🚗 상세 페이지, 영화 Id를 통해 상세 정보 가져오기
+    /// 🚗 상세 페이지, 영화 Id를 통해 상세 정보 가져오기
     func getMovieDetailInfo(movieID: Int) async throws -> MovieDetailInfoWelcome {
         let url = URL(string: "\(Constants.baseURL)/movie/\(movieID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
@@ -258,7 +259,7 @@ class NetworkManager {
         return movieDetail
     }
     
-    // 🚗 상세 페이지, TV Id를 통해 상세 정보 가져오기
+    /// 🚗 상세 페이지, TV Id를 통해 상세 정보 가져오기
     func getTVDetailInfo(tvID: Int) async throws -> TVDetailInfoWelcome {
         let url = URL(string: "\(Constants.baseURL)/tv/\(tvID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
@@ -312,6 +313,67 @@ class NetworkManager {
         let peopleDetail = try JSONDecoder().decode(PeopleDetailInfoWelcome.self, from: data)
         return peopleDetail
     }
+    
+    
+    /// 🎥 영화 캐스팅 정보 가져오기 
+    func getMovieCastInfo(contentID: Int) async throws -> TopBilledCastInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/\(contentID)/credits")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieCastInfo = try JSONDecoder().decode(TopBilledCastInfoWelcome.self, from: data)
+        
+        return movieCastInfo
+        
+    }
+    
+    
+    /// 🎥 영화 캐스팅 정보 가져오기
+    func getTVCastInfo(contentID: Int) async throws -> TopBilledCastInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/tv/\(contentID)/credits")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieCastInfo = try JSONDecoder().decode(TopBilledCastInfoWelcome.self, from: data)
+        
+        return movieCastInfo
+        
+    }
+    
     
     /// 🚗 contentId를 통해 영상정보 가져오기
     func getVideoInfo(contentID: Int) async throws -> VideoInfoWelcome {

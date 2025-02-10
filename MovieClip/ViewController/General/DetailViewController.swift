@@ -19,7 +19,11 @@ class DetailViewController: UIViewController {
     // 상세페이지의 헤더뷰
     private var detailHeaderView: DetailHeaderView?
     
+    // 테이블의 섹션 헤더
     private var detailTableSection: [String] = ["Overview", "Top Billed Cast", "Media", "Recommendations"]
+    
+    // 영화 캐스팅 정보 저장
+    private var movieTopBilledCastInfo: CastingList?
     
     
     // MARK: - UI Component
@@ -94,18 +98,21 @@ class DetailViewController: UIViewController {
                 // ✅ switch 문에서 데이터를 fetchedDetail 변수에 저장하고, 이후 한 번만 UI 업데이트를 수행
                 var fetchedDetail: ContentDetail?
                 var fetchedGenres: [String] = []  // 장르 저장 변수
+                var castingList: TopBilledCastInfoWelcome?  // 출연진 목록 저장
                 
                 switch contentType {
                 case .movie:
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
                     fetchedDetail = .movie(movieDetail)
                     fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    castingList = try await  NetworkManager.shared.getMovieCastInfo(contentID: contentID)
                     
                     
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
                     fetchedDetail = .tv(tvDetail)
                     fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    castingList = try await NetworkManager.shared.getTVCastInfo(contentID: contentID)
                     
                 case .people:
                     let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
@@ -118,8 +125,22 @@ class DetailViewController: UIViewController {
                     
                     // ✅ API 요청 실패 시 UI 업데이트 방지
                     guard let contentDetail = fetchedDetail else { return }
-                    
                     self.contentDetail = contentDetail
+                    
+                    // ✅ 'CastingList'를 'switch' 문을 통해 저장
+                    switch contentDetail {
+                    case .movie:
+                        if let castingList = castingList {
+                            self.movieTopBilledCastInfo = .movie(castingList)
+                        }
+                    case .tv:
+                        if let castingList = castingList {
+                            self.movieTopBilledCastInfo = .tv(castingList)
+                        }
+                    case .people:
+                        break
+                    }
+                    
                     
                     switch contentDetail {
                     case .movie(let movieDetail):
@@ -189,7 +210,20 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         case .actor:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TopBilledCastTableViewCell.reuseIdentifier, for: indexPath) as? TopBilledCastTableViewCell else { return UITableViewCell() }
             
+            switch contentType {
+            case .movie:
+                if let castingInfo = movieTopBilledCastInfo {
+                    cell.configure(with: castingInfo)
+                }
+            case .tv:
+                if let castingInfo = movieTopBilledCastInfo {
+                    cell.configure(with: castingInfo)
+                }
+            case .people:
+                break
+            }
             return cell
+
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -255,5 +289,10 @@ enum DetailSection: CaseIterable {
 }
 
 
+enum CastingList {
+    case movie(TopBilledCastInfoWelcome)
+    case tv(TopBilledCastInfoWelcome)
+    case people
+}
 
 
