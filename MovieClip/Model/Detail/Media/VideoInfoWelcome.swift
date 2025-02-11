@@ -8,13 +8,13 @@
 import Foundation
 
 
-// MARK: - Welcome
+// MARK: - VideoInfoWelcome
 struct VideoInfoWelcome: Codable {
     let id: Int
     let results: [VideoInfoResult]
 }
 
-// MARK: - Result
+// MARK: - VideoInfoResult
 struct VideoInfoResult: Codable {
     let name, key: String?
     let site: Site

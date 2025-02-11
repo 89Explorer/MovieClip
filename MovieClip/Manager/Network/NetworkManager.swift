@@ -376,7 +376,7 @@ class NetworkManager {
     
     
     /// 🚗 contentId를 통해 영상정보 가져오기
-    func getVideoInfo(contentID: Int) async throws -> VideoInfoWelcome {
+    func getMovieVideoInfo(contentID: Int) async throws -> VideoInfoWelcome {
         let url = URL(string: "\(Constants.baseURL)/movie/\(contentID)/videos")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
@@ -402,6 +402,80 @@ class NetworkManager {
         let movieVideo = try JSONDecoder().decode(VideoInfoWelcome.self, from: data)
         return movieVideo
         
+    }
+    
+    /// 🚗 contentId를 통해 tv 영상 정보 가져오기
+    func getTvVideoInfo(contentID: Int) async throws -> VideoInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/tv/\(contentID)/videos")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvVideo = try JSONDecoder().decode(VideoInfoWelcome.self, from: data)
+        return tvVideo
+        
+    }
+    
+    
+    /// 🚗 contentId를 통해 이미지 정보 가져오기
+    func getMoviePosterInfo(contentID: Int) async throws -> PosterInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/\(contentID)/images")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let moviePoster = try JSONDecoder().decode(PosterInfoWelcome.self, from: data)
+        
+        return moviePoster
+    }
+    
+    /// 🚗 contentId를 통해 tv 이미지 정보 가져오기
+    func getTvPosterInfo(contentID: Int) async throws -> PosterInfoWelcome {
+        let url = URL(string: "\(Constants.baseURL)/tv/\(contentID)/images")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvPoster = try JSONDecoder().decode(PosterInfoWelcome.self, from: data)
+        
+        return tvPoster
     }
     
 }

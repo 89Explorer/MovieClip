@@ -20,10 +20,16 @@ class DetailViewController: UIViewController {
     private var detailHeaderView: DetailHeaderView?
     
     // 테이블의 섹션 헤더
-    private var detailTableSection: [String] = ["Overview", "Top Billed Cast", "Media", "Recommendations"]
+    private var detailTableSection: [String] = ["Overview", "Top Billed Cast", "Videos", "Posters", "Recommendations"]
     
     // 영화 캐스팅 정보 저장
     private var movieTopBilledCastInfo: CastingList?
+    
+    // 비디오 섹션 데이터 저장
+    private var mediaVideos: [VideoInfoResult] = []
+    
+    // 이미지 섹션 데이터 저장
+    private var mediaPosters: [PosterInfoBackdrop] = []
     
     
     // MARK: - UI Component
@@ -89,6 +95,7 @@ class DetailViewController: UIViewController {
         detailTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         detailTableView.register(OverviewTableViewCell.self, forCellReuseIdentifier: OverviewTableViewCell.reuseIdentifier)
         detailTableView.register(TopBilledCastTableViewCell.self, forCellReuseIdentifier: TopBilledCastTableViewCell.reuseIdentifier)
+        detailTableView.register(MediaTableViewCell.self, forCellReuseIdentifier: MediaTableViewCell.reuseIdentifier)
     }
     
     /// init으로 받아온 데이터를 통해 API 요청
@@ -99,6 +106,8 @@ class DetailViewController: UIViewController {
                 var fetchedDetail: ContentDetail?
                 var fetchedGenres: [String] = []  // 장르 저장 변수
                 var castingList: TopBilledCastInfoWelcome?  // 출연진 목록 저장
+                var videoInfo: VideoInfoWelcome?
+                var posterInfo: PosterInfoWelcome?
                 
                 switch contentType {
                 case .movie:
@@ -107,12 +116,17 @@ class DetailViewController: UIViewController {
                     fetchedGenres = getGenresFromHomeSection(for: contentID)
                     castingList = try await  NetworkManager.shared.getMovieCastInfo(contentID: contentID)
                     
+                    videoInfo = try await NetworkManager.shared.getMovieVideoInfo(contentID: contentID)
+                    posterInfo = try await NetworkManager.shared.getMoviePosterInfo(contentID: contentID)
                     
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
                     fetchedDetail = .tv(tvDetail)
                     fetchedGenres = getGenresFromHomeSection(for: contentID)
                     castingList = try await NetworkManager.shared.getTVCastInfo(contentID: contentID)
+                    
+                    videoInfo = try await NetworkManager.shared.getTvVideoInfo(contentID: contentID)
+                    posterInfo = try await NetworkManager.shared.getTvPosterInfo(contentID: contentID)
                     
                 case .people:
                     let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
@@ -133,10 +147,18 @@ class DetailViewController: UIViewController {
                         if let castingList = castingList {
                             self.movieTopBilledCastInfo = .movie(castingList)
                         }
+                        
+                        self.mediaVideos = videoInfo?.results ?? []    // ✅ 비디오 데이터 저장
+                        self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
+                        
                     case .tv:
                         if let castingList = castingList {
                             self.movieTopBilledCastInfo = .tv(castingList)
                         }
+                        
+                        self.mediaVideos = videoInfo?.results ?? []    // ✅ 비디오 데이터 저장
+                        self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
+                        
                     case .people:
                         break
                     }
@@ -200,13 +222,14 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         let sectionType = DetailSection.allCases[indexPath.section]
         
         switch sectionType {
+            
         case .overview:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: OverviewTableViewCell.reuseIdentifier, for: indexPath) as? OverviewTableViewCell else { return UITableViewCell() }
             if let contentDetail = contentDetail {
                 cell.configure(with: contentDetail)
             }
-            
             return cell
+            
         case .actor:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TopBilledCastTableViewCell.reuseIdentifier, for: indexPath) as? TopBilledCastTableViewCell else { return UITableViewCell() }
             
@@ -223,7 +246,34 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
                 break
             }
             return cell
-
+            
+        case .video:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: MediaTableViewCell.reuseIdentifier, for: indexPath) as? MediaTableViewCell else { return UITableViewCell() }
+            
+            switch contentType {
+            case .movie, .tv:
+                if contentType == .movie || contentType == .tv {
+                    cell.configure(with: .video(mediaVideos), type: .video)
+                }
+                
+            case .people:
+                break
+            }
+            return cell
+            
+        case .poster:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: MediaTableViewCell.reuseIdentifier, for: indexPath) as? MediaTableViewCell else { return UITableViewCell() }
+            
+            switch contentType {
+            case .movie, .tv:
+                if contentType == .movie || contentType == .tv {
+                    cell.configure(with: .poster(mediaPosters), type: .poster)
+                }
+            case .people:
+                break
+            }
+            
+            return cell
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -234,7 +284,17 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        //return UITableView.automaticDimension
+        let sectionType = DetailSection.allCases[indexPath.section]
+        
+        switch sectionType {
+        case .video:
+            return 130 // ✅ 비디오 컬렉션 뷰 높이
+        case .poster:
+            return 250 // ✅ 포스터 컬렉션 뷰 높이
+        default:
+            return UITableView.automaticDimension
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -252,7 +312,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return detailTableSection[section]
     }
-    
+
 }
 
 
@@ -280,11 +340,12 @@ enum ContentDetail {
     case people(PeopleDetailInfoWelcome)
 }
 
-// 📌 detailTableView 섹션 관리 
+// 📌 detailTableView 섹션 관리
 enum DetailSection: CaseIterable {
     case overview
     case actor
-    case media
+    case video
+    case poster
     case similar
 }
 

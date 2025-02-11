@@ -8,13 +8,13 @@
 import Foundation
 
 
-// MARK: - Welcome
+// MARK: - TopBilledCastInfoWelcome
 struct TopBilledCastInfoWelcome: Codable {
     let id: Int
     let cast, crew: [TopBilledCastInfo]
 }
 
-// MARK: - Cast
+// MARK: - TopBilledCastInfo
 struct TopBilledCastInfo: Codable {
     let adult: Bool
     let gender, id: Int
