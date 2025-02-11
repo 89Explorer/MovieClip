@@ -478,6 +478,68 @@ class NetworkManager {
         return tvPoster
     }
     
+    /// 🚗 contentId를 통해 유사한 영화 정보 가져오기
+    func getMovieSimilarInfo(contentID: Int) async throws -> [MovieResult] {
+        let url = URL(string: "\(Constants.baseURL)/movie/\(contentID)/similar")!
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "1"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieSimilarInfo = try JSONDecoder().decode(MovieWelcome.self, from: data)
+        
+        return movieSimilarInfo.results
+    }
+    
+    
+    /// 🚗 contentId를 통해 유사한 tv 정보 가져오기
+    func getTVSimilarInfo(contentID: Int) async throws -> [TVResult] {
+        let url = URL(string: "\(Constants.baseURL)/tv/\(contentID)/similar")!
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "1"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvSimilarInfo = try JSONDecoder().decode(TVWelcome.self, from: data)
+        
+        return tvSimilarInfo.results
+    }
+    
+    
 }
 
 

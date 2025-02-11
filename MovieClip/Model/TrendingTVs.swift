@@ -26,7 +26,7 @@ struct TVResult: Codable {
     let id: Int
     let name, originalName, overview: String
     let posterPath: String?
-    let mediaType: TVMediaType
+    let mediaType: TVMediaType?
     let adult: Bool
     let originalLanguage: String
     let genreIDS: [Int]

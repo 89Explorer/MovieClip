@@ -72,7 +72,7 @@ class MediaTableViewCell: UITableViewCell {
                 case .poster:
                     layout.itemSize = CGSize(width: 150, height: 250)
                 case .video:
-                    layout.itemSize = CGSize(width: 220, height: 130)
+                    layout.itemSize = CGSize(width: 220, height: 150)
                 }
             }
             

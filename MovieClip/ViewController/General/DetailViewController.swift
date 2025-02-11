@@ -31,6 +31,9 @@ class DetailViewController: UIViewController {
     // 이미지 섹션 데이터 저장
     private var mediaPosters: [PosterInfoBackdrop] = []
     
+    // 영화, TV와 유사한 정보 저장
+    private var contentSimilarInfo: HomeSection?
+    
     
     // MARK: - UI Component
     private let detailTableView: UITableView = {
@@ -109,6 +112,8 @@ class DetailViewController: UIViewController {
                 var videoInfo: VideoInfoWelcome?
                 var posterInfo: PosterInfoWelcome?
                 
+                var fetchedSimilarInfo: HomeSection?
+                
                 switch contentType {
                 case .movie:
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
@@ -119,6 +124,10 @@ class DetailViewController: UIViewController {
                     videoInfo = try await NetworkManager.shared.getMovieVideoInfo(contentID: contentID)
                     posterInfo = try await NetworkManager.shared.getMoviePosterInfo(contentID: contentID)
                     
+                    let movieSimiliar = try await NetworkManager.shared.getMovieSimilarInfo(contentID: contentID)
+                    fetchedSimilarInfo = .trendingMovies(movieSimiliar)
+                    
+                    
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
                     fetchedDetail = .tv(tvDetail)
@@ -127,6 +136,9 @@ class DetailViewController: UIViewController {
                     
                     videoInfo = try await NetworkManager.shared.getTvVideoInfo(contentID: contentID)
                     posterInfo = try await NetworkManager.shared.getTvPosterInfo(contentID: contentID)
+                    
+                    let tvSimiliar = try await NetworkManager.shared.getTVSimilarInfo(contentID: contentID)
+                    fetchedSimilarInfo = .trendingTVs(tvSimiliar)
                     
                 case .people:
                     let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
@@ -151,6 +163,9 @@ class DetailViewController: UIViewController {
                         self.mediaVideos = videoInfo?.results ?? []    // ✅ 비디오 데이터 저장
                         self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
                         
+                        self.contentSimilarInfo = fetchedSimilarInfo
+                        dump(self.contentSimilarInfo)
+                        
                     case .tv:
                         if let castingList = castingList {
                             self.movieTopBilledCastInfo = .tv(castingList)
@@ -158,6 +173,9 @@ class DetailViewController: UIViewController {
                         
                         self.mediaVideos = videoInfo?.results ?? []    // ✅ 비디오 데이터 저장
                         self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
+                        
+                        self.contentSimilarInfo = fetchedSimilarInfo
+                        dump(self.contentSimilarInfo)
                         
                     case .people:
                         break
@@ -355,5 +373,6 @@ enum CastingList {
     case tv(TopBilledCastInfoWelcome)
     case people
 }
+
 
 

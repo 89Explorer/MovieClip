@@ -42,7 +42,6 @@ class MediaCollectionViewCell: UICollectionViewCell {
         thumbnailImageView.contentMode = .scaleAspectFill  // ✅ 기본값 설정
         thumbnailImageView.layer.cornerRadius = 0  // ✅ 코너 초기화
         thumbnailImageView.clipsToBounds = true  // ✅ 클립 설정 초기화
-        self.setNeedsLayout()  // ✅ 레이아웃 갱신
     }
     
     
@@ -57,12 +56,9 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 thumbnailImageView.sd_setImage(with: thumbnailUrl, completed: nil)
                 
                 // ✅ 비디오 설정 적용
-//                thumbnailImageView.contentMode = .scaleAspectFill
                 thumbnailImageView.layer.cornerRadius = 20
                 thumbnailImageView.clipsToBounds = true
-                
-                // ✅ 레이아웃 즉시 반영
-                self.layoutIfNeeded()
+            
             }
         case .poster(let poster):
             if let posterPath = poster.filePath {
@@ -70,12 +66,10 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 thumbnailImageView.sd_setImage(with: posterUrl, completed: nil)
                 
                 // ✅ 포스터 설정 적용
-//                thumbnailImageView.contentMode = .scaleAspectFit
-//                thumbnailImageView.layer.cornerRadius = 0
-//                thumbnailImageView.clipsToBounds = false
+                thumbnailImageView.contentMode = .scaleAspectFit
+                thumbnailImageView.layer.cornerRadius = 0
+                thumbnailImageView.clipsToBounds = false
                 
-                // ✅ 레이아웃 즉시 반영
-                self.layoutIfNeeded()
             }
         }
     }
