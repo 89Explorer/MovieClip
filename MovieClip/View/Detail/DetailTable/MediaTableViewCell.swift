@@ -59,6 +59,7 @@ class MediaTableViewCell: UITableViewCell {
         mediaCollectionView.register(MediaCollectionViewCell.self, forCellWithReuseIdentifier: MediaCollectionViewCell.reuseIdentifier)
     }
     
+    
     func configure(with contents: MediaContent, type: MediaType) {
         
         DispatchQueue.main.async {

@@ -99,6 +99,7 @@ class DetailViewController: UIViewController {
         detailTableView.register(OverviewTableViewCell.self, forCellReuseIdentifier: OverviewTableViewCell.reuseIdentifier)
         detailTableView.register(TopBilledCastTableViewCell.self, forCellReuseIdentifier: TopBilledCastTableViewCell.reuseIdentifier)
         detailTableView.register(MediaTableViewCell.self, forCellReuseIdentifier: MediaTableViewCell.reuseIdentifier)
+        detailTableView.register(SimilarTableViewCell.self, forCellReuseIdentifier: SimilarTableViewCell.reuseIdentifier)
     }
     
     /// init으로 받아온 데이터를 통해 API 요청
@@ -164,7 +165,6 @@ class DetailViewController: UIViewController {
                         self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
                         
                         self.contentSimilarInfo = fetchedSimilarInfo
-                        dump(self.contentSimilarInfo)
                         
                     case .tv:
                         if let castingList = castingList {
@@ -175,7 +175,6 @@ class DetailViewController: UIViewController {
                         self.mediaPosters = posterInfo?.posters ?? [] // ✅ 포스터 데이터 저장
                         
                         self.contentSimilarInfo = fetchedSimilarInfo
-                        dump(self.contentSimilarInfo)
                         
                     case .people:
                         break
@@ -293,10 +292,13 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             
             return cell
             
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            cell.textLabel?.text = "Test"
-            cell.backgroundColor = .white
+        case .similar:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SimilarTableViewCell.reuseIdentifier, for: indexPath) as? SimilarTableViewCell else { return UITableViewCell() }
+            
+            if let contentSimilarInfo = contentSimilarInfo {
+                cell.configure(with: contentSimilarInfo)   // ✅ enum HomeSection 전달
+            }
+            
             return cell
         }
     }
@@ -310,6 +312,8 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             return 130 // ✅ 비디오 컬렉션 뷰 높이
         case .poster:
             return 250 // ✅ 포스터 컬렉션 뷰 높이
+        case .similar:
+            return 200 // ✅ 유사한 영화, tv 컬렉션 뷰 높이
         default:
             return UITableView.automaticDimension
         }
