@@ -12,6 +12,8 @@ class MediaCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier = "MediaCollectionViewCell"
+    weak var delegate: MediaCollectionViewCellDelegate?   // ✅ Delegate 선언
+    private var videoKey: String?   // ✅ 클릭 시 YouTube 영상 키 저장
     
     
     // MARK: - UI Component
@@ -28,6 +30,7 @@ class MediaCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureConstraints()
+        setupTapGesture() // ✅ 탭 제스처 설정
         
     }
     
@@ -42,6 +45,7 @@ class MediaCollectionViewCell: UICollectionViewCell {
         thumbnailImageView.contentMode = .scaleAspectFill  // ✅ 기본값 설정
         thumbnailImageView.layer.cornerRadius = 0  // ✅ 코너 초기화
         thumbnailImageView.clipsToBounds = true  // ✅ 클립 설정 초기화
+        videoKey = nil  // ✅ 이전 비디오 키 초기화
     }
     
     
@@ -58,6 +62,9 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 // ✅ 비디오 설정 적용
                 thumbnailImageView.layer.cornerRadius = 20
                 thumbnailImageView.clipsToBounds = true
+                
+                // ✅ 비디오 키 저장 (탭 시 사용)
+                videoKey = key
             
             }
         case .poster(let poster):
@@ -72,6 +79,20 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 
             }
         }
+    }
+    
+    
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapThumbnail))
+        thumbnailImageView.isUserInteractionEnabled = true   // ✅ 터치 가능하도록 설정
+        thumbnailImageView.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didTapThumbnail() {
+        guard let videoKey = videoKey else { return }
+        delegate?.didTapVideo(with: videoKey)    // ✅ Delegate를 통해 이벤트 전달
     }
     
     
@@ -94,8 +115,15 @@ class MediaCollectionViewCell: UICollectionViewCell {
 }
 
 
-// 컬렉션뷰에서 개별 아이템을 저장할 enum
+// MARK: - Enum: 컬렉션뷰에서 개별 아이템을 저장할 enum
 enum MediaInfo {
     case poster(PosterInfoBackdrop)
     case video(VideoInfoResult)
 }
+
+
+// MARK: - Protocol
+protocol MediaCollectionViewCellDelegate: AnyObject {
+    func didTapVideo(with videoKey: String)
+}
+

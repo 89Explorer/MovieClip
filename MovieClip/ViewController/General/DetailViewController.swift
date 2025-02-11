@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
     
     // MARK: - Variable
     private let contentID: Int
@@ -271,6 +271,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             case .movie, .tv:
                 if contentType == .movie || contentType == .tv {
                     cell.configure(with: .video(mediaVideos), type: .video)
+                    cell.delegate = self
                 }
                 
             case .people:
@@ -343,6 +344,17 @@ extension DetailViewController: DetailHeaderViewDelegate {
     func didTapTrailerButton(title: String) {
         let trailerVC = TrailerViewController(trailerTitle: title)
         present(trailerVC, animated: true)
+    }
+}
+
+
+// MARK: - MediaTableViewCellDelegate
+extension DetailViewController: MediaTableViewCellDelegate {
+    func didTapVideo(with videoKey: String) {
+        // ✅ YouTube 영상 열기
+        if let url = URL(string: "https://www.youtube.com/watch?v=\(videoKey)") {
+            UIApplication.shared.open(url)
+        }
     }
 }
 

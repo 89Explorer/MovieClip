@@ -12,6 +12,7 @@ class MediaTableViewCell: UITableViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier: String = "MediaTableViewCell"
+    weak var delegate: MediaCollectionViewCellDelegate?   // ✅ Delegate 추가
     
     // video 데이터 저장
     private var videos: [VideoInfoResult] = []
@@ -125,6 +126,7 @@ extension MediaTableViewCell: UICollectionViewDelegate, UICollectionViewDataSour
         case .video(let videos):
             let videoItem = videos[indexPath.item]
             cell.configure(with: .video(videoItem))
+            cell.delegate = self  // ✅ Delegate 설정
         case .none:
             break
         }
@@ -144,4 +146,17 @@ enum MediaType {
 enum MediaContent {
     case poster([PosterInfoBackdrop])   // 포스터 데이터 저장하는 배열
     case video([VideoInfoResult])       // 비디오 데이터 저장하는 배열
+}
+
+
+// MARK: - MediaCollectionViewCellDelegate
+extension MediaTableViewCell: MediaCollectionViewCellDelegate {
+    func didTapVideo(with videoKey: String) {
+        delegate?.didTapVideo(with: videoKey) // ✅ 이벤트를 DetailViewController로 전달
+    }
+}
+
+// ✅ `MediaTableViewCellDelegate` 선언
+protocol MediaTableViewCellDelegate: AnyObject {
+    func didTapVideo(with videoKey: String)
 }
