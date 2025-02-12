@@ -102,7 +102,7 @@ class HomeViewController: UIViewController {
                 HomeViewController.homeSections = [
                     .trendingMovies(trendingMovies),
                     .trendingTVs(trendingTVs),
-                    .trendingPeoples(trendingPeoples),
+                    //.trendingPeoples(trendingPeoples),
                 ]
                 
                 DispatchQueue.main.async {
@@ -200,11 +200,11 @@ extension HomeViewController: HomeFeedTableViewCellDelegate {
             let detailVC = DetailViewController(contentID: selectedTV.id, contentType: .tv)
             navigationController?.pushViewController(detailVC, animated: true)
             
-        case .trendingPeoples(let people):
-            let selectedPeople = people[index]
-            let detailVC = DetailViewController(contentID: selectedPeople.id, contentType: .people)
-            navigationController?.pushViewController(detailVC, animated: true)
-            
+//        case .trendingPeoples(let people):
+//            let selectedPeople = people[index]
+//            let detailVC = DetailViewController(contentID: selectedPeople.id, contentType: .people)
+//            navigationController?.pushViewController(detailVC, animated: true)
+//            
         }
     }
 }
@@ -215,7 +215,7 @@ extension HomeViewController: HomeFeedTableViewCellDelegate {
 enum HomeSection {
     case trendingMovies([MovieResult])
     case trendingTVs([TVResult])
-    case trendingPeoples([PeopleResult])
+    //case trendingPeoples([PeopleResult])
 }
 
 

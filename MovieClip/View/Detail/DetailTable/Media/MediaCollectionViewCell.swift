@@ -13,7 +13,10 @@ class MediaCollectionViewCell: UICollectionViewCell {
     // MARK: - Variable
     static let reuseIdentifier = "MediaCollectionViewCell"
     weak var delegate: MediaCollectionViewCellDelegate?   // ✅ Delegate 선언
-    private var videoKey: String?   // ✅ 클릭 시 YouTube 영상 키 저장
+    private var videoKey: String?    // ✅ 클릭 시 YouTube 영상 키 저장
+    
+    private var posterPath: String?  // ✅ 클릭 시 Potser 경로 저장
+    
     
     
     // MARK: - UI Component
@@ -45,7 +48,8 @@ class MediaCollectionViewCell: UICollectionViewCell {
         thumbnailImageView.contentMode = .scaleAspectFill  // ✅ 기본값 설정
         thumbnailImageView.layer.cornerRadius = 0  // ✅ 코너 초기화
         thumbnailImageView.clipsToBounds = true  // ✅ 클립 설정 초기화
-        videoKey = nil  // ✅ 이전 비디오 키 초기화
+        videoKey = nil    // ✅ 이전 비디오 키 초기화
+        posterPath = nil  // ✅ 이전 포스터 경로 초기화
     }
     
     
@@ -65,6 +69,7 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 
                 // ✅ 비디오 키 저장 (탭 시 사용)
                 videoKey = key
+                posterPath = nil   // ✅ 포스터 경로 초기화 (필요 없음)
             
             }
         case .poster(let poster):
@@ -77,6 +82,10 @@ class MediaCollectionViewCell: UICollectionViewCell {
                 thumbnailImageView.layer.cornerRadius = 0
                 thumbnailImageView.clipsToBounds = false
                 
+                // ✅ 포스터 경로 저장 (탭 시 사용)
+                self.posterPath = posterPath
+                videoKey = nil  // ✅ YouTube 값 초기화 (필요 없음)
+                
             }
         }
     }
@@ -86,13 +95,19 @@ class MediaCollectionViewCell: UICollectionViewCell {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapThumbnail))
         thumbnailImageView.isUserInteractionEnabled = true   // ✅ 터치 가능하도록 설정
         thumbnailImageView.addGestureRecognizer(tapGesture)
+
     }
     
     
     // MARK: - Action
     @objc private func didTapThumbnail() {
-        guard let videoKey = videoKey else { return }
-        delegate?.didTapVideo(with: videoKey)    // ✅ Delegate를 통해 이벤트 전달
+        
+        if let videoKey = videoKey {
+            delegate?.didTapVideo(with: videoKey)     // ✅ 유튜브 실행
+        } else if let posterPath = posterPath {
+            delegate?.didTapPoster(with: posterPath)  // ✅ 전체 화면 이미지 보기
+        }
+        
     }
     
     
@@ -125,5 +140,6 @@ enum MediaInfo {
 // MARK: - Protocol
 protocol MediaCollectionViewCellDelegate: AnyObject {
     func didTapVideo(with videoKey: String)
+    func didTapPoster(with posterPath: String)
 }
 

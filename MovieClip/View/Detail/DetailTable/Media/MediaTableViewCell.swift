@@ -12,7 +12,7 @@ class MediaTableViewCell: UITableViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier: String = "MediaTableViewCell"
-    weak var delegate: MediaCollectionViewCellDelegate?   // ✅ Delegate 추가
+    weak var delegate: MediaTableViewCellDelegate?   // ✅ Delegate 추가
     
     // video 데이터 저장
     private var videos: [VideoInfoResult] = []
@@ -107,12 +107,14 @@ extension MediaTableViewCell: UICollectionViewDelegate, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         switch mediaItems {
+            
         case .poster(let posters):
             return posters.count
         case .video(let videos):
             return videos.count
         case .none:
             return 0
+            
         }
     }
     
@@ -120,13 +122,17 @@ extension MediaTableViewCell: UICollectionViewDelegate, UICollectionViewDataSour
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaCollectionViewCell.reuseIdentifier, for: indexPath) as? MediaCollectionViewCell else { return UICollectionViewCell() }
         
         switch mediaItems {
+            
         case .poster(let posters):
             let posterItem = posters[indexPath.item]
             cell.configure(with: .poster(posterItem))
+            cell.delegate = self  // ✅ Delegate 설정
+            
         case .video(let videos):
             let videoItem = videos[indexPath.item]
             cell.configure(with: .video(videoItem))
             cell.delegate = self  // ✅ Delegate 설정
+            
         case .none:
             break
         }
@@ -135,28 +141,34 @@ extension MediaTableViewCell: UICollectionViewDelegate, UICollectionViewDataSour
 }
 
 
-// ✅ 미디어 타입을 구분할 enum
+// MARK: - Enum: ✅ 미디어 타입을 구분할 enum
 enum MediaType {
     case poster
     case video
 }
 
 
-// ✅ API 응답 데이터를 저장할 enum
+// MARK: - Enum: ✅ API 응답 데이터를 저장할 enum
 enum MediaContent {
     case poster([PosterInfoBackdrop])   // 포스터 데이터 저장하는 배열
     case video([VideoInfoResult])       // 비디오 데이터 저장하는 배열
 }
 
 
-// MARK: - MediaCollectionViewCellDelegate
+// MARK: Extension: - MediaCollectionViewCellDelegate
 extension MediaTableViewCell: MediaCollectionViewCellDelegate {
+    func didTapPoster(with posterPath: String) {
+        delegate?.didTapPoster(with: posterPath)  // // ✅ 이미지 전체 보기 (DetailViewController로 전달)
+    }
+    
     func didTapVideo(with videoKey: String) {
         delegate?.didTapVideo(with: videoKey) // ✅ 이벤트를 DetailViewController로 전달
+        
     }
 }
 
-// ✅ `MediaTableViewCellDelegate` 선언
+// MARK: - Protocol: ✅ `MediaTableViewCellDelegate` 선언
 protocol MediaTableViewCellDelegate: AnyObject {
     func didTapVideo(with videoKey: String)
+    func didTapPoster(with posterPath: String)
 }

@@ -82,8 +82,8 @@ extension SimilarTableViewCell: UICollectionViewDelegate, UICollectionViewDataSo
             return movies.count
         case .trendingTVs(let tvs):
             return tvs.count
-        case .trendingPeoples:
-            return 0
+//        case .trendingPeoples:
+//            return 0
         case .none:
             return 0
         }
@@ -100,8 +100,8 @@ extension SimilarTableViewCell: UICollectionViewDelegate, UICollectionViewDataSo
         case .trendingTVs(let tvs):
             let tv = tvs[indexPath.item]
             cell.configure(with: .tv(tv))
-        case .trendingPeoples(_):
-            return UICollectionViewCell()
+//        case .trendingPeoples(_):
+//            return UICollectionViewCell()
         case .none:
             return UICollectionViewCell()
         }

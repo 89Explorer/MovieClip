@@ -212,8 +212,8 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
                 if let tv = tv.first(where: { $0.id == contentID}) {
                     return tv.genreNames ?? []     // ✅ tv의 장르 변환
                 }
-            case .trendingPeoples:
-                return []   // ✅ 배우는 장르가 없으므로 패스
+                //case .trendingPeoples:
+                //return []   // ✅ 배우는 장르가 없으므로 패스
             }
         }
         return []
@@ -286,6 +286,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             case .movie, .tv:
                 if contentType == .movie || contentType == .tv {
                     cell.configure(with: .poster(mediaPosters), type: .poster)
+                    cell.delegate = self
                 }
             case .people:
                 break
@@ -310,7 +311,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         
         switch sectionType {
         case .video:
-            return 130 // ✅ 비디오 컬렉션 뷰 높이
+            return 150 // ✅ 비디오 컬렉션 뷰 높이
         case .poster:
             return 250 // ✅ 포스터 컬렉션 뷰 높이
         case .similar:
@@ -335,7 +336,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return detailTableSection[section]
     }
-
+    
 }
 
 
@@ -355,6 +356,11 @@ extension DetailViewController: MediaTableViewCellDelegate {
         if let url = URL(string: "https://www.youtube.com/watch?v=\(videoKey)") {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func didTapPoster(with posterPath: String) {
+        let posterVC = PosterViewController(posterPath: posterPath)
+        present(posterVC, animated: true, completion: nil)
     }
 }
 
