@@ -13,6 +13,10 @@ class PeopleDetatilViewController: UIViewController {
     private let peopleID: Int
     weak var delegaate: PeopleDetailViewControllerDelegate?
     
+    // ✅ 배우 절보 저장
+    private var peopleDetail: PeopleDetailInfoWelcome?
+    private var peopleDetailHeaderView: PeopleDetailHeaderView?
+    
     
     // MARK: - UI Component
     private let peopleTableView: UITableView = {
@@ -38,6 +42,7 @@ class PeopleDetatilViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        view.addSubview(peopleTableView)
         
         navigationItem.title = "상세페이지"
         navigationItem.titleView?.tintColor = .white
@@ -47,6 +52,8 @@ class PeopleDetatilViewController: UIViewController {
         
         setupTableViewDelegate()
         print("✅ 선택된 배우의 id: \(peopleID)")
+        
+        fetchedPeopleDetailInfo()
     }
     
     
@@ -58,10 +65,44 @@ class PeopleDetatilViewController: UIViewController {
     
     
     // MARK: - Function
+    private func fetchedPeopleDetailInfo() {
+        Task {
+            do {
+                let peopleInfo = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: peopleID)
+                
+                DispatchQueue.main.async {
+                    self.peopleDetail = peopleInfo
+                    self.configureDetailHeaderView()    // 헤더뷰 생성
+                    
+                    
+                    guard let peopleDetail = self.peopleDetail else {
+                        print("❌ no peopleDetail")
+                        return
+                    }
+                    
+                    self.peopleDetailHeaderView?.configure(with: peopleDetail)
+                    
+                    self.peopleTableView.reloadData()
+                }
+            } catch {
+                print("❌ 데이터 로드 실패: \(error)")
+            }
+        }
+    }
+    
+    
     private func setupTableViewDelegate() {
         peopleTableView.delegate = self
         peopleTableView.dataSource = self
         peopleTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    
+    private func configureDetailHeaderView() {
+        let headerView = PeopleDetailHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
+        peopleTableView.tableHeaderView = headerView
+        guard let peopleInfo = peopleDetail else { return }
+        headerView.configure(with: peopleInfo)
     }
 }
 
