@@ -13,7 +13,6 @@ class PosterViewController: UIViewController {
     // MARK: - Variable
     private let posterPath: String
     
-    
     // MARK: - UI Component
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()

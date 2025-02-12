@@ -13,6 +13,10 @@ class SimilarCollectionViewCell: UICollectionViewCell {
     // MARK: - Variable
     static let reuseIdentifier = "SimilarCollectionViewCell"
     
+    weak var delegate: SimilarCollectionViewCellDelegate?
+    private var selectedContentId: Int?    // ✅ 클릭한 영화 또는 TV 경로 저장
+    private var selectedContentType: ContentType
+    
     
     // MARK: - UI Component
     private let similarImageView: UIImageView = {
@@ -36,14 +40,26 @@ class SimilarCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Life Cycle
     override init(frame: CGRect) {
+        self.selectedContentType = .movie
         super.init(frame: frame)
         contentView.backgroundColor = .black
+        
+        
+        setupTapGesture()
         
         configureConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        similarImageView.image = nil
+        similarTitleLabel.text = nil
+        selectedContentId = nil
+        selectedContentType = .movie
     }
     
     
@@ -65,6 +81,9 @@ class SimilarCollectionViewCell: UICollectionViewCell {
             let score = (movieDetail.voteAverage)
             scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
             
+            self.selectedContentId = movieDetail.id
+            self.selectedContentType = .movie
+            
         case .tv(let tvDetail):
             
             if let posterPath = tvDetail.backdropPath, !posterPath.isEmpty {
@@ -79,9 +98,30 @@ class SimilarCollectionViewCell: UICollectionViewCell {
             
             let score = (tvDetail.voteAverage)
             scoreLabel.configure(with: score != 0 ? Int(score * 10) : 100)
+            
+            self.selectedContentId = tvDetail.id
+            self.selectedContentType = .tv
         }
         
     }
+    
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImageView))
+        similarImageView.isUserInteractionEnabled = true
+        similarImageView.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didTapImageView() {
+        guard let selectedContentId = selectedContentId else {
+            print("❌ selectedContentId is nil")
+            return
+        }
+        
+        delegate?.didTapSimilarImage(with: selectedContentId, contentType: selectedContentType)    // ✅ 이벤트를 "SimilarTableViewCell" 전달
+    }
+    
     
     // MARK: - Layout
     private func configureConstraints() {
@@ -114,3 +154,8 @@ class SimilarCollectionViewCell: UICollectionViewCell {
     }
 }
 
+
+// MARK: - Protocol: SimilarCollectionViewCellDelegate
+protocol SimilarCollectionViewCellDelegate: AnyObject {
+    func didTapSimilarImage(with contentID: Int, contentType: ContentType)    // 👉 이미지 누르면 contentID 받는 메서드
+}

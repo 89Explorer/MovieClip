@@ -299,6 +299,8 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             
             if let contentSimilarInfo = contentSimilarInfo {
                 cell.configure(with: contentSimilarInfo)   // ✅ enum HomeSection 전달
+                
+                cell.delegate = self
             }
             
             return cell
@@ -364,6 +366,15 @@ extension DetailViewController: MediaTableViewCellDelegate {
     }
 }
 
+
+// MARK: - Extension:
+extension DetailViewController: SimilarTableViewDelegate {
+    func didTapSimilarImage(with contentID: Int, contentType: ContentType) {
+        print("Seelcted ContentId: \(contentID), Selected ContentType: \(contentType)")
+        let detailVC = DetailViewController(contentID: contentID, contentType: contentType)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
 
 // 📌 사용자가 선택한 콘텐츠 유형을 구분 (API 요청용)
 enum ContentType {

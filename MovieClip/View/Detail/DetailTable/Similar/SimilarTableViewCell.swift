@@ -14,6 +14,8 @@ class SimilarTableViewCell: UITableViewCell {
     
     private var contentSimilarInfo: HomeSection?
     
+    weak var delegate: SimilarTableViewDelegate?   // ✅ DetailViewController로 이벤트 전달할 delegate 선언
+    
     
     // MARK: - UI Component
     private let similarCollectionView: UICollectionView = {
@@ -94,12 +96,17 @@ extension SimilarTableViewCell: UICollectionViewDelegate, UICollectionViewDataSo
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SimilarCollectionViewCell.reuseIdentifier, for: indexPath) as? SimilarCollectionViewCell else { return UICollectionViewCell() }
         
         switch contentSimilarInfo {
+            
         case .trendingMovies(let movies):
             let movie = movies[indexPath.item]
             cell.configure(with: .movie(movie))
+            cell.delegate = self
+            
         case .trendingTVs(let tvs):
             let tv = tvs[indexPath.item]
             cell.configure(with: .tv(tv))
+            cell.delegate = self
+            
 //        case .trendingPeoples(_):
 //            return UICollectionViewCell()
         case .none:
@@ -111,9 +118,24 @@ extension SimilarTableViewCell: UICollectionViewDelegate, UICollectionViewDataSo
 }
 
 
+// MARK: Extension - SimilarCollectionViewCellDelegate
+extension SimilarTableViewCell: SimilarCollectionViewCellDelegate {
+    func didTapSimilarImage(with contentID: Int, contentType: ContentType) {
+        delegate?.didTapSimilarImage(with: contentID, contentType: contentType)   // ✅ DetailViewController로 이벤트 전달
+    }
+}
+
+
+
 // 📌 유사한 콘텐츠를 위한 Enum 추가
 enum SimilarContent {
     case movie(MovieResult)   // 영화 결과
     case tv(TVResult)         // TV 결과
 }
+
+
+protocol SimilarTableViewDelegate: AnyObject {
+    func didTapSimilarImage(with contentID: Int, contentType: ContentType)
+}
+
 
