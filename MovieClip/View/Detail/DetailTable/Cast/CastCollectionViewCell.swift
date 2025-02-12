@@ -12,6 +12,9 @@ class CastCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Variable
     static let reuseIdentifier: String = "CastCollectionViewCell"
+    weak var delegate: CastCollectionViewCellDelegate?
+    
+    private var peopleId: Int?    // ✅ 배우 id 저장
     
     // MARK: - UI Component
     private let basicView: UIView = {
@@ -53,6 +56,9 @@ class CastCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.backgroundColor = .black
+        
+        setupTapGesture()
+        
         configureConstraints()
     }
     
@@ -75,6 +81,25 @@ class CastCollectionViewCell: UICollectionViewCell {
         } else {
             posterImageView.image = UIImage(systemName: "photo.badge.exclamationmark")
         }
+        
+        self.peopleId = casting.id
+    }
+    
+    /// posterImageView에 탭제스처 적용
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPosterImageView))
+        posterImageView.isUserInteractionEnabled = true   // ✅ 터치 가능하도록 설정
+        posterImageView.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didTapPosterImageView() {
+        guard let peopleId = peopleId else {
+            print("❌ No PeopleId")
+            return
+        }
+        delegate?.didTapPosterImageView(with: peopleId)
     }
     
     
@@ -113,4 +138,10 @@ class CastCollectionViewCell: UICollectionViewCell {
             roleLabel.bottomAnchor.constraint(equalTo: basicView.bottomAnchor, constant: 0)
         ])
     }
+}
+
+
+// MARK: - Protocol
+protocol CastCollectionViewCellDelegate: AnyObject {
+    func didTapPosterImageView(with peopleId: Int)
 }

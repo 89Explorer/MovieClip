@@ -12,6 +12,8 @@ class TopBilledCastTableViewCell: UITableViewCell {
     // MARK: - Variable
     static let reuseIdentifier: String = "TopBilledCastTableViewCell"
     private var castingList: CastingList?
+    
+    weak var delegate: TopBilledCastTableViewDelegate?
 
     
     // MARK: - UI Components
@@ -97,9 +99,11 @@ extension TopBilledCastTableViewCell: UICollectionViewDelegate, UICollectionView
         case .movie(let castInfo):
             let castMember = castInfo.cast[indexPath.item]
             cell.configure(with: castMember)
+            cell.delegate = self
         case .tv(let castInfo):
             let castMember = castInfo.cast[indexPath.item]
             cell.configure(with: castMember)
+            cell.delegate = self
         default:
             break
         }
@@ -107,3 +111,16 @@ extension TopBilledCastTableViewCell: UICollectionViewDelegate, UICollectionView
     }
 }
 
+
+// MARK: - Extension: CastCollectionViewCellDelegate
+extension TopBilledCastTableViewCell: CastCollectionViewCellDelegate {
+    func didTapPosterImageView(with peopleId: Int) {
+        delegate?.didTapPosterImageView(with: peopleId)   
+    }
+}
+
+
+// MARK: - Protocol: - TopBilledCastTableViewDelegate
+protocol TopBilledCastTableViewDelegate: AnyObject {
+    func didTapPosterImageView(with peopleId: Int)
+}

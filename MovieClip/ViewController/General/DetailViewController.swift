@@ -49,6 +49,7 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
         return indicator
     }()
     
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -259,10 +260,12 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             case .movie:
                 if let castingInfo = movieTopBilledCastInfo {
                     cell.configure(with: castingInfo)
+                    cell.delegate = self
                 }
             case .tv:
                 if let castingInfo = movieTopBilledCastInfo {
                     cell.configure(with: castingInfo)
+                    cell.delegate = self
                 }
             case .people:
                 break
@@ -405,6 +408,15 @@ extension DetailViewController: SimilarTableViewDelegate {
 extension DetailViewController: RatingViewControllerDelegate {
     func didSlidedValue(with value: String) {
         detailHeaderView?.updateMyScoreLabel(value: value)
+    }
+}
+
+
+// MARK: - Extension: TopBilledCastTableViewDelegate
+extension DetailViewController: TopBilledCastTableViewDelegate {
+    func didTapPosterImageView(with peopleId: Int) {
+        let peopleDetailVC = PeopleDetatilViewController(peopleID: peopleId)
+        navigationController?.pushViewController(peopleDetailVC, animated: true)
     }
 }
 
