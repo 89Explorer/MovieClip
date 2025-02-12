@@ -64,6 +64,11 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
         
         navigationItem.title = "상세페이지"
         navigationItem.titleView?.tintColor = .white
+        
+        let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButton.tintColor = .systemBlue
+        self.navigationItem.backBarButtonItem = backBarButton
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -344,6 +349,18 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
 
 // MARK: - Extension: DetailHeaderViewDelegate
 extension DetailViewController: DetailHeaderViewDelegate {
+    func didTapRating() {
+        let ratingVC = RatingViewController()
+        
+        if let sheet = ratingVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        
+        present(ratingVC, animated: true, completion: nil)
+    }
+    
     func didTapTrailerButton(title: String) {
         let trailerVC = TrailerViewController(trailerTitle: title)
         present(trailerVC, animated: true)
@@ -351,7 +368,7 @@ extension DetailViewController: DetailHeaderViewDelegate {
 }
 
 
-// MARK: - MediaTableViewCellDelegate
+// MARK: - Extension: MediaTableViewCellDelegate
 extension DetailViewController: MediaTableViewCellDelegate {
     func didTapVideo(with videoKey: String) {
         // ✅ YouTube 영상 열기
@@ -367,10 +384,9 @@ extension DetailViewController: MediaTableViewCellDelegate {
 }
 
 
-// MARK: - Extension:
+// MARK: - Extension: SimilarTableViewDelegate
 extension DetailViewController: SimilarTableViewDelegate {
     func didTapSimilarImage(with contentID: Int, contentType: ContentType) {
-        print("Seelcted ContentId: \(contentID), Selected ContentType: \(contentType)")
         let detailVC = DetailViewController(contentID: contentID, contentType: contentType)
         navigationController?.pushViewController(detailVC, animated: true)
     }

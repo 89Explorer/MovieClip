@@ -14,6 +14,7 @@ class DetailHeaderView: UIView {
     weak var delegate: DetailHeaderViewDelegate?
     private var selectedTitle: String = ""
     
+    
     // MARK: - UI Component
     private let basicView: UIView = {
         let view = UIView()
@@ -102,12 +103,47 @@ class DetailHeaderView: UIView {
         return button
     }()
     
+    private let userScroeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let userVoteCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private let myScroeLabel: BasePaddingLabel = {
+        let label = BasePaddingLabel(padding: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.text = "내 평점: 🤔"
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        
+        label.layer.borderWidth = 1
+        label.layer.borderColor = UIColor.white.cgColor
+        label.layer.cornerRadius = 4
+        label.layer.masksToBounds = true
+        
+        return label
+    }()
+    
     
     // MARK: - Life Cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
         
+        setupTapGesture()
         configureConstraints()
     }
     
@@ -140,6 +176,12 @@ class DetailHeaderView: UIView {
         
         let runTime = movie.runtime
         runtimeLabel.text = "\(runTime)분"
+        
+        let userScore = movie.voteAverage
+        userScroeLabel.text = "⭐️ \(userScore)점"
+        
+        let userVote = movie.voteCount
+        userVoteCountLabel.text = "(\(userVote)건)"
 
     }
     
@@ -167,9 +209,16 @@ class DetailHeaderView: UIView {
         
         let countEpisodes = tv.numberOfEpisodes
         runtimeLabel.text = "에피소드: \(countEpisodes)개"
+        
+        let userScore = tv.voteAverage
+        userScroeLabel.text = "⭐️ \(userScore)점"
+        
+        let userVote = tv.voteCount
+        userVoteCountLabel.text = "(\(userVote)건)"
     
     }
     
+    // 인물 정보에 대한 함수
     func configure(_ people: PeopleDetailInfoWelcome) {
         backdropImage.backgroundColor = .systemGray
         backdropImage.layer.opacity = 0.3
@@ -186,11 +235,26 @@ class DetailHeaderView: UIView {
         
     }
     
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapLabel))
+        myScroeLabel.isUserInteractionEnabled = true
+        myScroeLabel.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    
     // MARK: - Action
     /// trailterButon을 누르면 title 정보 전달
     @objc private func didTapTrailerButton() {
         delegate?.didTapTrailerButton(title: selectedTitle)
     }
+    
+    
+    /// myScroeLabel을 누르면 동작
+    @objc private func didTapLabel() {
+        delegate?.didTapRating()
+    }
+    
     
     // MARK: - Layout
     private func configureConstraints() {
@@ -202,6 +266,9 @@ class DetailHeaderView: UIView {
         basicView.addSubview(genreLabel)
         basicView.addSubview(runtimeLabel)
         basicView.addSubview(trailerButton)
+        basicView.addSubview(userScroeLabel)
+        basicView.addSubview(userVoteCountLabel)
+        basicView.addSubview(myScroeLabel)
         
         basicView.translatesAutoresizingMaskIntoConstraints = false
         backdropImage.translatesAutoresizingMaskIntoConstraints = false
@@ -211,6 +278,9 @@ class DetailHeaderView: UIView {
         genreLabel.translatesAutoresizingMaskIntoConstraints = false
         runtimeLabel.translatesAutoresizingMaskIntoConstraints = false
         trailerButton.translatesAutoresizingMaskIntoConstraints = false
+        userScroeLabel.translatesAutoresizingMaskIntoConstraints = false
+        userVoteCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        myScroeLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             
@@ -250,6 +320,18 @@ class DetailHeaderView: UIView {
             trailerButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
             trailerButton.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 5),
             
+            userScroeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            userScroeLabel.topAnchor.constraint(equalTo: trailerButton.bottomAnchor, constant: 10),
+            userScroeLabel.heightAnchor.constraint(equalToConstant: 20),
+            userScroeLabel.widthAnchor.constraint(equalToConstant: 75),
+            
+            userVoteCountLabel.leadingAnchor.constraint(equalTo: userScroeLabel.trailingAnchor, constant: 5),
+            userVoteCountLabel.topAnchor.constraint(equalTo: userScroeLabel.topAnchor, constant: 0),
+            userVoteCountLabel.heightAnchor.constraint(equalToConstant: 20),
+            
+            myScroeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
+            myScroeLabel.topAnchor.constraint(equalTo: userScroeLabel.bottomAnchor, constant: 5),
+            
         ])
     }
     
@@ -261,4 +343,6 @@ class DetailHeaderView: UIView {
 /// detailHeaderView 내 trailterButton 눌렸을 때 동작할 메서드
 protocol DetailHeaderViewDelegate: AnyObject {
     func didTapTrailerButton(title: String)
+    func didTapRating()
 }
+

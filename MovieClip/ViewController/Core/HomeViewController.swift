@@ -38,7 +38,12 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         self.fetchMediaData()
         
+        let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButton.tintColor = .systemBlue
+        self.navigationItem.backBarButtonItem = backBarButton
+
     }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
