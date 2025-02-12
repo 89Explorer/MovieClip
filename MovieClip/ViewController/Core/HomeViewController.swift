@@ -134,6 +134,7 @@ class HomeViewController: UIViewController {
     private func homeFeedTableHeaderView() {
         headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
         homeFeedTableView.tableHeaderView = headerView
+        headerView?.delegate = self
     }
     
 }
@@ -215,7 +216,6 @@ extension HomeViewController: HomeFeedTableViewCellDelegate {
 }
 
 
-
 // MARK: - Enum
 enum HomeSection {
     case trendingMovies([MovieResult])
@@ -224,3 +224,10 @@ enum HomeSection {
 }
 
 
+
+extension HomeViewController: HomeTableHeaderviewDelegate {
+    func didTapHomeTableHeader(contentID: Int, contentType: ContentType) {
+        let detailVC = DetailViewController(contentID: contentID, contentType: contentType)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}

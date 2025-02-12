@@ -235,12 +235,14 @@ class DetailHeaderView: UIView {
         
     }
     
+    /// myScoreLabel에 탭 제스처 설정
     private func setupTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapLabel))
         myScroeLabel.isUserInteractionEnabled = true
         myScroeLabel.addGestureRecognizer(tapGesture)
     }
     
+    /// myScoreLabel에 slider로 선택된 값 전달
     func updateMyScoreLabel(value: String) {
         myScroeLabel.text = "내 평점: ⭐️ \(value)"
     }

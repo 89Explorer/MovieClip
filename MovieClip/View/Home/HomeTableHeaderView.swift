@@ -9,6 +9,10 @@ import UIKit
 
 class HomeTableHeaderView: UIView {
     
+    // MARK: - Variable
+    weak var delegate: HomeTableHeaderviewDelegate?
+    private var contentID: Int?
+    
     // MARK: - UI Component
     private let posterImageView: UIImageView = {
         let imageView = UIImageView()
@@ -23,6 +27,8 @@ class HomeTableHeaderView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
+        
+        setupTapGesture()
         configureConstraints()
     }
     
@@ -45,7 +51,25 @@ class HomeTableHeaderView: UIView {
             posterImageView.image = UIImage(systemName: "photo.badge.exclamationmark")
         }
         
-  
+        self.contentID = content.id
+        
+    }
+    
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapPosterImageView))
+        posterImageView.isUserInteractionEnabled = true
+        posterImageView.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didTapPosterImageView() {
+        guard let contentID = contentID else {
+            print("❌ No contentID")
+            return
+        }
+        
+        delegate?.didTapHomeTableHeader(contentID: contentID, contentType: .movie)
     }
 
     // MARK: - Layouts
@@ -70,4 +94,10 @@ class HomeTableHeaderView: UIView {
 
         ])
     }
+}
+
+
+// MARK: - Protocol
+protocol HomeTableHeaderviewDelegate: AnyObject {
+    func didTapHomeTableHeader(contentID: Int, contentType: ContentType)
 }
