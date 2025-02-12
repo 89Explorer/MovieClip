@@ -352,8 +352,16 @@ extension DetailViewController: DetailHeaderViewDelegate {
     func didTapRating() {
         let ratingVC = RatingViewController()
         
+        ratingVC.delegate = self
+        
         if let sheet = ratingVC.sheetPresentationController {
-            sheet.detents = [.medium()]
+            
+            sheet.detents = [
+                .custom(resolver: { context in
+                    return 300
+                })
+            ]
+            
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
@@ -389,6 +397,14 @@ extension DetailViewController: SimilarTableViewDelegate {
     func didTapSimilarImage(with contentID: Int, contentType: ContentType) {
         let detailVC = DetailViewController(contentID: contentID, contentType: contentType)
         navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+
+// MARK: - Extension: RatingViewControllerDelegate
+extension DetailViewController: RatingViewControllerDelegate {
+    func didSlidedValue(with value: String) {
+        detailHeaderView?.updateMyScoreLabel(value: value)
     }
 }
 

@@ -177,7 +177,7 @@ class DetailHeaderView: UIView {
         let runTime = movie.runtime
         runtimeLabel.text = "\(runTime)분"
         
-        let userScore = movie.voteAverage
+        let userScore = String(format: "%.1f", movie.voteAverage)
         userScroeLabel.text = "⭐️ \(userScore)점"
         
         let userVote = movie.voteCount
@@ -210,7 +210,7 @@ class DetailHeaderView: UIView {
         let countEpisodes = tv.numberOfEpisodes
         runtimeLabel.text = "에피소드: \(countEpisodes)개"
         
-        let userScore = tv.voteAverage
+        let userScore = String(format: "%.1f", tv.voteAverage)
         userScroeLabel.text = "⭐️ \(userScore)점"
         
         let userVote = tv.voteCount
@@ -241,6 +241,9 @@ class DetailHeaderView: UIView {
         myScroeLabel.addGestureRecognizer(tapGesture)
     }
     
+    func updateMyScoreLabel(value: String) {
+        myScroeLabel.text = "내 평점: ⭐️ \(value)"
+    }
     
     
     // MARK: - Action
@@ -323,7 +326,7 @@ class DetailHeaderView: UIView {
             userScroeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: 0),
             userScroeLabel.topAnchor.constraint(equalTo: trailerButton.bottomAnchor, constant: 10),
             userScroeLabel.heightAnchor.constraint(equalToConstant: 20),
-            userScroeLabel.widthAnchor.constraint(equalToConstant: 75),
+            userScroeLabel.widthAnchor.constraint(equalToConstant: 80),
             
             userVoteCountLabel.leadingAnchor.constraint(equalTo: userScroeLabel.trailingAnchor, constant: 5),
             userVoteCountLabel.topAnchor.constraint(equalTo: userScroeLabel.topAnchor, constant: 0),
