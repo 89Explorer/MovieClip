@@ -540,6 +540,29 @@ class NetworkManager {
     }
     
     
+    /// 🚗 peopleID를 통해 사람의 외부 소셜네트워크 확인 
+    func getPeopleExternalIDs(peopleID: Int) async throws -> ExternalID {
+        let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)/external_ids")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let peopleExternalIDs = try JSONDecoder().decode(ExternalID.self, from: data)
+        
+        return peopleExternalIDs
+                      
+    }
+    
 }
 
 

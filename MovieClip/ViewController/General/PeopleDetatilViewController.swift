@@ -16,6 +16,7 @@ class PeopleDetatilViewController: UIViewController {
     // ✅ 배우 절보 저장
     private var peopleDetail: PeopleDetailInfoWelcome?
     private var peopleDetailHeaderView: PeopleDetailHeaderView?
+    private var socialLinks: ExternalID?
     
     
     // MARK: - UI Component
@@ -37,7 +38,7 @@ class PeopleDetatilViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,16 +51,13 @@ class PeopleDetatilViewController: UIViewController {
         // ✅ 높이 자동 조절 설정
         peopleTableView.estimatedRowHeight = 100  // 임의의 예상 높이 설정
         
-        setupTableViewDelegate()
-        print("✅ 선택된 배우의 id: \(peopleID)")
-        
+        setupTableViewDelegate()        
         fetchedPeopleDetailInfo()
     }
     
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        // 테이블 뷰 적용
         peopleTableView.frame = view.bounds
     }
     
@@ -69,19 +67,21 @@ class PeopleDetatilViewController: UIViewController {
         Task {
             do {
                 let peopleInfo = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: peopleID)
+                let socialLinks = try await NetworkManager.shared.getPeopleExternalIDs(peopleID: peopleID)
+                
                 
                 DispatchQueue.main.async {
-                    self.peopleDetail = peopleInfo
-                    self.configureDetailHeaderView()    // 헤더뷰 생성
                     
+                    self.peopleDetail = peopleInfo
+                    self.socialLinks = socialLinks
                     
                     guard let peopleDetail = self.peopleDetail else {
                         print("❌ no peopleDetail")
                         return
                     }
+                    self.configureDetailHeaderView()    // 헤더뷰 생성
                     
-                    self.peopleDetailHeaderView?.configure(with: peopleDetail)
-                    
+                    self.peopleDetailHeaderView?.configure(with: peopleDetail, socialLinks: socialLinks)
                     self.peopleTableView.reloadData()
                 }
             } catch {
@@ -99,10 +99,12 @@ class PeopleDetatilViewController: UIViewController {
     
     
     private func configureDetailHeaderView() {
-        let headerView = PeopleDetailHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
+        let headerView = PeopleDetailHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 250))
         peopleTableView.tableHeaderView = headerView
-        guard let peopleInfo = peopleDetail else { return }
-        headerView.configure(with: peopleInfo)
+        guard let peopleInfo = peopleDetail,
+              let socialLinks = socialLinks
+        else { return }
+        headerView.configure(with: peopleInfo, socialLinks: socialLinks)
     }
 }
 
