@@ -69,7 +69,7 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -124,8 +124,12 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
                 switch contentType {
                 case .movie:
                     let movieDetail = try await NetworkManager.shared.getMovieDetailInfo(movieID: contentID)
+                    
                     fetchedDetail = .movie(movieDetail)
-                    fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    
+                    let genres = movieDetail.genres.map { $0.id }
+                    
+                    fetchedGenres = getGenresFromHomeSection(for: genres, contentType: .movie)
                     castingList = try await  NetworkManager.shared.getMovieCastInfo(contentID: contentID)
                     
                     videoInfo = try await NetworkManager.shared.getMovieVideoInfo(contentID: contentID)
@@ -138,7 +142,10 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
                 case .tv:
                     let tvDetail = try await NetworkManager.shared.getTVDetailInfo(tvID: contentID)
                     fetchedDetail = .tv(tvDetail)
-                    fetchedGenres = getGenresFromHomeSection(for: contentID)
+                    
+                    let genres = tvDetail.genres.map { $0.id }
+                    
+                    fetchedGenres = getGenresFromHomeSection(for: genres, contentType: .tv)
                     castingList = try await NetworkManager.shared.getTVCastInfo(contentID: contentID)
                     
                     videoInfo = try await NetworkManager.shared.getTvVideoInfo(contentID: contentID)
@@ -147,10 +154,10 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
                     let tvSimiliar = try await NetworkManager.shared.getTVSimilarInfo(contentID: contentID)
                     fetchedSimilarInfo = .trendingTVs(tvSimiliar)
                     
-                case .people:
-                    let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
-                    fetchedDetail = .people(peopleDetail)
-                    fetchedGenres = getGenresFromHomeSection(for: contentID)
+                case .people: break
+                    //let peopleDetail = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: contentID)
+                    //fetchedDetail = .people(peopleDetail)
+                    //fetchedGenres = getGenresFromHomeSection(for: contentID)
                 }
                 
                 DispatchQueue.main.async {
@@ -183,9 +190,8 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
                         self.contentSimilarInfo = fetchedSimilarInfo
                         
                     case .people:
-                        break
+                        fetchedGenres = []
                     }
-                    
                     
                     switch contentDetail {
                     case .movie(let movieDetail):
@@ -206,24 +212,40 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
         }
     }
     
-    /// 🚗 홈 뷰컨틀롤러 내 homeSection에서 genre 가져오기
-    private func getGenresFromHomeSection(for contentID: Int) -> [String] {
-        for section in HomeViewController.homeSections {
-            switch section {
-            case .trendingMovies(let movies):
-                if let movie = movies.first(where: { $0.id == contentID }) {
-                    return movie.genreNames ?? []  // ✅ 영화의 장르 변환
-                }
-            case .trendingTVs(let tv):
-                if let tv = tv.first(where: { $0.id == contentID}) {
-                    return tv.genreNames ?? []     // ✅ tv의 장르 변환
-                }
-                //case .trendingPeoples:
-                //return []   // ✅ 배우는 장르가 없으므로 패스
+    /// 🚗 홈 뷰컨틀롤러 내 homeSection에서 genre 가져오기 -> 개선 (contentID를 기반으로 찾는 방식이 아니라, API에서 받은 genreIDs를 기반으로 변환하도록 수정)
+    private func getGenresFromHomeSection(for genreIDs: [Int], contentType: ContentType) -> [String] {
+        switch contentType {
+        case .movie:
+            return genreIDs.compactMap { genreID in
+                HomeViewController.movieGenres.first { $0.id == genreID }?.name
             }
+        case .tv:
+            return genreIDs.compactMap { genreID in
+                HomeViewController.tvGenres.first {  $0.id == genreID }?.name
+            }
+        case .people:
+            return []
         }
-        return []
     }
+    
+    
+    //    private func getGenresFromHomeSection(for contentID: Int) -> [String] {
+    //        for section in HomeViewController.homeSections {
+    //            switch section {
+    //            case .trendingMovies(let movies):
+    //                if let movie = movies.first(where: { $0.id == contentID }) {
+    //                    return movie.genreNames ?? []  // ✅ 영화의 장르 변환
+    //                }
+    //            case .trendingTVs(let tv):
+    //                if let tv = tv.first(where: { $0.id == contentID}) {
+    //                    return tv.genreNames ?? []     // ✅ tv의 장르 변환
+    //                }
+    //                //case .trendingPeoples:
+    //                //return []   // ✅ 배우는 장르가 없으므로 패스
+    //            }
+    //        }
+    //        return []
+    //    }
 }
 
 

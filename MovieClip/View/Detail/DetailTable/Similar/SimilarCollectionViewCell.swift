@@ -44,7 +44,6 @@ class SimilarCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.backgroundColor = .black
         
-        
         setupTapGesture()
         
         configureConstraints()
@@ -84,6 +83,8 @@ class SimilarCollectionViewCell: UICollectionViewCell {
             self.selectedContentId = movieDetail.id
             self.selectedContentType = .movie
             
+            
+            
         case .tv(let tvDetail):
             
             if let posterPath = tvDetail.backdropPath, !posterPath.isEmpty {
@@ -101,6 +102,8 @@ class SimilarCollectionViewCell: UICollectionViewCell {
             
             self.selectedContentId = tvDetail.id
             self.selectedContentType = .tv
+            
+            
         }
         
     }

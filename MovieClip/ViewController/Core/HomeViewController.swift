@@ -12,6 +12,12 @@ class HomeViewController: UIViewController {
     // MARK: - Variables
     /// 테이블의 섹션별 데이터를 static 프로퍼티로 선언
     static var homeSections: [HomeSection] = []
+    
+    // ✅ 영화 및 TV 장르를 저장할 'static' 프로퍼티 추가
+    static var movieGenres: [MovieGenre] = []
+    static var tvGenres: [TVGenre] = []
+    
+    
     private var homeHeaderRandomItem: MovieResult?
     
     private var homeFeedTableSection: [String] = ["Trending Movie", "Trending TV", "Trending People"]
@@ -41,7 +47,7 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-
+        
     }
     
     
@@ -63,6 +69,7 @@ class HomeViewController: UIViewController {
                 
                 // 2. 영화 장르 목록 가져오기
                 let movieGenres = try await NetworkManager.shared.getMovieGenre()
+                HomeViewController.movieGenres = movieGenres
                 
                 // 3. 각 영화의 genreIds를 genreNames로 변환
                 for i in 0..<trendingMovies.count {
@@ -80,6 +87,7 @@ class HomeViewController: UIViewController {
                 
                 // 트렌딩 TV 장르 목록 가져오기
                 let tvGenres = try await NetworkManager.shared.getTVGenre()
+                HomeViewController.tvGenres = tvGenres
                 
                 // 각 TV의 genreIds를 genreNames로 변환
                 for i in 0..<trendingTVs.count {
@@ -96,7 +104,7 @@ class HomeViewController: UIViewController {
                 
                 
                 // 트렌딩 배우 목록 가져오기
-                let trendingPeoples = try await NetworkManager.shared.getTrendingPeoples()
+                //let trendingPeoples = try await NetworkManager.shared.getTrendingPeoples()
                 
                 
                 // 트렌딩 all 목록에서 랜덤 1개의 정보 가져오기
@@ -177,12 +185,12 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let defaultOffset = view.safeAreaInsets.top
-//        let offset = scrollView.contentOffset.y + defaultOffset
-//        
-//        navigationController?.navigationBar.transform = .init(translationX: 0, y: -offset)
-//    }
+    //    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    //        let defaultOffset = view.safeAreaInsets.top
+    //        let offset = scrollView.contentOffset.y + defaultOffset
+    //
+    //        navigationController?.navigationBar.transform = .init(translationX: 0, y: -offset)
+    //    }
 }
 
 // MARK: - Extension: HomeFeedTableViewCellDelegate
@@ -206,11 +214,11 @@ extension HomeViewController: HomeFeedTableViewCellDelegate {
             let detailVC = DetailViewController(contentID: selectedTV.id, contentType: .tv)
             navigationController?.pushViewController(detailVC, animated: true)
             
-//        case .trendingPeoples(let people):
-//            let selectedPeople = people[index]
-//            let detailVC = DetailViewController(contentID: selectedPeople.id, contentType: .people)
-//            navigationController?.pushViewController(detailVC, animated: true)
-//            
+            //        case .trendingPeoples(let people):
+            //            let selectedPeople = people[index]
+            //            let detailVC = DetailViewController(contentID: selectedPeople.id, contentType: .people)
+            //            navigationController?.pushViewController(detailVC, animated: true)
+            //
         }
     }
 }
