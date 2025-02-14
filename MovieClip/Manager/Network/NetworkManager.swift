@@ -565,7 +565,7 @@ class NetworkManager {
     
     
     // 구글 클라우드 번역 API를 통해 번역하는 메서드
-    func translateText(_ text: String, completion: @escaping (String?) -> Void) {
+    func translateText(_ text: String) async -> String {
         let apiKey = "AIzaSyCFdYxCxHXF07ssuM2ie9rEm6EQ6EDyJ0o"
         let targetLanguage = "ko" // 한국어(Korean)로 번역
         let sourceLanguage = "en" // 영어(English)로부터 번역
@@ -573,8 +573,7 @@ class NetworkManager {
         // ✅ API 요청 URL 생성
         let urlString = "https://translation.googleapis.com/language/translate/v2?key=\(apiKey)"
         guard let url = URL(string: urlString) else {
-            completion(nil)
-            return
+            return text         // ✅ 번역 실패 시 원본 반환
         }
         
         // ✅ 요청 데이터 설정 (JSON Body)
@@ -586,8 +585,7 @@ class NetworkManager {
         ]
 
         guard let jsonData = try? JSONSerialization.data(withJSONObject: parameters) else {
-            completion(nil)
-            return
+            return text
         }
         
         // ✅ URLRequest 설정
@@ -595,30 +593,21 @@ class NetworkManager {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
-        
-        // ✅ API 요청 실행
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(nil)
-                return
-            }
+    
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
 
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                if let data = json?["data"] as? [String: Any],
-                   let translations = data["translations"] as? [[String: Any]],
-                   let translatedText = translations.first?["translatedText"] as? String {
-                    completion(translatedText) // ✅ 번역 결과 반환
-                } else {
-                    completion(nil)
-                }
-            } catch {
-                completion(nil)
+            if let data = json?["data"] as? [String: Any],
+               let translations = data["translations"] as? [[String: Any]],
+               let translatedText = translations.first?["translatedText"] as? String {
+                return translatedText // ✅ 번역 결과 반환
+            } else {
+                return text // ✅ 번역 실패 시 원본 반환
             }
+        } catch {
+            return text
         }
-
-        task.resume()
-
     }
 }
 

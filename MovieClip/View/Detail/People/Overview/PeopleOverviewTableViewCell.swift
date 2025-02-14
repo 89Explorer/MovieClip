@@ -54,6 +54,7 @@ class PeopleOverviewTableViewCell: UITableViewCell {
     
     // MARK: - Function
     func configure(with content: String, isExpanded: Bool) {
+        
         overviewLabel.text = content
         self.isExpanded = isExpanded
         
@@ -81,10 +82,10 @@ class PeopleOverviewTableViewCell: UITableViewCell {
             overviewLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             overviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             overviewLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            overviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            overviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
             
             //expandButton.topAnchor.constraint(equalTo: overviewLabel.bottomAnchor, constant: 10),
-            expandButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+            expandButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             expandButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             expandButton.heightAnchor.constraint(equalToConstant: 20)
             

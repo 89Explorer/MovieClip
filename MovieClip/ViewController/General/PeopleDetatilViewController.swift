@@ -23,6 +23,8 @@ class PeopleDetatilViewController: UIViewController {
     
     private var expandedCells: Set<Int> = [] // ✅ 확장된 셀 저장
     
+    private var koreanBio: String = ""
+    
     
     // MARK: - UI Component
     private let peopleTableView: UITableView = {
@@ -75,10 +77,14 @@ class PeopleDetatilViewController: UIViewController {
                 let peopleInfo = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: peopleID)
                 let socialLinks = try await NetworkManager.shared.getPeopleExternalIDs(peopleID: peopleID)
                 
+                // ✅ biography 번역
+                let translatedBio = await NetworkManager.shared.translateText(peopleInfo.biography ?? "정보 없음 😅")
+                
                 DispatchQueue.main.async { [self] in
                     
                     self.peopleDetail = peopleInfo
                     self.socialLinks = socialLinks
+                    self.koreanBio = translatedBio
                     
                     guard let peopleDetail = self.peopleDetail else {
                         print("❌ no peopleDetail")
@@ -136,19 +142,14 @@ extension PeopleDetatilViewController: UITableViewDelegate, UITableViewDataSourc
         case .overview:
             
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PeopleOverviewTableViewCell.reuseIdentifier, for: indexPath) as? PeopleOverviewTableViewCell else { return UITableViewCell() }
-            
-            guard let peopleDetail = peopleDetail else { return UITableViewCell() }
         
             let isExpanded = expandedCells.contains(indexPath.row)    // ✅ 확장 여부 확인
             
-            if let biography = peopleDetail.biography, !(biography.count == 0) {
-                
-                cell.configure(with: biography, isExpanded: isExpanded)
+            if koreanBio.count != 0 {
+                cell.configure(with: koreanBio, isExpanded: isExpanded)
             } else {
-                
                 cell.configure(with: "정보 없음 😅", isExpanded: isExpanded)
             }
-            
         
             cell.delegate = self
             
