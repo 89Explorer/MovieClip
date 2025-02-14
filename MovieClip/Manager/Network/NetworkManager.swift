@@ -292,7 +292,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR")
+            URLQueryItem(name: "language", value: "en-US")
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
 
@@ -310,8 +310,8 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        let peopleDetail = try JSONDecoder().decode(PeopleDetailInfoWelcome.self, from: data)
-        return peopleDetail
+        let peopleDetail = try JSONDecoder().decode(PeopleDetailInfoWelcome.self, from: data )
+        return peopleDetail 
     }
     
     

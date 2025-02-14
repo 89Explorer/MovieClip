@@ -68,7 +68,7 @@ class PeopleDetailHeaderView: UIView {
     
     private let socialStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.backgroundColor = .systemBlue
+        stackView.backgroundColor = .white
         stackView.layer.cornerRadius = 5
         stackView.layer.masksToBounds = true
         stackView.axis = .horizontal

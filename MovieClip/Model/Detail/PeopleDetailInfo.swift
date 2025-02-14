@@ -12,7 +12,7 @@ import Foundation
 struct PeopleDetailInfoWelcome: Codable {
     let adult: Bool
     let alsoKnownAs: [String]
-    let biography: String
+    let biography: String?
     let birthday: String?
     let deathday: String? // ✅ JSONNull 대신 String? 적용
     let gender: Int
@@ -27,7 +27,7 @@ struct PeopleDetailInfoWelcome: Codable {
     enum CodingKeys: String, CodingKey {
         case adult
         case alsoKnownAs = "also_known_as"
-        case biography, birthday, deathday, gender, homepage, id
+        case birthday, deathday, gender, homepage, id, biography
         case imdbID = "imdb_id"
         case knownForDepartment = "known_for_department"
         case name

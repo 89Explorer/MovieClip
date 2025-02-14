@@ -227,25 +227,6 @@ class DetailViewController: UIViewController, MediaCollectionViewCellDelegate {
             return []
         }
     }
-    
-    
-    //    private func getGenresFromHomeSection(for contentID: Int) -> [String] {
-    //        for section in HomeViewController.homeSections {
-    //            switch section {
-    //            case .trendingMovies(let movies):
-    //                if let movie = movies.first(where: { $0.id == contentID }) {
-    //                    return movie.genreNames ?? []  // ✅ 영화의 장르 변환
-    //                }
-    //            case .trendingTVs(let tv):
-    //                if let tv = tv.first(where: { $0.id == contentID}) {
-    //                    return tv.genreNames ?? []     // ✅ tv의 장르 변환
-    //                }
-    //                //case .trendingPeoples:
-    //                //return []   // ✅ 배우는 장르가 없으므로 패스
-    //            }
-    //        }
-    //        return []
-    //    }
 }
 
 
