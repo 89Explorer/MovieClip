@@ -78,7 +78,7 @@ class PeopleDetatilViewController: UIViewController {
                 let socialLinks = try await NetworkManager.shared.getPeopleExternalIDs(peopleID: peopleID)
                 
                 // ✅ biography 번역
-                let translatedBio = await NetworkManager.shared.translateText(peopleInfo.biography ?? "정보 없음 😅")
+                let translatedBio = await GoogleTranslateAPI.translateText(peopleInfo.biography ?? "정보 없음 😅")
                 
                 DispatchQueue.main.async { [self] in
                     
