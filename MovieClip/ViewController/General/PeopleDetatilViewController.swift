@@ -148,6 +148,7 @@ extension PeopleDetatilViewController: UITableViewDelegate, UITableViewDataSourc
                 
                 cell.configure(with: "정보 없음 😅", isExpanded: isExpanded)
             }
+            
         
             cell.delegate = self
             
@@ -196,7 +197,6 @@ extension PeopleDetatilViewController: PeopleOverviewTableViewCellDelegate {
             } else {
                 expandedCells.insert(indexPath.row) // ✅ 확장되지 않은 경우 추가
             }
-            
             
             UIView.animate(withDuration: 0.3) {
                 self.peopleTableView.reloadData()

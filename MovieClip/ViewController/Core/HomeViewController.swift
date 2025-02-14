@@ -47,7 +47,7 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-        
+            
     }
     
     
