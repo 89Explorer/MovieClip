@@ -562,5 +562,59 @@ class NetworkManager {
         return peopleExternalIDs
         
     }
+    
+    /// 🚗 peopleID를 통해 사람의 영화 출연작 확인
+    func getMovieCredits(peopleID: Int) async throws -> MovieCreditWelcome{
+        let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)/movie_credits")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieCredits = try JSONDecoder().decode(MovieCreditWelcome.self, from: data)
+        return movieCredits
+    }
+
+    /// 🚗 peopleID를 통해 사람의 tv 출연작 확인
+    func getTVCredits(peopleID: Int) async throws -> TVCreditWelcome {
+        let url = URL(string: "\(Constants.baseURL)/person/\(peopleID)/tv_credits")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvCredits = try JSONDecoder().decode(TVCreditWelcome.self, from: data)
+        return tvCredits
+    }
 }
 
