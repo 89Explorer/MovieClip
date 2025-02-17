@@ -25,6 +25,11 @@ class PeopleDetatilViewController: UIViewController {
     
     private var koreanBio: String = ""
     
+    private var movieCredits: [MovieCreditCast] = []
+    private var tvCredits: [TVCreditCast] = []
+    
+    private var creditType: CreditType = .movie
+    
     
     // MARK: - UI Component
     private let peopleTableView: UITableView = {
@@ -77,14 +82,20 @@ class PeopleDetatilViewController: UIViewController {
                 let peopleInfo = try await NetworkManager.shared.getPeopleDetailInfo(peopleID: peopleID)
                 let socialLinks = try await NetworkManager.shared.getPeopleExternalIDs(peopleID: peopleID)
                 
+                let movieCredits = try await NetworkManager.shared.getMovieCredits(peopleID: peopleID)
+                let tvCredits = try await NetworkManager.shared.getTVCredits(peopleID: peopleID)
+                
                 // ✅ biography 번역
                 let translatedBio = await GoogleTranslateAPI.translateText(peopleInfo.biography ?? "정보 없음 😅")
+                
                 
                 DispatchQueue.main.async { [self] in
                     
                     self.peopleDetail = peopleInfo
                     self.socialLinks = socialLinks
                     self.koreanBio = translatedBio
+                    self.movieCredits = movieCredits.cast
+                    self.tvCredits = tvCredits.cast
                     
                     guard let peopleDetail = self.peopleDetail else {
                         print("❌ no peopleDetail")
@@ -109,6 +120,7 @@ class PeopleDetatilViewController: UIViewController {
         peopleTableView.dataSource = self
         peopleTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         peopleTableView.register(PeopleOverviewTableViewCell.self, forCellReuseIdentifier: PeopleOverviewTableViewCell.reuseIdentifier)
+        peopleTableView.register(CreditTableViewCell.self, forCellReuseIdentifier: CreditTableViewCell.reuseIdentifier)
     }
     
     
@@ -156,13 +168,20 @@ extension PeopleDetatilViewController: UITableViewDelegate, UITableViewDataSourc
             return cell
             
         case .filmography:
-            break
+            
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CreditTableViewCell.reuseIdentifier, for: indexPath) as? CreditTableViewCell else { return UITableViewCell() }
+            
+            switch creditType {
+            case .movie:
+                cell.configure(with: .movie(movieCredits), creditType: .movie)
+                cell.delegate = self
+            case .tv:
+                cell.configure(with: .tv(tvCredits), creditType: .tv)
+                cell.delegate = self
+            }
+            
+            return cell
         }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Test"
-        
-        return cell
         
     }
     
@@ -204,6 +223,24 @@ extension PeopleDetatilViewController: PeopleOverviewTableViewCellDelegate {
             }
         }
     }
+}
+
+
+extension PeopleDetatilViewController: CreditTableViewCellDelegate {
+    
+    func didTapCategoryButton() {
+        creditType.toggle()
+        DispatchQueue.main.async {
+            self.peopleTableView.reloadData()
+        }
+
+    }
+    
+    func didTapImage(with contentID: Int, contentType: ContentType) {
+        let detailVC = DetailViewController(contentID: contentID, contentType: contentType)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
 }
 
 
