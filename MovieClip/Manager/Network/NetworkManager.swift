@@ -616,5 +616,36 @@ class NetworkManager {
         let tvCredits = try JSONDecoder().decode(TVCreditWelcome.self, from: data)
         return tvCredits
     }
+    
+    
+    /// 🚗 특정기간 동안 상영중인 영화
+    func getMovieNowPlaying(pageNo: Int = 1) async throws -> MovieListWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/now_playing")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(pageNo)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieNowPlaying = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        
+        return movieNowPlaying
+    }
+    
 }
 
