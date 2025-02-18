@@ -617,6 +617,7 @@ class NetworkManager {
         return tvCredits
     }
     
+    // MARK: - Movie Sections
     
     /// 🚗 특정기간 동안 상영중인 영화
     func getMovieNowPlaying(pageNo: Int = 1) async throws -> MovieListWelcome {
@@ -642,10 +643,134 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        let movieNowPlaying = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        var movieNowPlaying = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        movieNowPlaying.type = .noewPlayingMovie
         
         return movieNowPlaying
     }
+    
+    /// 🚗 인기있는 영화 목록 가져오기
+    func getMoviePopular(pageNo: Int = 1) async throws -> MovieListWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/popular")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "1"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var moviePopular = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        moviePopular.type = .popularMovie
+        
+        return moviePopular
+    }
+    
+    
+    /// 🚗 영화 순위 가져오기
+    func getMovieTopRated(pageNo: Int = 1) async throws -> MovieListWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/top_rated")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "1"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var movieTopRated = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        movieTopRated.type = .topRatedMovie
+        
+        return movieTopRated
+    }
+    
+    /// 🚗 영화 개봉예정작 가져오기
+    func getMovieUpcoming(pageNo: Int = 1) async throws -> MovieListWelcome {
+        let url = URL(string: "\(Constants.baseURL)/movie/upcoming")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "1"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var movieUpcoming = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        movieUpcoming.type = .upcomingMovie
+        
+        return movieUpcoming
+    }
+    
+    
+    func fetchAllMovies() async throws -> CombineData {
+        
+        // 비동기 API 호출 동시에 실행
+        async let movieNowPlaying = getMovieNowPlaying()
+        async let moviePopular = getMoviePopular()
+        async let movieTopRated = getMovieTopRated()
+        async let movieUpcoming = getMovieUpcoming()
+        
+        
+        // 모든 비동기 작업의 결과 대기
+        let nowPlayingResult = try await movieNowPlaying
+        let popularResult = try await moviePopular
+        let topRatedResult = try await movieTopRated
+        let upcomingResult = try await movieUpcoming
+        
+        
+        // 결과를 하나의 영화 객체로 결합
+        var combinedData: CombineData = CombineData(combineMovieData: [])
+        
+        
+        // 각 결과를 combinedData에 추가
+        combinedData.combineMovieData.append(nowPlayingResult)
+        combinedData.combineMovieData.append(popularResult)
+        combinedData.combineMovieData.append(topRatedResult)
+        combinedData.combineMovieData.append(upcomingResult)
+        
+        return combinedData
+    }
+    
+    
     
 }
 

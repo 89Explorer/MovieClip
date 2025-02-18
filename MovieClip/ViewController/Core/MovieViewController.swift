@@ -17,7 +17,7 @@ class MovieViewController: UIViewController {
         
         Task {
             do {
-                let movieNowPlaying = try await NetworkManager.shared.getMovieNowPlaying(pageNo: 1)
+                let movieNowPlaying = try await NetworkManager.shared.fetchAllMovies()
                 dump(movieNowPlaying)
             }
             catch {

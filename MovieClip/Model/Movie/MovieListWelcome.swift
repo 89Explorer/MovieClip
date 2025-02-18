@@ -7,12 +7,21 @@
 
 import Foundation
 
+// MARK: - CombineData
+// ✅ 전체 데이터를 저장하는 구조체
+struct CombineData: Codable, Hashable {
+    var combineMovieData: [MovieListWelcome]   // ✅ MovieListWelcome 데이터를 여러 개 섹션으로 저장
+}
+
+
 // MARK: - MovieListWelcome
-struct MovieListWelcome: Codable {
-    let dates: MovieListDates
-    let page: Int
-    let results: [MovieListResult]
-    let totalPages, totalResults: Int
+// ✅ 개별 섹션 정보 저장
+struct MovieListWelcome: Codable, Hashable {
+    var dates: MovieListDates?
+    var page: Int
+    var results: [MovieListResult]   // ✅ 해당 섹션의 영화 목록
+    var type: SectionType?           // ✅ 섹션 타입 (예: 최신, 인기, 순위 영화 등) 저장
+    var totalPages, totalResults: Int
 
     enum CodingKeys: String, CodingKey {
         case dates, page, results
@@ -23,13 +32,14 @@ struct MovieListWelcome: Codable {
 
 
 // MARK: - MovieListDates
-struct MovieListDates: Codable {
+struct MovieListDates: Codable, Hashable {
     let maximum, minimum: String
 }
 
 
 // MARK: - MovieListResult
-struct MovieListResult: Codable {
+// ✅ 개별 영화 데이터
+struct MovieListResult: Codable, Hashable {
     let adult: Bool
     let backdropPath: String
     let genreIDS: [Int]
@@ -54,4 +64,14 @@ struct MovieListResult: Codable {
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
     }
+}
+
+
+// MARK: - SectionType
+// ✅ 컬렉션 뷰의 섹션 구분
+enum SectionType: String, Codable {
+    case noewPlayingMovie = "Now Playing Movie"
+    case popularMovie = "Popular Movie"
+    case topRatedMovie = "Top Rated Movie"
+    case upcomingMovie = "Upcoming Movie"
 }
