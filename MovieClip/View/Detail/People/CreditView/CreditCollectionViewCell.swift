@@ -117,7 +117,8 @@ class CreditCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Action
     @objc private func didTapCreditImage() {
-        guard let selectedContentId = selectedContentId, let selectedContentType = selectedContentType else {
+        guard let selectedContentId = selectedContentId,
+              let selectedContentType = selectedContentType else {
             print("❌ selectedContentId or selectedContentType is nil")
             return
         }
@@ -157,7 +158,7 @@ class CreditCollectionViewCell: UICollectionViewCell {
 }
 
 
-// MARK: - Protocol
+// MARK: - Protocol: CreditCollectionViewCellDelegate
 protocol CreditCollectionViewCellDelegate: AnyObject {
     func didTapImage(with contentID: Int, contentType: ContentType)
 }

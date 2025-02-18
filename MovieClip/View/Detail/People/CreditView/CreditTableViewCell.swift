@@ -66,7 +66,6 @@ class CreditTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     // MARK: - Function
     private func setupCollectionViewDelegate() {
         creditCollectionView.delegate = self
@@ -103,32 +102,63 @@ class CreditTableViewCell: UITableViewCell {
     }
     
     // ✅ 버튼 UI 업데이트 함수 추가
+//    private func updateButtonState() {
+//        
+//        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) { [self] in
+//            //guard let self = self else { return }
+//            
+//            switch creditType {
+//            case .movie:
+//                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemBlue
+//                calledMovieCreditButton.alpha = 1.0
+//                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+//                
+//                calledTVCreditButton.configuration?.baseBackgroundColor = .systemGray
+//                calledTVCreditButton.alpha = 0.7
+//                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+//            case .tv:
+//                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemGray
+//                calledMovieCreditButton.alpha = 0.7
+//                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+//                
+//                calledTVCreditButton.configuration?.baseBackgroundColor = .systemBlue
+//                calledTVCreditButton.alpha = 1.0
+//                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+//                
+//            }
+//        }
+//    }
+    
     private func updateButtonState() {
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) { [self] in
-            //guard let self = self else { return }
+        UIView.animate(withDuration: 0.25, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.0, options: [.curveEaseInOut]) { [self] in
             
             switch creditType {
             case .movie:
+                // ✅ 영화 버튼 활성화
                 calledMovieCreditButton.configuration?.baseBackgroundColor = .systemBlue
                 calledMovieCreditButton.alpha = 1.0
-                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.15, y: 1.15) // 💡 더 커지도록 변경
                 
+                // ✅ TV 버튼 비활성화
                 calledTVCreditButton.configuration?.baseBackgroundColor = .systemGray
-                calledTVCreditButton.alpha = 0.7
+                calledTVCreditButton.alpha = 0.5
                 calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-            case .tv:
-                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemGray
-                calledMovieCreditButton.alpha = 0.7
-                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
                 
+            case .tv:
+                // ✅ TV 버튼 활성화
                 calledTVCreditButton.configuration?.baseBackgroundColor = .systemBlue
                 calledTVCreditButton.alpha = 1.0
-                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.15, y: 1.15) // 💡 더 커지도록 변경
                 
+                // ✅ 영화 버튼 비활성화
+                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemGray
+                calledMovieCreditButton.alpha = 0.5
+                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
             }
         }
     }
+
+
     
     
     // MARK: - Action
@@ -208,7 +238,7 @@ extension CreditTableViewCell: UICollectionViewDelegate, UICollectionViewDataSou
     }
 }
 
-
+// MARK: - Extension: CreditCollectionViewCellDelegate
 extension CreditTableViewCell: CreditCollectionViewCellDelegate {
     
     func didTapImage(with contentID: Int, contentType: ContentType) {
@@ -218,14 +248,14 @@ extension CreditTableViewCell: CreditCollectionViewCellDelegate {
 }
 
 
+// MARK: - Protocol: CreditTableViewCellDelegate
 protocol CreditTableViewCellDelegate: AnyObject {
     func didTapImage(with contentID: Int, contentType: ContentType)
     func didTapCategoryButton()
 }
 
 
-
-
+// MARK: - Enum: CreditType
 enum CreditType {
     case movie
     case tv
@@ -235,11 +265,15 @@ enum CreditType {
     }
 }
 
+
+// MARK: - Enum: CreditInfos
 enum CreditInfos {
     case movie([MovieCreditCast])
     case tv([TVCreditCast])
 }
 
+
+// MARK: - Enum: CreditInfo
 enum CreditInfo {
     case movie(MovieCreditCast)
     case tv(TVCreditCast)
