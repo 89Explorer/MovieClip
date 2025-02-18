@@ -22,27 +22,11 @@ class CreditTableViewCell: UITableViewCell {
     weak var delegate: CreditTableViewCellDelegate?
     
     
-    private let calledMovieCreditButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.contentEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-        button.setTitle("Movie", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 5
-        button.layer.masksToBounds = true
-        return button
-    }()
+    // MARK: - UI Component
+    private lazy var calledMovieCreditButton: UIButton = categoryButton(with: "Movie", action: #selector(didTapCalledMovie))
+
+    private lazy var calledTVCreditButton: UIButton = categoryButton(with: "TV", action: #selector(didTapCalledTV))
     
-    private let calledTVCreditButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.contentEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-        button.setTitle("TV", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 5
-        button.layer.masksToBounds = true
-        return button
-    }()
     
     private let creditCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -76,9 +60,6 @@ class CreditTableViewCell: UITableViewCell {
         self.updateButtonState()
         
         configureConstraints()
-        calledMovieCreditButton.addTarget(self, action: #selector(didTapCalledMovie), for: .touchUpInside)
-        calledTVCreditButton.addTarget(self, action: #selector(didTapCalledTV), for: .touchUpInside)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -94,6 +75,22 @@ class CreditTableViewCell: UITableViewCell {
         creditCollectionView.register(CreditCollectionViewCell.self, forCellWithReuseIdentifier: CreditCollectionViewCell.reuseIdentifier)
     }
     
+    private func categoryButton(with title: String, action: Selector) -> UIButton {
+        var buttonConfiguration = UIButton.Configuration.filled()
+        buttonConfiguration.baseBackgroundColor = .systemGray
+        buttonConfiguration.baseForegroundColor = .white
+        
+        var titleAttr = AttributedString(title)
+        titleAttr.font = .systemFont(ofSize: 14, weight: .bold)
+        
+        buttonConfiguration.attributedTitle = titleAttr
+        buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
+        
+        let button = UIButton(configuration: buttonConfiguration)
+        button.addTarget(self, action: action, for: .touchUpInside) // 버튼 클릭 이벤트 추가
+        return button
+    }
+    
     
     func configure(with creditInfos: CreditInfos, creditType: CreditType) {
         self.creditItems = creditInfos
@@ -107,16 +104,31 @@ class CreditTableViewCell: UITableViewCell {
     
     // ✅ 버튼 UI 업데이트 함수 추가
     private func updateButtonState() {
-        switch creditType {
-        case .movie:
-            calledMovieCreditButton.backgroundColor = .systemBlue
-            calledTVCreditButton.backgroundColor = .systemGray
-        case .tv:
-            calledMovieCreditButton.backgroundColor = .systemGray
-            calledTVCreditButton.backgroundColor = .systemBlue
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) { [self] in
+            //guard let self = self else { return }
+            
+            switch creditType {
+            case .movie:
+                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemBlue
+                calledMovieCreditButton.alpha = 1.0
+                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                
+                calledTVCreditButton.configuration?.baseBackgroundColor = .systemGray
+                calledTVCreditButton.alpha = 0.7
+                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            case .tv:
+                calledMovieCreditButton.configuration?.baseBackgroundColor = .systemGray
+                calledMovieCreditButton.alpha = 0.7
+                calledMovieCreditButton.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+                
+                calledTVCreditButton.configuration?.baseBackgroundColor = .systemBlue
+                calledTVCreditButton.alpha = 1.0
+                calledTVCreditButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                
+            }
         }
     }
-    
     
     
     // MARK: - Action
@@ -145,8 +157,7 @@ class CreditTableViewCell: UITableViewCell {
             
             buttonStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             buttonStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            buttonStackView.heightAnchor.constraint(equalToConstant: 40),
-            buttonStackView.widthAnchor.constraint(equalToConstant: 120),
+            buttonStackView.widthAnchor.constraint(equalToConstant: 150),
             
             creditCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             creditCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
