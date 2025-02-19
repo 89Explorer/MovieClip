@@ -620,7 +620,7 @@ class NetworkManager {
     // MARK: - Movie Sections
     
     /// 🚗 특정기간 동안 상영중인 영화
-    func getMovieNowPlaying(pageNo: Int = 1) async throws -> MovieListWelcome {
+    func getMovieNowPlaying(pageNo: Int = 1) async throws -> TMDBData {
         let url = URL(string: "\(Constants.baseURL)/movie/now_playing")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
@@ -643,14 +643,14 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        var movieNowPlaying = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        var movieNowPlaying = try JSONDecoder().decode(TMDBData.self, from: data)
         movieNowPlaying.type = .noewPlayingMovie
         
         return movieNowPlaying
     }
     
     /// 🚗 인기있는 영화 목록 가져오기
-    func getMoviePopular(pageNo: Int = 1) async throws -> MovieListWelcome {
+    func getMoviePopular(pageNo: Int = 1) async throws -> TMDBData {
         let url = URL(string: "\(Constants.baseURL)/movie/popular")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
@@ -673,7 +673,7 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        var moviePopular = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        var moviePopular = try JSONDecoder().decode(TMDBData.self, from: data)
         moviePopular.type = .popularMovie
         
         return moviePopular
@@ -681,7 +681,7 @@ class NetworkManager {
     
     
     /// 🚗 영화 순위 가져오기
-    func getMovieTopRated(pageNo: Int = 1) async throws -> MovieListWelcome {
+    func getMovieTopRated(pageNo: Int = 1) async throws -> TMDBData {
         let url = URL(string: "\(Constants.baseURL)/movie/top_rated")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
@@ -704,14 +704,14 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        var movieTopRated = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        var movieTopRated = try JSONDecoder().decode(TMDBData.self, from: data)
         movieTopRated.type = .topRatedMovie
         
         return movieTopRated
     }
     
     /// 🚗 영화 개봉예정작 가져오기
-    func getMovieUpcoming(pageNo: Int = 1) async throws -> MovieListWelcome {
+    func getMovieUpcoming(pageNo: Int = 1) async throws -> TMDBData {
         let url = URL(string: "\(Constants.baseURL)/movie/upcoming")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
@@ -734,7 +734,7 @@ class NetworkManager {
             throw APIError.failedToGetData
         }
         
-        var movieUpcoming = try JSONDecoder().decode(MovieListWelcome.self, from: data)
+        var movieUpcoming = try JSONDecoder().decode(TMDBData.self, from: data)
         movieUpcoming.type = .upcomingMovie
         
         return movieUpcoming
@@ -758,19 +758,17 @@ class NetworkManager {
         
         
         // 결과를 하나의 영화 객체로 결합
-        var combinedData: CombineData = CombineData(combineMovieData: [])
+        var combinedData: CombineData = CombineData(combineTMDB: [])
         
         
         // 각 결과를 combinedData에 추가
-        combinedData.combineMovieData.append(nowPlayingResult)
-        combinedData.combineMovieData.append(popularResult)
-        combinedData.combineMovieData.append(topRatedResult)
-        combinedData.combineMovieData.append(upcomingResult)
+        combinedData.combineTMDB.append(nowPlayingResult)
+        combinedData.combineTMDB.append(popularResult)
+        combinedData.combineTMDB.append(topRatedResult)
+        combinedData.combineTMDB.append(upcomingResult)
         
         return combinedData
     }
-    
-    
-    
+
 }
 
