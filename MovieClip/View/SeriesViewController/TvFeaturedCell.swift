@@ -37,6 +37,10 @@ class TvFeaturedCell: UICollectionViewCell, SelfConfiguringTVCell {
     // MARK: - Function
     func setupUI() {
         
+        let seprator = UIView(frame: .zero)
+        seprator.translatesAutoresizingMaskIntoConstraints = false
+        seprator.backgroundColor = .systemBlue
+        
         // 평점 라벨 UI 설정
         voteLabel.font = UIFontMetrics.default.scaledFont(for: UIFont.systemFont(ofSize: 12, weight: .bold))
         voteLabel.textColor = .systemRed
@@ -59,7 +63,7 @@ class TvFeaturedCell: UICollectionViewCell, SelfConfiguringTVCell {
         
         
         // 스택뷰 설정
-        let stackView = UIStackView(arrangedSubviews: [voteLabel, titleLabel, genreLabel, tvImageView])
+        let stackView = UIStackView(arrangedSubviews: [seprator, voteLabel, titleLabel, genreLabel, tvImageView])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         
@@ -69,6 +73,8 @@ class TvFeaturedCell: UICollectionViewCell, SelfConfiguringTVCell {
         
         NSLayoutConstraint.activate([
             
+            seprator.heightAnchor.constraint(equalToConstant: 1),
+            
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -76,6 +82,7 @@ class TvFeaturedCell: UICollectionViewCell, SelfConfiguringTVCell {
             
         ])
         
+        stackView.setCustomSpacing(10, after: seprator)
         stackView.setCustomSpacing(10, after: genreLabel)
     }
     

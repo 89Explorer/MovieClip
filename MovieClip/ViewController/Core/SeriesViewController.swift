@@ -23,13 +23,7 @@ class SeriesViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         
-        seriesCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
-        seriesCollectionView.backgroundColor = .black
-        seriesCollectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        seriesCollectionView.showsVerticalScrollIndicator = false
-        view.addSubview(seriesCollectionView)
-        
-        seriesCollectionView.register(TvFeaturedCell.self, forCellWithReuseIdentifier: TvFeaturedCell.reuseIdentifier)
+        setupCollectionView()
         
         fetchTvs()
         createDataSource()
@@ -37,6 +31,20 @@ class SeriesViewController: UIViewController {
     
     
     // MARK: - Function
+    
+    private func setupCollectionView() {
+        seriesCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
+        seriesCollectionView.backgroundColor = .black
+        seriesCollectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        seriesCollectionView.showsVerticalScrollIndicator = false
+        
+        view.addSubview(seriesCollectionView)
+        
+        seriesCollectionView.register(TvFeaturedCell.self, forCellWithReuseIdentifier: TvFeaturedCell.reuseIdentifier)
+        seriesCollectionView.register(TVMediumCell.self, forCellWithReuseIdentifier: TVMediumCell.reuseIdentifier)
+        
+    }
+    
     private func configure<T: SelfConfiguringTVCell>(_ cellType: T.Type, with model: TvTMDBResult, for indexPath: IndexPath) -> T {
         
         guard let cell = seriesCollectionView.dequeueReusableCell(withReuseIdentifier: cellType.reuseIdentifier, for: indexPath) as? T else { fatalError("Unable to deque \(cellType)")}
@@ -53,10 +61,10 @@ class SeriesViewController: UIViewController {
             let sectionType = self.tvCombineSection.combineTMDB[indexPath.section].type ?? .popular
             
             switch sectionType {
-//            case .airingToday:
-//                return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
-//            case .onTheAir:
-//                return self.configure(TvOnTheAirCell.self, with: tvTMDBResult, for: indexPath)
+            case .airingToday:
+                return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
+            case .onTheAir:
+                return self.configure(TVMediumCell.self, with: tvTMDBResult, for: indexPath)
 //            case .popular:
 //                return self.configure(TvPopularCell.self, with: tvTMDBResult, for: indexPath)
 //            case .topRated:
@@ -93,6 +101,8 @@ class SeriesViewController: UIViewController {
             let section = self.tvCombineSection.combineTMDB[sectionIndex]
             
             switch section.type {
+            case .onTheAir:
+                return self.createMediumTableSection(using: section.results)
             default:
                 return self.createFeaturedSection(using: section.results)
             }
@@ -104,7 +114,7 @@ class SeriesViewController: UIViewController {
         return layout
     }
     
-    
+    // TvFeaturedCell 관련 레이아웃
     private func createFeaturedSection(using section: [TvTMDBResult]) -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         
@@ -117,6 +127,22 @@ class SeriesViewController: UIViewController {
         
         let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
         layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+        return layoutSection
+    }
+    
+    
+    private func createMediumTableSection(using section: [TvTMDBResult]) -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.2))
+        
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
+        
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .fractionalWidth(0.85))
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+        
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+        
         return layoutSection
     }
     
