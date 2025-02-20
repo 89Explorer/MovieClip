@@ -125,7 +125,21 @@ class SeriesViewController: UIViewController {
     private func fetchTvs() {
         Task {
             do {
-                let tvs = try await NetworkManager.shared.fetchAllTvs()
+                var tvs = try await NetworkManager.shared.fetchAllTvs()
+                
+                for i in 0..<tvs.combineTMDB.count {
+                    for j in 0..<tvs.combineTMDB[i].results.count {
+                        let genreIDs = tvs.combineTMDB[i].results[j].genreIDS
+                        let contentType: ContentType = .tv
+                        
+                        var genreNames = getGenresFromHomeSection(for: genreIDs, contentType: contentType)
+                        
+                        // 영어 장르명을 한글로 변환
+                        genreNames = genreNames.map { genreTranslation[$0] ?? $0}
+                        
+                        tvs.combineTMDB[i].results[j].genreNames = genreNames
+                    }
+                }
                 
                 DispatchQueue.main.async {
                     self.tvCombineSection = tvs
@@ -134,6 +148,21 @@ class SeriesViewController: UIViewController {
             } catch {
                 print("❌ Error: \(error)")
             }
+        }
+    }
+
+    private func getGenresFromHomeSection(for genreIDs: [Int], contentType: ContentType) -> [String] {
+        switch contentType {
+        case .movie:
+            return genreIDs.compactMap { genreID in
+                HomeViewController.movieGenres.first { $0.id == genreID }?.name
+            }
+        case .tv:
+            return genreIDs.compactMap { genreID in
+                HomeViewController.tvGenres.first {  $0.id == genreID }?.name
+            }
+        case .people:
+            return []
         }
     }
 }

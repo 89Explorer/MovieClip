@@ -18,3 +18,5 @@ let genreTranslation: [String: String] = [
     "Reality": "리얼리티",
     "Soap": "연속극"
 ]
+
+
