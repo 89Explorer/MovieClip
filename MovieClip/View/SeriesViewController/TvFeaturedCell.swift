@@ -39,7 +39,7 @@ class TvFeaturedCell: UICollectionViewCell, SelfConfiguringTVCell {
         
         let seprator = UIView(frame: .zero)
         seprator.translatesAutoresizingMaskIntoConstraints = false
-        seprator.backgroundColor = .systemBlue
+        seprator.backgroundColor = .systemGray
         
         // 평점 라벨 UI 설정
         voteLabel.font = UIFontMetrics.default.scaledFont(for: UIFont.systemFont(ofSize: 12, weight: .bold))

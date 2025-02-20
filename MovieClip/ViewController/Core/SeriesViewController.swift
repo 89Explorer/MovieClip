@@ -40,9 +40,14 @@ class SeriesViewController: UIViewController {
         
         view.addSubview(seriesCollectionView)
         
+        seriesCollectionView.delegate = self
+        
+        // 컬렉션뷰 섹션헤더 설정
+        seriesCollectionView.register(TVSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TVSectionHeader.reuseIdentifier)
+        
         seriesCollectionView.register(TvFeaturedCell.self, forCellWithReuseIdentifier: TvFeaturedCell.reuseIdentifier)
         seriesCollectionView.register(TVMediumCell.self, forCellWithReuseIdentifier: TVMediumCell.reuseIdentifier)
-        
+        seriesCollectionView.register(TVSmallCell.self, forCellWithReuseIdentifier: TVSmallCell.reuseIdentifier)
     }
     
     private func configure<T: SelfConfiguringTVCell>(_ cellType: T.Type, with model: TvTMDBResult, for indexPath: IndexPath) -> T {
@@ -65,13 +70,42 @@ class SeriesViewController: UIViewController {
                 return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
             case .onTheAir:
                 return self.configure(TVMediumCell.self, with: tvTMDBResult, for: indexPath)
-//            case .popular:
-//                return self.configure(TvPopularCell.self, with: tvTMDBResult, for: indexPath)
-//            case .topRated:
-//                return self.configure(TvTopRatedCell.self, with: tvTMDBResult, for: indexPath)
-            default:
+            case .popular:
                 return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
+            case .topRated:
+                return self.configure(TVSmallCell.self, with: tvTMDBResult, for: indexPath)
+//            default:
+//                return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
             }
+        }
+        
+        dataSource?.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TVSectionHeader.reuseIdentifier, for: indexPath) as? TVSectionHeader else { return nil }
+            
+            guard let firstItem = self?.dataSource?.itemIdentifier(for: indexPath) else { return nil }
+            guard let section = self?.dataSource?.snapshot().sectionIdentifier(containingItem: firstItem) else { return nil }
+            
+            switch section.type {
+            case .airingToday:
+                let mainTitle = section.type?.rawValue
+                let subTitle = "오늘 방영중 TV"
+                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+            case .onTheAir:
+                let mainTitle = section.type?.rawValue
+                let subTitle = "현재 방영 중인 TV"
+                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+            case .popular:
+                let mainTitle = section.type?.rawValue
+                let subTitle = "인기 TV"
+                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+            case .topRated:
+                let mainTitle = section.type?.rawValue
+                let subTitle = "순위 별 TV"
+                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+            case .none:
+                return nil
+            }
+            return sectionHeader
         }
     }
     
@@ -103,6 +137,8 @@ class SeriesViewController: UIViewController {
             switch section.type {
             case .onTheAir:
                 return self.createMediumTableSection(using: section.results)
+            case .topRated:
+                return self.createSmaillTableSection(using: section.results)
             default:
                 return self.createFeaturedSection(using: section.results)
             }
@@ -127,6 +163,11 @@ class SeriesViewController: UIViewController {
         
         let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
         layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+        
+        // 섹션 헤더설정
+        let layoutSectionHeader = createSectionHeader()
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
+        
         return layoutSection
     }
     
@@ -143,7 +184,38 @@ class SeriesViewController: UIViewController {
         let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
         layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
         
+        // 섹션 헤더설정
+        let layoutSectionHeader = createSectionHeader()
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
+        
+        
         return layoutSection
+    }
+    
+    func createSmaillTableSection(using section: [TvTMDBResult]) -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.33))
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0)
+        
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .fractionalWidth(0.8))
+        let layoutGoup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+
+        let layoutSection = NSCollectionLayoutSection(group: layoutGoup)
+        layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+        
+        // 섹션 헤더설정
+        let layoutSectionHeader = createSectionHeader()
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
+        
+        
+        return layoutSection
+    }
+    
+    func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .estimated(80))
+        let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        
+        return layoutSectionHeader
     }
     
     
@@ -191,4 +263,20 @@ class SeriesViewController: UIViewController {
             return []
         }
     }
+}
+
+
+// MARK: - Extension
+extension SeriesViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let selectedMovie = dataSource?.itemIdentifier(for: indexPath.self) else { return }
+        
+        let contentID = selectedMovie.tvResult.id
+        
+        let detailVC = DetailViewController(contentID: contentID, contentType: .tv)
+        
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
 }

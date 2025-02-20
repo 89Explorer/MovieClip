@@ -26,6 +26,18 @@ class TVMediumCell: UICollectionViewCell, SelfConfiguringTVCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        contentView.backgroundColor = .black
+        setupUI()
+    
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    private func setupUI() {
+        
         // 제목 설정
         titleLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         titleLabel.textColor = .white
@@ -82,13 +94,7 @@ class TVMediumCell: UICollectionViewCell, SelfConfiguringTVCell {
             checkButton.widthAnchor.constraint(equalToConstant: 20)
             
         ])
-    
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     
     
     func configure(with data: TvTMDBResult) {
