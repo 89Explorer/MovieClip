@@ -715,7 +715,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/movie/upcoming")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "language", value: "ko-KR"),
           URLQueryItem(name: "page", value: "1"),
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
@@ -740,7 +740,7 @@ class NetworkManager {
         return movieUpcoming
     }
     
-    
+    /// 🚗 영화의 모든 카테고리 정보를 받아오는 함수
     func fetchAllMovies() async throws -> CombineData {
         
         // 비동기 API 호출 동시에 실행
@@ -770,5 +770,156 @@ class NetworkManager {
         return combinedData
     }
 
+    
+    // MARK: - Tv Section
+    /// 🚗 오늘 방송인 TV
+    func getTvAiringToday(pageNo: Int = 1) async throws -> TvTMDBData {
+        let url = URL(string: "\(Constants.baseURL)/tv/airing_today")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(pageNo)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var tvAiringToday = try JSONDecoder().decode(TvTMDBData.self, from: data)
+        tvAiringToday.type = .airingToday
+        
+        return tvAiringToday
+    }
+    
+    /// 🚗 앞으로 7일동안 방송될 TV
+    func getTvOnTheAir(pageNo: Int = 1) async throws -> TvTMDBData {
+        let url = URL(string: "\(Constants.baseURL)/tv/on_the_air")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(pageNo)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var tvOnTheAir = try JSONDecoder().decode(TvTMDBData.self, from: data)
+        tvOnTheAir.type = .onTheAir
+        
+        return tvOnTheAir
+    }
+    
+    
+    /// 🚗 인기순으로 정렬된 TV 프로그램 목록
+    func getTvPopular(pageNo: Int = 1) async throws -> TvTMDBData {
+        let url = URL(string: "\(Constants.baseURL)/tv/popular")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(pageNo)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var tvPopular = try JSONDecoder().decode(TvTMDBData.self, from: data)
+        tvPopular.type = .popular
+        
+        return tvPopular
+    }
+    
+    
+    /// 🚗 인기순으로 정렬된 TV 프로그램 목록
+    func getTvTopRated(pageNo: Int = 1) async throws -> TvTMDBData {
+        let url = URL(string: "\(Constants.baseURL)/tv/top_rated")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(pageNo)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        var tvTopRated = try JSONDecoder().decode(TvTMDBData.self, from: data)
+        tvTopRated.type = .topRated
+        
+        return tvTopRated
+    }
+    
+    /// 🚗 TV 전체 데이터 가져오기
+    func fetchAllTvs() async throws -> TvCombineData {
+        
+        // 비동기 API 호출 동시에 실행
+        async let tvAiringToday = getTvAiringToday()
+        async let tvOnTheAir = getTvOnTheAir()
+        async let tvPopular = getTvPopular()
+        async let tvTopRated = getTvTopRated()
+        
+        // 모든 비동기 작업의 결과 대기
+        let airingToday = try await tvAiringToday
+        let onTheAir = try await tvOnTheAir
+        let popular = try await tvPopular
+        let topRated = try await tvTopRated
+        
+        // 결과를 하나의 TV 객체로 결합
+        var combinedData: TvCombineData = TvCombineData(combineTMDB: [])
+        
+        // 각 결과를 combinedData에 추가
+        combinedData.combineTMDB.append(airingToday)
+        combinedData.combineTMDB.append(onTheAir)
+        combinedData.combineTMDB.append(popular)
+        combinedData.combineTMDB.append(topRated)
+        
+        return combinedData
+    }
+    
 }
 

@@ -34,6 +34,7 @@ class MovieViewController: UIViewController {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositonalLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .black
+        collectionView.showsVerticalScrollIndicator = false
         view.addSubview(collectionView)
     
         collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.reuseIdentifier)
@@ -70,8 +71,6 @@ class MovieViewController: UIViewController {
         dataSource = UICollectionViewDiffableDataSource<TMDBData, MainResults>(collectionView: collectionView) {
             collectionView, indexPath, model in
             switch self.combineSection.combineTMDB[indexPath.section].type {
-            case .topRatedMovie:
-                return self.configure(FeaturedCell.self, with: model, for: indexPath)
             default:
                 return self.configure(TodayCollectionViewCell.self, with: model, for: indexPath)
             }

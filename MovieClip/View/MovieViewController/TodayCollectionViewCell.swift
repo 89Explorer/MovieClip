@@ -69,7 +69,7 @@ class TodayCollectionViewCell: UICollectionViewCell,SelfConfiguringCell {
         // guard let model = model.results.first else { return }
         guard let vote = model.vote_average else { return }
         if vote <= 0 {
-            tagline.text = "평점: \(0.0)"
+            tagline.text = "평점: 0.0"
         } else {
             let rountVote = String(format: "%.1f", vote)
             tagline.text = "평점: " + rountVote

@@ -12,7 +12,16 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        Task {
+            do {
+                let test1 = try await NetworkManager.shared.fetchAllTvs()
+                DispatchQueue.main.async {
+                    dump(test1)
+                }
+            } catch {
+                print("error")
+            }
+        }
     }
     
 
