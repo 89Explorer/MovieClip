@@ -921,5 +921,110 @@ class NetworkManager {
         return combinedData
     }
     
+    
+    // MARK: - Search
+    
+    /// 검색어를 통해 영화 목록 결과
+    func searchMovie(with keyword: String, page: Int = 1) async throws -> SearchResultMedia {
+        
+        let url = URL(string: "\(Constants.baseURL)/search/movie")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "query", value: "\(keyword)"),
+          URLQueryItem(name: "include_adult", value: "false"),
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(page)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let movieSearchResult = try JSONDecoder().decode(SearchResultMedia.self, from: data)
+        
+        return movieSearchResult
+        
+    }
+    
+    /// 검색어를 통해 TV 목록 결과
+    func searchTV(with keyword: String, page: Int = 1) async throws -> SearchResultMedia {
+        
+        let url = URL(string: "\(Constants.baseURL)/search/tv")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "query", value: "\(keyword)"),
+          URLQueryItem(name: "include_adult", value: "false"),
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(page)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let tvSearchResult = try JSONDecoder().decode(SearchResultMedia.self, from: data)
+        
+        return tvSearchResult
+        
+    }
+    
+    
+    /// 검색어를 통해 TV 목록 결과
+    func searchPerson(with keyword: String, page: Int = 1) async throws -> SearchResultPerson {
+        
+        let url = URL(string: "\(Constants.baseURL)/search/person")!
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        let queryItems: [URLQueryItem] = [
+          URLQueryItem(name: "query", value: "\(keyword)"),
+          URLQueryItem(name: "include_adult", value: "false"),
+          URLQueryItem(name: "language", value: "en-US"),
+          URLQueryItem(name: "page", value: "\(page)"),
+        ]
+        components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 10
+        request.allHTTPHeaderFields = [
+            "accept": "application/json",
+            "Authorization": "Bearer \(Constants.API_KEY)"
+        ]
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw APIError.failedToGetData
+        }
+        
+        let personSearchResult = try JSONDecoder().decode(SearchResultPerson.self, from: data)
+        
+        return personSearchResult
+        
+    }
+    
+    
+    
 }
 

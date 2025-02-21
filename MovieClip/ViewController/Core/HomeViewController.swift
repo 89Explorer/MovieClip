@@ -42,6 +42,12 @@ class HomeViewController: UIViewController {
         
         setupTableViewDelegate()
         homeFeedTableHeaderView()
+        
+        // ✅ 네비에기션 타이틀 설정
+        navigationItem.title = "Home"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        configureNavigationBarAppearance()
+        
         self.fetchMediaData()
         
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
@@ -59,6 +65,23 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - Functions
+    private func configureNavigationBarAppearance() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        // ✅ 네비게이션 바 배경 검은색
+        appearance.backgroundColor = .black
+        
+        // ✅ 큰 타이틀 색상 흰색
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        // ✅ 일반 타이틀 색상 흰색
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+    }
+    
     /// API에서 데이터를 받아와 homeSections에 저장
     private func fetchMediaData() {
         Task {

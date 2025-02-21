@@ -20,6 +20,11 @@ class MovieViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         
+        // ✅ 네비에기션 타이틀 설정
+        navigationItem.title = "Movie"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        configureNavigationBarAppearance()
+        
         setupCollectionView()
         
         fetchMovies()
@@ -28,6 +33,22 @@ class MovieViewController: UIViewController {
         collectionView.delegate = self
     }
     
+    private func configureNavigationBarAppearance() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        // ✅ 네비게이션 바 배경 검은색
+        appearance.backgroundColor = .black
+        
+        // ✅ 큰 타이틀 색상 흰색
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        // ✅ 일반 타이틀 색상 흰색
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+    }
     
     func setupCollectionView() {
         
@@ -71,6 +92,8 @@ class MovieViewController: UIViewController {
         dataSource = UICollectionViewDiffableDataSource<TMDBData, MainResults>(collectionView: collectionView) {
             collectionView, indexPath, model in
             switch self.combineSection.combineTMDB[indexPath.section].type {
+            case .topRatedMovie:
+                return self.configure(FeaturedCell.self, with: model, for: indexPath)
             default:
                 return self.configure(TodayCollectionViewCell.self, with: model, for: indexPath)
             }

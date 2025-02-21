@@ -51,6 +51,7 @@ class FeaturedCell: UICollectionViewCell, SelfConfiguringCell {
         outerStackView.translatesAutoresizingMaskIntoConstraints = false
         outerStackView.alignment = .center
         outerStackView.spacing = 5
+        outerStackView.axis = .horizontal
         contentView.addSubview(outerStackView)
         
         NSLayoutConstraint.activate([

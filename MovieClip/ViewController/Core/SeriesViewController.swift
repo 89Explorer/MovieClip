@@ -23,6 +23,11 @@ class SeriesViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         
+        // ✅ 네비에기션 타이틀 설정
+        navigationItem.title = "TV"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        configureNavigationBarAppearance()
+        
         setupCollectionView()
         
         fetchTvs()
@@ -31,6 +36,22 @@ class SeriesViewController: UIViewController {
     
     
     // MARK: - Function
+    private func configureNavigationBarAppearance() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        // ✅ 네비게이션 바 배경 검은색
+        appearance.backgroundColor = .black
+        
+        // ✅ 큰 타이틀 색상 흰색
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        // ✅ 일반 타이틀 색상 흰색
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+    }
     
     private func setupCollectionView() {
         seriesCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
@@ -74,8 +95,6 @@ class SeriesViewController: UIViewController {
                 return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
             case .topRated:
                 return self.configure(TVSmallCell.self, with: tvTMDBResult, for: indexPath)
-//            default:
-//                return self.configure(TvFeaturedCell.self, with: tvTMDBResult, for: indexPath)
             }
         }
         
@@ -85,26 +104,23 @@ class SeriesViewController: UIViewController {
             guard let firstItem = self?.dataSource?.itemIdentifier(for: indexPath) else { return nil }
             guard let section = self?.dataSource?.snapshot().sectionIdentifier(containingItem: firstItem) else { return nil }
             
-            switch section.type {
+            guard let sectionType = section.type else { return nil }
+            
+            let mainTitle = sectionType.rawValue
+            let subTitle: String
+            
+            switch sectionType {
             case .airingToday:
-                let mainTitle = section.type?.rawValue
-                let subTitle = "오늘 방영중 TV"
-                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+                subTitle = "오늘 방영중 TV"
             case .onTheAir:
-                let mainTitle = section.type?.rawValue
-                let subTitle = "현재 방영 중인 TV"
-                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+                subTitle = "현재 방영 중인 TV"
             case .popular:
-                let mainTitle = section.type?.rawValue
-                let subTitle = "인기 TV"
-                sectionHeader.configure(with: mainTitle!, sub: subTitle)
+                subTitle = "인기 TV"
             case .topRated:
-                let mainTitle = section.type?.rawValue
-                let subTitle = "순위 별 TV"
-                sectionHeader.configure(with: mainTitle!, sub: subTitle)
-            case .none:
-                return nil
+                subTitle = "순위 별 TV"
             }
+            
+            sectionHeader.configure(with: mainTitle, sub: subTitle)
             return sectionHeader
         }
     }
@@ -131,7 +147,9 @@ class SeriesViewController: UIViewController {
     
     private func createCompositionalLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout {
+            
             sectionIndex, layoutEnvironment in
+            
             let section = self.tvCombineSection.combineTMDB[sectionIndex]
             
             switch section.type {
