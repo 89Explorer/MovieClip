@@ -1023,8 +1023,5 @@ class NetworkManager {
         return personSearchResult
         
     }
-    
-    
-    
 }
 

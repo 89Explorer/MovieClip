@@ -9,9 +9,9 @@ import Foundation
 
 
 // MARK: - Welcome
-struct SearchResultPerson: Codable {
+struct SearchResultPerson: Codable, Hashable {
     let page: Int
-    let results: [PerosnResult]
+    let results: [PersonResult]
     let totalPages, totalResults: Int
 
     enum CodingKeys: String, CodingKey {
@@ -22,7 +22,7 @@ struct SearchResultPerson: Codable {
 }
 
 // MARK: - Result
-struct PerosnResult: Codable {
+struct PersonResult: Codable, Hashable {
     let adult: Bool
     let gender, id: Int
     let knownForDepartment: PersonKnownForDepartment?
@@ -43,7 +43,7 @@ struct PerosnResult: Codable {
 }
 
 // MARK: - KnownFor
-struct PersonKnownFor: Codable {
+struct PersonKnownFor: Codable, Hashable {
     let backdropPath: String?
     let id: Int
     let title, originalTitle: String?
@@ -81,12 +81,12 @@ struct PersonKnownFor: Codable {
     }
 }
 
-enum PersonMediaType: String, Codable {
+enum PersonMediaType: String, Codable, Hashable {
     case movie = "movie"
     case tv = "tv"
 }
 
-enum PersonKnownForDepartment: String, Codable {
+enum PersonKnownForDepartment: String, Codable, Hashable {
     case acting = "Acting"
     case production = "Production"
     case writing = "Writing"

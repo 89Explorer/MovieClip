@@ -9,7 +9,7 @@ import Foundation
 
 
 // MARK: - SearchResultMedia - 영화
-struct SearchResultMedia: Codable {
+struct SearchResultMedia: Codable, Hashable {
     let page: Int
     let results: [MediaResult]
     let totalPages, totalResults: Int
@@ -22,7 +22,7 @@ struct SearchResultMedia: Codable {
 }
 
 // MARK: - MediaResult
-struct MediaResult: Codable {
+struct MediaResult: Codable, Hashable {
     let adult: Bool
     let backdropPath: String?
     let genreIDS: [Int]
@@ -36,6 +36,7 @@ struct MediaResult: Codable {
     let video: Bool?
     let voteAverage: Double
     let voteCount: Int
+    var genreNames: [String]?
 
     enum CodingKeys: String, CodingKey {
         case adult
@@ -51,4 +52,17 @@ struct MediaResult: Codable {
         case voteCount = "vote_count"
         case name
     }
+}
+
+
+enum SearchSection: Hashable, CaseIterable {
+    case movie
+    case tv
+    case people
+}
+
+enum SearchItem: Hashable {
+    case movie(MediaResult)
+    case tv(MediaResult)
+    case people(PersonResult)
 }

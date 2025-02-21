@@ -18,3 +18,9 @@ protocol SelfConfiguringTVCell {
     static var reuseIdentifier: String { get }
     func configure(with data: TvTMDBResult)
 }
+
+
+protocol SelfConfiguringSearchCell {
+    static var reuseIdentifier: String { get }
+    func configure(with data: SearchItem)
+}

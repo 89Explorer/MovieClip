@@ -6,12 +6,31 @@
 //
 
 import UIKit
+import Combine
 
 class SearchViewController: UIViewController {
     
+    // MARK: - Variable
+    private let viewModel: SearchViewModel = SearchViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    
     
     // MARK: - UI Component
-    private let searchController = UISearchController(searchResultsController: SearchResultViewController())
+    private let searchController: UISearchController
+    private let resultViewController: SearchResultViewController
+    
+    
+    // MARK: - Init
+    init() {
+        self.resultViewController = SearchResultViewController(viewModel: viewModel)
+        self.searchController = UISearchController(searchResultsController: resultViewController)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -20,12 +39,14 @@ class SearchViewController: UIViewController {
         
         configureSearchController()
         configureNavigationBarAppearance()
-        searchController.searchResultsUpdater = self
         
+        //searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
     }
     
     
     // MARK: - Function
+    
     private func configureNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -69,16 +90,15 @@ class SearchViewController: UIViewController {
 }
 
 
-extension SearchViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        
-        let searchBar = searchController.searchBar
-        
+extension SearchViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let keyword = searchBar.text,
               !keyword.trimmingCharacters(in: .whitespaces).isEmpty,
-              keyword.trimmingCharacters(in: .whitespaces).count >= 2,
-              
-                let resultController = searchController.searchResultsController as? SearchResultViewController
+              keyword.trimmingCharacters(in: .whitespaces).count >= 2
         else { return }
+        
+        viewModel.search(query: keyword)
+        searchBar.resignFirstResponder()
     }
 }
