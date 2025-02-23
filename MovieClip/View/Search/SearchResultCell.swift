@@ -134,8 +134,15 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
             posterImageView.sd_setImage(with: url, completed: nil)
             
             
-            let genreNames = viewModel?.fetchedGenres[movie.id]
-            genreLabel.text = genreNames?.joined(separator: " / ")
+//            let genreNames = viewModel?.fetchedGenres[movie.id]
+//            genreLabel.text = genreNames?.joined(separator: " / ")
+            
+            // ✅ 장르 정보를 `viewModel?.fetchedGenres`에서 가져옴
+            if let genreNames = viewModel?.fetchedGenres[movie.id] {
+                genreLabel.text = genreNames.joined(separator: " / ")
+            } else {
+                genreLabel.text = "장르 없음😅"
+            }
             
             
         case .tv(let tv):
@@ -168,8 +175,16 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") else { return }
             posterImageView.sd_setImage(with: url, completed: nil)
             
-            let genreNames = viewModel?.fetchedGenres[tv.id]
-            genreLabel.text = genreNames?.joined(separator: " / ")
+//            let genreNames = viewModel?.fetchedGenres[tv.id]
+//            genreLabel.text = genreNames?.joined(separator: " / ")
+            
+            // ✅ 장르 정보를 `viewModel?.fetchedGenres`에서 가져옴
+            if let genreNames = viewModel?.fetchedGenres[tv.id] {
+                genreLabel.text = genreNames.joined(separator: " / ")
+            } else {
+                genreLabel.text = "장르 없음😅"
+            }
+            
             
         case .people(let person):
             

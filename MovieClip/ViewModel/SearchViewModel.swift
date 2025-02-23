@@ -180,29 +180,27 @@ class SearchViewModel: ObservableObject {
         }
     }
     
-    
     private func fetchGenre(for media: SearchTranslatedItem) {
+        var newGenres: [Int: [String]] = [:] // 🔹 한 번에 저장할 임시 딕셔너리
+
         switch media {
         case .movie(let movies):
-            for movie in movies {
-                Task {
-                    let genreNames = getGenresFromHomeSection(for: movie.genreIDS, contentType: .movie)
-                    DispatchQueue.main.async {
-                        self.fetchedGenres[movie.id] = genreNames
-                    }
-                }
+            movies.forEach { movie in
+                let genreNames = getGenresFromHomeSection(for: movie.genreIDS, contentType: .movie)
+                newGenres[movie.id] = genreNames
             }
-        case.tv(let tvs):
-            for tv in tvs {
-                Task {
-                    let genreName = getGenresFromHomeSection(for: tv.genreIDS, contentType: .tv)
-                    DispatchQueue.main.async {
-                        self.fetchedGenres[tv.id] = genreName
-                    }
-                }
+        case .tv(let tvs):
+            tvs.forEach { tv in
+                let genreNames = getGenresFromHomeSection(for: tv.genreIDS, contentType: .tv)
+                newGenres[tv.id] = genreNames
             }
         }
+
+        DispatchQueue.main.async {
+            self.fetchedGenres.merge(newGenres) { _, new in new }
+        }
     }
+
     
     private func getGenresFromHomeSection(for genreIDs: [Int], contentType: ContentType) -> [String] {
         switch contentType {
