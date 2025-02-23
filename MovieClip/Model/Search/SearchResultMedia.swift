@@ -59,10 +59,26 @@ enum SearchSection: Hashable, CaseIterable {
     case movie
     case tv
     case people
+    
+    var title: String {
+        switch self {
+        case .movie: return "🎬 영화"
+        case .tv: return "📺 TV 프로그램"
+        case .people: return "🎭 인물"
+        }
+    }
 }
+
+
 
 enum SearchItem: Hashable {
     case movie(MediaResult)
     case tv(MediaResult)
     case people(PersonResult)
+}
+
+
+enum SearchTranslatedItem: Hashable {
+    case movie([MediaResult])
+    case tv([MediaResult])
 }

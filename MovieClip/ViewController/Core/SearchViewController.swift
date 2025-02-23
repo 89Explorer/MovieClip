@@ -40,13 +40,11 @@ class SearchViewController: UIViewController {
         configureSearchController()
         configureNavigationBarAppearance()
         
-        //searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
     }
     
     
     // MARK: - Function
-    
     private func configureNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -90,6 +88,7 @@ class SearchViewController: UIViewController {
 }
 
 
+// MARK: - Extension: UISearchBarDelegate
 extension SearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

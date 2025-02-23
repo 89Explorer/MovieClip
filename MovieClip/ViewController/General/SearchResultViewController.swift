@@ -44,7 +44,8 @@ class SearchResultViewController: UIViewController {
         
         searchResultCollectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.reuseIdentifier)
         searchResultCollectionView.register(SearchFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: SearchFooterView.reuseIdentifier)
-
+        searchResultCollectionView.register(SearchSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SearchSectionHeader.reuseIdentifier)
+        
         
         view.addSubview(searchResultCollectionView)
         
@@ -119,14 +120,10 @@ class SearchResultViewController: UIViewController {
     
     
     
-    private func configure<T: SelfConfiguringSearchCell>(_ cellType: T.Type, with model: SearchItem, for indexPath: IndexPath) -> T {
-        guard let cell = searchResultCollectionView.dequeueReusableCell(withReuseIdentifier: cellType.reuseIdentifier, for: indexPath) as? T else {
-            fatalError("Unable to deque: \(cellType)")
-        }
+    private func configure<T: SelfConfiguringSearchCell>(_ cell: T, with model: SearchItem) {
         
         cell.configure(with: model)
         
-        return cell
     }
     
     
@@ -144,55 +141,94 @@ class SearchResultViewController: UIViewController {
     
     private func createDataSource() {
         dataSource = UICollectionViewDiffableDataSource<SearchSection, SearchItem>(collectionView: searchResultCollectionView) { searchResultCollectionView, indexPath, item in
+            
+            guard let cell = searchResultCollectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
+            
+            cell.setViewModel(self.viewModel)
+            
             switch item {
             case .movie(let movie):
-                return self.configure(SearchResultCell.self, with: .movie(movie), for: indexPath)
+                self.configure(cell, with: .movie(movie))
             case .tv(let tv):
-                return self.configure(SearchResultCell.self, with: .tv(tv), for: indexPath)
+                self.configure(cell, with: .tv(tv))
             case .people(let person):
-                return self.configure(SearchResultCell.self, with: .people(person), for: indexPath)
+                self.configure(cell, with: .people(person))
             }
+            
+            return cell
         }
         
-        // 더보기 버튼을 위한 Footer 설정
         dataSource?.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
-            guard let self = self, kind == UICollectionView.elementKindSectionFooter else { return nil }
+            guard let self = self else { return UICollectionReusableView() }
             
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SearchFooterView.reuseIdentifier, for: indexPath) as? SearchFooterView
-            
-            let section = SearchSection.allCases[indexPath.section]
-            footer?.configure(with: section) {
-                switch section {
-                case .movie: self.viewModel.loadMoreMovies()
-                case .tv: self.viewModel.loadMoreTVShows()
-                case .people: self.viewModel.loadMorePeople()
-                }
+            if kind == UICollectionView.elementKindSectionHeader {
+                // ✅ 섹션 헤더 처리
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SearchSectionHeader.reuseIdentifier, for: indexPath) as? SearchSectionHeader
+                
+                let section = SearchSection.allCases[indexPath.section]
+      
+                header?.configure(with: section.title)
+                
+                return header ?? UICollectionReusableView() // 🔴 nil 반환 방지
             }
             
-            return footer
+            if kind == UICollectionView.elementKindSectionFooter {
+                // ✅ 더보기 버튼(검색 결과 전체보기) 처리
+                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SearchFooterView.reuseIdentifier, for: indexPath) as! SearchFooterView
+                
+                let section = SearchSection.allCases[indexPath.section]
+                let canLoadMore: Bool
+                
+                switch section {
+                case .movie: canLoadMore = self.viewModel.canLoadMoreMovies
+                case .tv: canLoadMore = self.viewModel.canLoadMoreTVShows
+                case .people: canLoadMore = self.viewModel.canLoadMorePeople
+                }
+                
+                footer.isHidden = !canLoadMore // ✅ 필요 없으면 숨김
+                footer.configure(with: "검색 결과 전체보기") {
+                    switch section {
+                    case .movie: self.viewModel.loadMore(for: .movie)
+                    case .tv: self.viewModel.loadMore(for: .tv)
+                    case .people: self.viewModel.loadMore(for: .people)
+                    }
+                }
+                
+                return footer
+            }
+            
+            return UICollectionReusableView() // 🔴 nil 반환 방지
         }
+        
     }
     
     
     private func createSearchResultSection() -> NSCollectionLayoutSection {
-        
-        // 아이템 크기
+            
+        // ✅ 아이템 크기 (각 셀 크기)
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33))
         let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
-        //layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
         
+        // ✅ 그룹 설정 (수직 그룹)
         let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .estimated(400))
         let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
-        
+
+        // ✅ 섹션 설정
         let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
         layoutSection.interGroupSpacing = 10
         layoutSection.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-        
-        // 더보기 버튼
+
+        // ✅ "검색 결과 더 보기" 버튼 추가 (Supplementary Item - elementKindSectionFooter)
         let footerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .estimated(50))
         let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: footerSize, elementKind: UICollectionView.elementKindSectionFooter, alignment: .bottom)
-        layoutSection.boundarySupplementaryItems = [footer]
-        
+
+        // ✅ 섹션 헤더 추가 (Supplementary Item - elementKindSectionHeader)
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(50))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+
+        layoutSection.boundarySupplementaryItems = [header, footer]
+
+
         return layoutSection
     }
 }

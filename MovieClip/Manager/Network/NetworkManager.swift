@@ -991,7 +991,7 @@ class NetworkManager {
     }
     
     
-    /// 검색어를 통해 TV 목록 결과
+    /// 검색어를 통해 사람 목록 결과
     func searchPerson(with keyword: String, page: Int = 1) async throws -> SearchResultPerson {
         
         let url = URL(string: "\(Constants.baseURL)/search/person")!
@@ -1023,5 +1023,6 @@ class NetworkManager {
         return personSearchResult
         
     }
+    
 }
 

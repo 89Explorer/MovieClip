@@ -15,7 +15,7 @@ class SearchFooterView: UICollectionReusableView {
     
     
     // MARK: - UI Component
-    private let moreButton: UIButton = UIButton(type: .system)
+    let moreButton: UIButton = UIButton(type: .system)
     
     
     // MARK: - Init
@@ -47,8 +47,9 @@ class SearchFooterView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with section: SearchSection, loadMoreAction: @escaping () -> Void) {
+    func configure(with title: String, loadMoreAction: @escaping () -> Void) {
         self.loadMoreAction = loadMoreAction
+        moreButton.setTitle(title, for: .normal)
     }
     
     @objc private func loadMoreTapped() {

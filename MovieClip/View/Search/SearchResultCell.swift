@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import Combine
 
 class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
     
     
     // MARK: - Variable
     static var reuseIdentifier: String = "SearchResultCell"
+    private var viewModel: SearchViewModel?
+    private var cancellable = Set<AnyCancellable>()
     
     
     // MARk: - UI Component
@@ -36,6 +39,7 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
         // 제목 설정
         mainTitleLabel.font = UIFont.preferredFont(forTextStyle: .title2)
         mainTitleLabel.textColor = .white
+        mainTitleLabel.numberOfLines = 2
         
         
         // 장르 설정
@@ -57,14 +61,14 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
         // innerStackView 설정
         let innerStackView: UIStackView = UIStackView(arrangedSubviews: [mainTitleLabel, genreLabel, overviewLabel])
         innerStackView.axis = .vertical
-        innerStackView.spacing = 5
+        innerStackView.spacing = 10
         
         
         // outerStackView 설정
         let outerStackView: UIStackView = UIStackView(arrangedSubviews: [posterImageView, innerStackView, checkButton])
         outerStackView.axis = .horizontal
         outerStackView.alignment = .center
-        outerStackView.spacing = 5
+        outerStackView.spacing = 10
         
         outerStackView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(outerStackView)
@@ -78,7 +82,7 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
             outerStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
             outerStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            posterImageView.widthAnchor.constraint(equalToConstant: 60),
+            posterImageView.widthAnchor.constraint(equalToConstant: 80),
             checkButton.widthAnchor.constraint(equalToConstant: 20)
             
         ])
@@ -88,6 +92,13 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    // MARK: - Function
+    func setViewModel(_ viewModel: SearchViewModel) {
+        self.viewModel = viewModel
+    }
+    
     
     func configure(with data: SearchItem) {
         switch data {
@@ -101,13 +112,31 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
             genreLabel.text = movie.genreNames?.joined(separator: " / ") ?? "장르 없음😅"
             
             // 개요 할당
-            let overview = movie.overview
-            overviewLabel.text = overview
+            overviewLabel.text = "번역중 ....."
+            
+            if let translatedOverview = viewModel?.translatedMovieOverviews[movie.id] {
+                overviewLabel.text = translatedOverview
+            } else {
+                viewModel?.$translatedMovieOverviews
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] translatedDict in
+                        if let translatedText = translatedDict[movie.id] {
+                            self?.overviewLabel.text = translatedText
+                        }
+                    }
+                    .store(in: &cancellable)
+            }
+            
             
             // 이미지 설정
             guard let posterPath = movie.posterPath else { return }
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") else { return }
             posterImageView.sd_setImage(with: url, completed: nil)
+            
+            
+            let genreNames = viewModel?.fetchedGenres[movie.id]
+            genreLabel.text = genreNames?.joined(separator: " / ")
+            
             
         case .tv(let tv):
             
@@ -119,13 +148,28 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
             genreLabel.text = tv.genreNames?.joined(separator: " / ") ?? "장르 없음😅"
             
             // 개요 할당
-            let overview = tv.overview
-            overviewLabel.text = overview
+            overviewLabel.text = "번역중...."
+            
+            if let translatedOverview = viewModel?.translatedTVOverviews[tv.id] {
+                overviewLabel.text = translatedOverview
+            } else {
+                viewModel?.$translatedTVOverviews
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] translatedDict in
+                        if let translatedText = translatedDict[tv.id] {
+                            self?.overviewLabel.text = translatedText
+                        }
+                    }
+                    .store(in: &cancellable)
+            }
             
             // 이미지 설정
             guard let posterPath = tv.posterPath else { return }
             guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") else { return }
             posterImageView.sd_setImage(with: url, completed: nil)
+            
+            let genreNames = viewModel?.fetchedGenres[tv.id]
+            genreLabel.text = genreNames?.joined(separator: " / ")
             
         case .people(let person):
             
@@ -144,6 +188,4 @@ class SearchResultCell: UICollectionViewCell, SelfConfiguringSearchCell {
         
         }
     }
-    
-    
 }
