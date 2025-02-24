@@ -59,16 +59,19 @@
 ## ⚙️ 구현 고려사항
 - TMDB에서 제공하는 API 호출 함수 및 데이터 모델 준수
 - UICollectionViewDiffableDataSource을 활용한 데이터 관리
-  > 데이터 스냅샷을 기반으로 변경 사항을 자동으로 반영하여, 수동 UI 업데이트를 최소화하고 성능을 최적화합니다.
+   - 데이터 스냅샷을 기반으로 변경 사항을 자동으로 반영하여, 수동 UI 업데이트를 최소화하고 성능을 최적화합니다.
 - UICollectionViewCompositionalLayout을 통한 유연한 UI 레이아웃 구성
-  > 각 섹션별로 독립적인 레이아웃 설계가 가능하여, 다양한 디자인 요구사항을 손쉽게 구현할 수 있습니다.
+   - 각 섹션별로 독립적인 레이아웃 설계가 가능하여, 다양한 디자인 요구사항을 손쉽게 구현할 수 있습니다.
 - Combine을 적용하여 실시간 검색 기능 구현
-  > 검색 결과를 섹션 별(영화, 티비 프로그램, 인물) 보여줍니다.
-  > 검색 결과는 1페이지에 20개 이며, 검색 결과가 1페이지에 20개 보다 적을 경우는 "더보기" 버튼이 활성화되지 않습니다.
-  > 검색 결과 섹션에 검색 결과가 없을 경우, "더보기" 버튼이 활성화되지 않습니다. 
+   - 검색 결과를 섹션 별(영화, 티비 프로그램, 인물) 보여줍니다.
+   - 검색 결과는 1페이지에 20개 이며, 검색 결과가 1페이지에 20개 보다 적을 경우는 "더보기" 버튼이 활성화되지 않습니다.
+   - 검색 결과 섹션에 검색 결과가 없을 경우, "더보기" 버튼이 활성화되지 않습니다.
+   - Combine 선택한 이유
+     - 여러 개의 비동기 API (TMDB, Google, 장르 반환) 호출을 효율적으로 처리   
+     - API 요청 ➡️ 번역 ➡️ 데이터 변환 ➡️ UI 업데이트 순으로 체계적으로 데이터 효름 구축
 - Google 번역 API를 적용하여 한국어 지원 기능 추가
-  > TMDB에서 기본 언어는 한국어로 설정할 수 있지만, 특정 정본는 한국어 제공이 되지 않습니다.
-  > Google 번역 API를 통해 영어 ➡️ 한국어로 번역합니다.
+   - TMDB에서 기본 언어는 한국어로 설정할 수 있지만, 특정 정본는 한국어 제공이 되지 않습니다.
+   - Google 번역 API를 통해 영어 ➡️ 한국어로 번역합니다.
 
 <br />
 <br />
@@ -196,9 +199,52 @@ private func fetchTvs() {
 
 네트워크 요청에서도 이전 NetFlix 앱과 다른 점이 있습니다. 이 전에는 Completion Handler 방식을 사용하여 API를 를 요청했지만,
 이번에는 async / await 으로 구현하여 코드 가독성이 좋아졌습니다. 
-또한 MVVM + Combine 을 활용하여 검색 기능을 구현하여, 비동기 데이터 흐름을 보다 직관적으로 관리할 수 있었습니다. 
+또한 검색 기능을 구현할 때는 MVVM + Combine을 활용하여 비동기적으로 처리해야하는 작업(검색 API, 번역 API 등)과 한 번에 
+데이터를 가져와 효율적인 UI 업데이트를 처리했습니다. 
 
 
+기존 Completion Handler 방식:
+```swift
+func fetchMovies(completion: @escaping ([Movie]) -> Void) {
+    let url = URL(string: "https://api.themoviedb.org/3/trending/movie/day?api_key=YOUR_API_KEY")!
+    URLSession.shared.dataTask(with: url) { data, response, error in
+        guard let data = data, error == nil else {
+            completion([])
+            return
+        }
+        let movies = try? JSONDecoder().decode(MovieResponse.self, from: data).results
+        completion(movies ?? [])
+    }.resume()
+}
+```
+
+async/await 적용 후:
+```swift
+func fetchMovies() async throws -> [Movie] {
+    let url = URL(string: "https://api.themoviedb.org/3/trending/movie/day?api_key=YOUR_API_KEY")!
+    let (data, _) = try await URLSession.shared.data(from: url)
+    let movies = try JSONDecoder().decode(MovieResponse.self, from: data).results
+    return movies
+}
+```
+
+🌟 async / await 을 적용하면  { } 가 줄어들어서 코드가 간결해보이고, 가독성이 좋아지는 것 같다. 
+
+이번 프로젝트를 통해 iOS 개발 트렌드을 적용하여 학습할 수 있었고, CompositionalLayout, DiffableDataSource, async/await, Combine 에 대해 좀 더 알게 된 프로젝트였다. 
+
+
+### 🔨 추후 진행 사항
+
+1. 회원 가입
+   - 소셜 미디어 회원가입 (구글, 카카오, 애플)
+   - 로그인, 로그아웃, 회원 탈퇴 
+   - 회원 정보 입력 (프로필 이미지, 닉네임, 소개)
+
+2. 즐겨찾기, 평점 부여
+
+3. 리뷰 작성
+
+4. 리뷰 불러오기 (예: 네이버 영화 리뷰)
 
 
 
