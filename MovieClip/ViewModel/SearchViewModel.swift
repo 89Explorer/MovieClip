@@ -53,6 +53,7 @@ class SearchViewModel: ObservableObject {
                     self.totalMoviesCount = results.movies.totalResults
                     self.totalTVShowsCount = results.tvShows.totalResults
                     self.totalPeopleCount = results.people.totalResults
+
                     
                     self.translateOverviews(for: .movie(self.movies))
                     self.translateOverviews(for: .tv(self.tvShows))
@@ -62,6 +63,11 @@ class SearchViewModel: ObservableObject {
                     
                     self.updateLoadMoreStatus()
                 }
+                
+                
+                
+                
+                
             } catch {
                 print("❌ 검색 요청 실패: \(error.localizedDescription)")
             }

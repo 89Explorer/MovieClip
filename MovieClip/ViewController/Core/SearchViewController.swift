@@ -74,6 +74,7 @@ class SearchViewController: UIViewController {
         
         // ✅ 검색 컨트롤러 추가
         searchController.obscuresBackgroundDuringPresentation = false
+        //searchController.hidesNavigationBarDuringPresentation = false  // 🚀 네비게이션 바 유지
         navigationItem.searchController = searchController
         
         // ✅ 스크롤 시에도 검색창이 사라지지 않도록 설정

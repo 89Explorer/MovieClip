@@ -51,6 +51,9 @@ class SearchResultViewController: UIViewController {
         
         bindViewModel()
         createDataSource()
+        
+        searchResultCollectionView.delegate = self
+        searchResultCollectionView.isUserInteractionEnabled = true
     }
     
     
@@ -230,5 +233,42 @@ class SearchResultViewController: UIViewController {
 
 
         return layoutSection
+    }
+}
+
+
+// MARK: - Extension
+extension SearchResultViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        guard let selectedCategory = dataSource?.itemIdentifier(for: indexPath) else { return }
+        
+        let detailVC: UIViewController
+        
+        switch selectedCategory {
+        case .movie(let movie):
+            let contentID = movie.id
+            detailVC = DetailViewController(contentID: contentID, contentType: .movie)
+            //navigationController?.pushViewController(detailVC, animated: true)
+        case .tv(let tv):
+            let contentID = tv.id
+            detailVC = DetailViewController(contentID: contentID, contentType: .tv)
+            //navigationController?.pushViewController(detailVC, animated: true)
+            
+        case .people(let people):
+            let contentID = people.id
+            detailVC = PeopleDetatilViewController(peopleID: contentID)
+            //navigationController?.pushViewController(detailVC, animated: true)
+        }
+        
+        // ✅ 현재 navigationController가 nil인지 확인 후 push
+        if let navController = self.navigationController {
+            navController.pushViewController(detailVC, animated: true)
+        } else {
+            print("❌ navigationController가 없음! present로 대체")
+            //present(UINavigationController(rootViewController: detailVC), animated: true)
+            presentingViewController?.navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
 }
