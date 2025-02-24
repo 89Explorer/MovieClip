@@ -9,7 +9,7 @@
 - MovieClip 은 TMDB API를 활용하여 최신 영화, TV 프로그램, 배우 정보를 검색하고 관리할 수 있는 iOS 애플리케이션입니다.
 - async/await 을 사용하여 보다 직관적이고 유지보수하기 쉬운 코드로 작성했습니다.
 - UICollectionViewDiffableDataSource 와 CompositionalLayout 을 활용하여 동적인 UI를 구성했습니다.
-- 검색 기능에서는 MVVM, Combine 을 적용하여 다양한 비동기 처리 함수로 부터 데이터를 가져와 한 번에 UI 업데이트를 구현하였습니다. 
+- 검색 기능에서는 MVVM, Combine 을 적용하여 다양한 비동기 처리 함수로 부터 데이터 처리 흐름을 유연하게 할 수 있도록 구현하였습니다. 
 - Google API 를 활용하여 영화, 티비 프로그램, 인물 관련 개요 부분에 대해 번역 기능을 제공하고 있습니다.
 
 <br />
@@ -199,8 +199,8 @@ private func fetchTvs() {
 
 네트워크 요청에서도 이전 NetFlix 앱과 다른 점이 있습니다. 이 전에는 Completion Handler 방식을 사용하여 API를 를 요청했지만,
 이번에는 async / await 으로 구현하여 코드 가독성이 좋아졌습니다. 
-또한 검색 기능을 구현할 때는 MVVM + Combine을 활용하여 비동기적으로 처리해야하는 작업(검색 API, 번역 API 등)과 한 번에 
-데이터를 가져와 효율적인 UI 업데이트를 처리했습니다. 
+또한 검색 기능을 구현할 때는 MVVM + Combine을 활용하여 비동기적으로 처리해야하는 작업(검색 API, 번역 API 등)으로부터  
+데이터를 가져와 유연하게 UI 업데이트를 처리했습니다. 
 
 
 기존 Completion Handler 방식:
