@@ -6,11 +6,11 @@
 <br />
 
 ## 📌 앱 소개 
-- $\huge{\rm{\color{green}MovieClip}}$ 은 TMDB API를 활용하여 최신 영화, TV 프로그램, 배우 정보를 검색하고 관리할 수 있는 iOS 애플리케이션입니다.
-- $\huge{\rm{\color{green}async/await}}$ 을 사용하여 보다 직관적이고 유지보수하기 쉬운 코드로 작성했습니다.
-- $\huge{\rm{\color{green}UICollectionViewDiffableDataSource}}$ 와 $\huge{\rm{\color{green}CompositionalLayout}}$ 을 활용하여 동적인 UI를 구성했습니다.
-- 검색 기능에서는 $\huge{\rm{\color{green}MVVM}}$, $\huge{\rm{\color{green}Combine}}$ 을 적용하여 실시간 검색을 구현하였습니다. 
-- $\huge{\rm{\color{green}Google API}}$ 를 활용하여 영화, 티비 프로그램, 인물 관련 개요 부분에 대해 번역 기능을 제공하고 있습니다.
+- MovieClip 은 TMDB API를 활용하여 최신 영화, TV 프로그램, 배우 정보를 검색하고 관리할 수 있는 iOS 애플리케이션입니다.
+- async/await 을 사용하여 보다 직관적이고 유지보수하기 쉬운 코드로 작성했습니다.
+- UICollectionViewDiffableDataSource 와 CompositionalLayout 을 활용하여 동적인 UI를 구성했습니다.
+- 검색 기능에서는 MVVM, Combine 을 적용하여 다양한 비동기 처리 함수로 부터 데이터를 가져와 한 번에 UI 업데이트를 구현하였습니다. 
+- Google API 를 활용하여 영화, 티비 프로그램, 인물 관련 개요 부분에 대해 번역 기능을 제공하고 있습니다.
 
 <br />
 <br />
@@ -230,7 +230,8 @@ func fetchMovies() async throws -> [Movie] {
 
 🌟 async / await 을 적용하면  { } 가 줄어들어서 코드가 간결해보이고, 가독성이 좋아지는 것 같다. 
 
-이번 프로젝트를 통해 iOS 개발 트렌드을 적용하여 학습할 수 있었고, CompositionalLayout, DiffableDataSource, async/await, Combine 에 대해 좀 더 알게 된 프로젝트였다. 
+이번 프로젝트를 통해 iOS 개발 트렌드을 적용하여 학습할 수 있었고, CompositionalLayout, DiffableDataSource, async/await, Combine 에 대해 좀 더 알게 된 프로젝트이었습니다.
+추후 진행 사항에 나온 대로 업데이트할 예정입니다.
 
 
 ### 🔨 추후 진행 사항
