@@ -92,6 +92,8 @@
 - 해결: 기존 구조체에서 sectionType을 포함한 별도의 구조체를 생성하여, 동일한 id라도 sectionType이 다르기 때문에 중복으로 인한 데이터 누락이 방지됨
 - 주소: https://explorer89.tistory.com/343
 
+<br />
+
 3. 이 외의 프로젝트 기록한 내용은 아래 주소에 있습니다.
 - 주소: https://explorer89.tistory.com/category/Project/MovieClip
 
