@@ -76,6 +76,28 @@
 <br />
 <br />
 
+## ❌ 문제 해결 
+1. 검색 결과의 상세페이지 이동이 안됨...
+- 원인: SearchResultViewController는 UISearchController의 searchResultsController로 설정되어 있어서 네비게이션 스택에 포함되지 않음!
+- 해결: 기존 네비게이션 흐름을 유지할 목적으로 다음 코드를 사용
+  ```
+  presentingViewController?.navigationController?.pushViewController(detailVC, animated: true)
+  ```
+- 주소: https://explorer89.tistory.com/359
+
+<br />
+
+2.  UICollectionViewDiffableDataSource.. 데이터 중복으로 인한 데이터 누락...
+- 원인: UICollectionViewDiffableDataSource에서 중복된 item identifier가 추가되었기 때문에 발생한 오류
+- 해결: 기존 구조체에서 sectionType을 포함한 별도의 구조체를 생성하여, 동일한 id라도 sectionType이 다르기 때문에 중복으로 인한 데이터 누락이 방지됨
+- 주소: https://explorer89.tistory.com/343
+
+3. 이 외의 프로젝트 기록한 내용은 아래 주소에 있습니다.
+- 주소: https://explorer89.tistory.com/category/Project/MovieClip
+
+<br />
+<br />
+
 ## 🛠 개발 기간
 - 개발 기간: 3주
 - 개발 인원: 1인
