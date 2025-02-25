@@ -64,10 +64,6 @@ class SearchViewModel: ObservableObject {
                     self.updateLoadMoreStatus()
                 }
                 
-                
-                
-                
-                
             } catch {
                 print("❌ 검색 요청 실패: \(error.localizedDescription)")
             }

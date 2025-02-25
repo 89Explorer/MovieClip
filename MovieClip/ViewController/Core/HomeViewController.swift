@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class HomeViewController: UIViewController {
     
@@ -53,7 +54,17 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-            
+    
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if Auth.auth().currentUser == nil {
+            let onBoardingVC = UINavigationController(rootViewController: OnboardingViewController())
+            //onBoardingVC.modalPresentationStyle = .fullScreen
+            present(onBoardingVC, animated: true)
+        }
     }
     
     
