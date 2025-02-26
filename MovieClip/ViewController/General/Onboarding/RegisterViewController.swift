@@ -6,8 +6,14 @@
 //
 
 import UIKit
+import Combine
+
 
 class RegisterViewController: UIViewController {
+    
+    // MARK: - Variable
+    private var viewModel = AuthenticationViewModel()
+    private var cancelable = Set<AnyCancellable>()
     
     
     // MARK: - UI Component
@@ -55,7 +61,7 @@ class RegisterViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Create Account", for: .normal)
         button.tintColor = .white
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
         button.backgroundColor = .systemBlue
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 10
@@ -69,8 +75,58 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .black
+        bindViews()
+        resigneKeyboard()
         configureConstraints()
     }
+    
+    
+    // MARK: - Function
+    private func bindViews() {
+        emailTextField.addTarget(self, action: #selector(didChangedEmailField), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(didChangedPassword), for: .editingChanged)
+        registerButton.addTarget(self, action: #selector(didTapRegister), for: .touchUpInside)
+        
+        viewModel.$isAuthenticationFormValid
+            .sink { [weak self] validationState in
+                self?.registerButton.isEnabled = validationState
+            }
+            .store(in: &cancelable)
+        
+        viewModel.$user
+            .sink { [weak self] user in
+                print(user)
+            }
+            .store(in: &cancelable)
+    }
+    
+    /// 빈 곳을 누르면 키보드 내려가게 하는 메서드
+    private func resigneKeyboard() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didChangedEmailField() {
+        viewModel.email = emailTextField.text
+        viewModel.validateAuthenticationForm()
+    }
+    
+    
+    @objc private func didChangedPassword() {
+        viewModel.password = passwordTextField.text
+        viewModel.validateAuthenticationForm()
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc private func didTapRegister() {
+        viewModel.createUser()
+    }
+    
     
     // MARK: - Constraints
     private func configureConstraints() {

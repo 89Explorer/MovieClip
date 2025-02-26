@@ -79,7 +79,7 @@ class OnboardingViewController: UIViewController {
             
             welcomeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             welcomeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50),
+            welcomeLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100),
             
             createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             createAccountButton.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 20),
