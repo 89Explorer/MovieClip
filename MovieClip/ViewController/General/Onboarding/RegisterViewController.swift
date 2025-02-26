@@ -69,11 +69,11 @@ class RegisterViewController: UIViewController {
         return button
     }()
     
-
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .black
         bindViews()
         resigneKeyboard()
@@ -93,11 +93,22 @@ class RegisterViewController: UIViewController {
             }
             .store(in: &cancelable)
         
+        // 회원가입 성공에 따른 화면 이동
         viewModel.$user
             .sink { [weak self] user in
-                print(user)
+                guard user != nil else { return }
+                
+                // 현재 RegisterViewController가 띄워진 모든 모달을 닫음 (Onboarding 포함)
+                self?.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                    // ✅ 모든 화면을 닫은 후, rootViewController를 변경 (MainTabBarController로)
+                    if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                        sceneDelegate.window?.rootViewController = MainTabBarController()
+                    }
+                })
             }
             .store(in: &cancelable)
+        
+        
     }
     
     /// 빈 곳을 누르면 키보드 내려가게 하는 메서드

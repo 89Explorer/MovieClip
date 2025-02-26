@@ -54,19 +54,11 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-    
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
-        if Auth.auth().currentUser == nil {
-            let onBoardingVC = UINavigationController(rootViewController: OnboardingViewController())
-            //onBoardingVC.modalPresentationStyle = .fullScreen
-            present(onBoardingVC, animated: true)
-        }
-    }
+        // 로그아웃 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(didTapSignOut))
     
+    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -179,6 +171,14 @@ class HomeViewController: UIViewController {
         headerView?.delegate = self
     }
     
+    
+    // MARK: - Action
+    @objc private func didTapSignOut() {
+        do {
+            try? Auth.auth().signOut()
+            NotificationCenter.default.post(name: NSNotification.Name("UserDidLogout"), object: nil)
+        }
+    }
 }
 
 // MARK: - Extension: TableView Delegate
