@@ -12,6 +12,7 @@ import Combine
 
 final class AuthenticationViewModel: ObservableObject {
     
+    // MARK: - Variable
     @Published var email: String?
     @Published var password: String?
     @Published var isAuthenticationFormValid: Bool = false
@@ -20,8 +21,8 @@ final class AuthenticationViewModel: ObservableObject {
     
     private var cancelable: Set<AnyCancellable> = []
     
-    // MARK: - Function
     
+    // MARK: - Function
     /// 이메일, 비밀번호 입력 유효성 검사 메서드 
     func validateAuthenticationForm() {
         guard let email = email,
@@ -46,6 +47,25 @@ final class AuthenticationViewModel: ObservableObject {
               let password = password else { return }
         
         AuthManager.shared.registerUser(email: email, password: password)
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                case .finished:
+                    print("회원가입 성공")
+                }
+            } receiveValue: { [weak self] user in
+                self?.user = user
+            }
+            .store(in: &cancelable)
+
+    }
+    
+    func loginUser() {
+        guard let email = email,
+              let password = password else { return }
+        
+        AuthManager.shared.loginUser(email: email, password: password)
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):

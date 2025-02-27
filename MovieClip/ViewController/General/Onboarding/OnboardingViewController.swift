@@ -103,7 +103,7 @@ class OnboardingViewController: UIViewController {
     
     @objc private func didTapLogin() {
         print("Login")
-        //let loginVC = LoginViewController()
-        //navigationController?.pushViewController(loginVC, animated: true)
+        let loginVC = LoginViewController()
+        navigationController?.pushViewController(loginVC, animated: true)
     }
 }

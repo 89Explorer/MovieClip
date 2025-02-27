@@ -17,24 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.setupWindow(with: scene)
         checkAuthentication()
-        
-        // 로그아웃 시 화면 변경을 위한 Notifiation 설정
-        NotificationCenter.default.addObserver(self, selector: #selector(handleLogout), name: NSNotification.Name("UserDidLogout"), object: nil)
-        
-        
-        // 회원가입 성공 후 처리
-        NotificationCenter.default.addObserver(self, selector: #selector(handleUserCreated), name: NSNotification.Name("CreateUserSuccess"), object: nil)
+
     }
-    
-    
-    @objc private func handleLogout() {
-        checkAuthentication()
-    }
-    
-    @objc private func handleUserCreated() {
-        checkAuthentication()
-    }
-    
     
     private func setupWindow(with scene: UIScene) {
         guard let windowScene = (scene as? UIWindowScene) else { return }

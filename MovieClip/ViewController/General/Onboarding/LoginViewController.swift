@@ -1,15 +1,14 @@
 //
-//  RegisterViewController.swift
+//  LoginViewController.swift
 //  MovieClip
 //
-//  Created by 권정근 on 2/25/25.
+//  Created by 권정근 on 2/26/25.
 //
 
 import UIKit
-import Combine
+import Combine 
 
-
-class RegisterViewController: UIViewController {
+class LoginViewController: UIViewController {
     
     // MARK: - Variable
     private var viewModel = AuthenticationViewModel()
@@ -19,7 +18,7 @@ class RegisterViewController: UIViewController {
     // MARK: - UI Component
     private let registerTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Create your Account"
+        label.text = "Login to your account"
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .white
         return label
@@ -58,9 +57,9 @@ class RegisterViewController: UIViewController {
         return textField
     }()
     
-    private let registerButton: UIButton = {
+    private let loginButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Create Account", for: .normal)
+        button.setTitle("Login", for: .normal)
         button.tintColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
         button.backgroundColor = .systemBlue
@@ -70,45 +69,45 @@ class RegisterViewController: UIViewController {
         return button
     }()
     
-    
+
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .black
-        bindViews()
+        
         resigneKeyboard()
+        bindViews()
         configureConstraints()
     }
     
     
     // MARK: - Function
     private func bindViews() {
-        emailTextField.addTarget(self, action: #selector(didChangedEmailField), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(didChangedPassword), for: .editingChanged)
-        registerButton.addTarget(self, action: #selector(didTapRegister), for: .touchUpInside)
+        emailTextField.addTarget(self, action: #selector(didChangeEmailField), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(didChangePasswordField), for: .editingChanged)
+        loginButton.addTarget(self, action: #selector(didTapLogin), for: .touchUpInside)
         
         viewModel.$isAuthenticationFormValid
             .sink { [weak self] validationState in
-                self?.registerButton.isEnabled = validationState
-            }
-            .store(in: &cancelable)
+            self?.loginButton.isEnabled = validationState
+        }
+        .store(in: &cancelable)
         
-        // 회원가입 성공에 따른 화면 이동
         viewModel.$user
             .sink { [weak self] user in
                 guard user != nil else { return }
                 
-                // 현재 RegisterViewController가 띄워진 모든 모달을 닫음 (Onboarding 포함)
                 self?.view.window?.rootViewController?.dismiss(animated: true, completion: {
-                    // ✅ 모든 화면을 닫은 후, rootViewController를 변경 (MainTabBarController로)
-                    if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    if let sceneDelegate = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.delegate as? SceneDelegate {
                         sceneDelegate.window?.rootViewController = MainTabBarController()
                     }
                 })
             }
             .store(in: &cancelable)
+        
     }
+    
+    
     
     /// 빈 곳을 누르면 키보드 내려가게 하는 메서드
     private func resigneKeyboard() {
@@ -118,13 +117,12 @@ class RegisterViewController: UIViewController {
     
     
     // MARK: - Action
-    @objc private func didChangedEmailField() {
+    @objc private func didChangeEmailField() {
         viewModel.email = emailTextField.text
         viewModel.validateAuthenticationForm()
     }
     
-    
-    @objc private func didChangedPassword() {
+    @objc private func didChangePasswordField() {
         viewModel.password = passwordTextField.text
         viewModel.validateAuthenticationForm()
     }
@@ -133,8 +131,8 @@ class RegisterViewController: UIViewController {
         view.endEditing(true)
     }
     
-    @objc private func didTapRegister() {
-        viewModel.createUser()
+    @objc private func didTapLogin() {
+        viewModel.loginUser()
     }
     
     
@@ -143,12 +141,12 @@ class RegisterViewController: UIViewController {
         view.addSubview(registerTitleLabel)
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
-        view.addSubview(registerButton)
+        view.addSubview(loginButton)
         
         registerTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
-        registerButton.translatesAutoresizingMaskIntoConstraints = false
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
@@ -167,12 +165,11 @@ class RegisterViewController: UIViewController {
             passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 60),
             
-            registerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            registerButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 40),
-            registerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            registerButton.heightAnchor.constraint(equalToConstant: 60)
+            loginButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 40),
+            loginButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            loginButton.heightAnchor.constraint(equalToConstant: 60)
             
         ])
     }
 }
-

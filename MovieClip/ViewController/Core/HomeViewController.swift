@@ -175,10 +175,19 @@ class HomeViewController: UIViewController {
     // MARK: - Action
     @objc private func didTapSignOut() {
         do {
-            try? Auth.auth().signOut()
-            NotificationCenter.default.post(name: NSNotification.Name("UserDidLogout"), object: nil)
+            try Auth.auth().signOut()
+            
+            // ✅ 기존의 모든 화면을 닫고, OnboardingViewController로 이동
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
+                }
+            })
+        } catch {
+            print("로그아웃 실패: \(error.localizedDescription)")
         }
     }
+
 }
 
 // MARK: - Extension: TableView Delegate
