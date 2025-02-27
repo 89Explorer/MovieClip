@@ -31,6 +31,7 @@ class RegisterViewController: UIViewController {
             string: "이메일 양식으로 입력해주세요 ",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
         )
+        textField.textColor = .black
         textField.keyboardType = .emailAddress
         textField.autocapitalizationType = .none
         textField.font = .systemFont(ofSize: 12)
@@ -48,6 +49,7 @@ class RegisterViewController: UIViewController {
             string: "비밀번호는 최소 8자 이상으로 입력해주세요",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
         )
+        textField.textColor = .black
         textField.isSecureTextEntry = true
         textField.font = .systemFont(ofSize: 12)
         textField.backgroundColor = .white

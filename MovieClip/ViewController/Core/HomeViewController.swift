@@ -177,10 +177,13 @@ class HomeViewController: UIViewController {
         headerView?.delegate = self
     }
     
+    /// viewModel 바인딩 함수
     private func bindView() {
-        // 회원정보 가져오기 
+        
+        // ✅ 회원정보 가져오기
         viewModel.retrieveUser()
         
+        // ✅ 회원정보가 수정이 안되었다면 ➡️ ProfileDataFormViewController 로 이동
         viewModel.$user
             .sink { [weak self] user in
                 guard let user = user else { return }
