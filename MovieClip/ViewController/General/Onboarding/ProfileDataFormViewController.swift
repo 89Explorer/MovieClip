@@ -7,9 +7,15 @@
 
 import UIKit
 import PhotosUI
+import Combine
 
 
 class ProfileDataFormViewController: UIViewController {
+    
+    // MARK: - Variable
+    private var viewModel = ProfileDataFormViewModel()
+    private var cancelable: Set<AnyCancellable> = []
+    
     
     // MARK: - UI Component
     private let basicScrollView: UIScrollView = UIScrollView()
@@ -33,15 +39,27 @@ class ProfileDataFormViewController: UIViewController {
         
         configureAvatarImage()
         configureUI()
+        bindViews()
     }
     
     
-    // MARK: - Function
-    
+    // MARK: - Functio
     /// 프로필 이미지 선택 메서드
     private func configureAvatarImage() {
         let imageTapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapToUpload))
         avatarPlaceholderImageView.addGestureRecognizer(imageTapGesture)
+    }
+    
+    private func bindViews() {
+        usernameTextField.addTarget(self, action: #selector(didUpdateUsername), for: .editingChanged)
+        
+        viewModel.$isFormValid
+            .sink { [weak self] buttonState in
+                self?.submitButton.isEnabled = buttonState
+                self?.submitButton.backgroundColor = buttonState ? .systemBlue : .systemGray
+            }
+            .store(in: &cancelable)
+        
     }
     
     
@@ -60,6 +78,10 @@ class ProfileDataFormViewController: UIViewController {
         present(picker, animated: true)
     }
     
+    @objc private func didUpdateUsername() {
+        viewModel.username = usernameTextField.text
+        viewModel.validateUserProfileForm()
+    }
     
     // MARK: - UI Layout
     private func configureUI() {
@@ -80,11 +102,13 @@ class ProfileDataFormViewController: UIViewController {
         // 유저이름 라벨 설정
         usernameTextField.keyboardType = .default
         usernameTextField.backgroundColor = .white
+        usernameTextField.textColor = .black
+        usernameTextField.font = .systemFont(ofSize: 16, weight: .bold)
         usernameTextField.leftViewMode = .always
         usernameTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 15))
         usernameTextField.layer.cornerRadius = 10
         usernameTextField.layer.masksToBounds = true
-        usernameTextField.attributedPlaceholder = NSAttributedString(string: "사용하실 닉네임을 입력하세요", attributes: [.foregroundColor: UIColor.gray])
+        usernameTextField.attributedPlaceholder = NSAttributedString(string: "사용하실 닉네임을 3자 이상 입력하세요", attributes: [.foregroundColor: UIColor.gray])
         usernameTextField.translatesAutoresizingMaskIntoConstraints = false
         
         
@@ -105,7 +129,7 @@ class ProfileDataFormViewController: UIViewController {
         bioTextView.layer.cornerRadius = 10
         bioTextView.layer.masksToBounds = true
         bioTextView.textContainerInset = .init(top: 15, left: 15, bottom: 15, right: 15)
-        bioTextView.text = "간단한 자기 소개 글을 작성해주세요" + "\n" + "예: 액션 영화를 좋아하는 토끼"
+        bioTextView.text = "간단한 자기 소개 글을 3자 이상 작성해주세요" + "\n" + "예: 액션 영화를 좋아하는 토끼"
         bioTextView.textColor = .gray
         bioTextView.font = .systemFont(ofSize: 16, weight: .bold)
         bioTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,6 +215,11 @@ extension ProfileDataFormViewController: UITextViewDelegate {
             bioTextView.textColor = .gray
         }
     }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        viewModel.bio = bioTextView.text
+        viewModel.validateUserProfileForm()
+    }
 }
 
 
@@ -204,6 +233,8 @@ extension ProfileDataFormViewController: PHPickerViewControllerDelegate {
                     DispatchQueue.main.async {
                         self?.avatarPlaceholderImageView.contentMode = .scaleAspectFill
                         self?.avatarPlaceholderImageView.image = image
+                        self?.viewModel.imageData = image
+                        self?.viewModel.validateUserProfileForm()
                     }
                 }
             }
