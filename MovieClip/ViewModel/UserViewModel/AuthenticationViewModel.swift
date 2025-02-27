@@ -43,10 +43,12 @@ final class AuthenticationViewModel: ObservableObject {
     
     /// 이메일, 비밀번호로 회원가입하는 메서드 
     func createUser() {
-        guard let email = email,
-              let password = password else { return }
-        
+        guard let email = email, let password = password else { return }
+
         AuthManager.shared.registerUser(email: email, password: password)
+            .handleEvents(receiveOutput: { [weak self] user in
+                self?.user = user                  // ✅ createRecord 호출에 따라 handleEvents 추가
+            })
             .sink { [weak self] completion in
                 switch completion {
                 case .failure(let error):
@@ -55,12 +57,14 @@ final class AuthenticationViewModel: ObservableObject {
                     print("회원가입 성공")
                 }
             } receiveValue: { [weak self] user in
-                self?.user = user
+                // self?.user = user
+                self?.createRecord(for: user)      // ✅ createRecode 호출로 회원정보 저장 시도
             }
             .store(in: &cancelable)
-
     }
-    
+
+
+    /// 이메일, 비밀번호를 이용해서 로그인하는 메서드
     func loginUser() {
         guard let email = email,
               let password = password else { return }
@@ -71,13 +75,29 @@ final class AuthenticationViewModel: ObservableObject {
                 case .failure(let error):
                     self?.error = error.localizedDescription
                 case .finished:
-                    print("회원가입 성공")
+                    print("로그인 성공")
                 }
             } receiveValue: { [weak self] user in
                 self?.user = user
             }
             .store(in: &cancelable)
-
+    }
+    
+    
+    /// 회원 정보를 firebase FireStore의 특정 문서에 저장하는 메서드
+    func createRecord(for user: User) {
+        DatabaseManager.shared.collectionUsers(add: user)
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.error = error.localizedDescription
+                case .finished:
+                    print("회원 정보 저장 성공")
+                }
+            } receiveValue: { state in
+                print("Adding user record to database: \(state)")
+            }
+            .store(in: &cancelable)
     }
 }
 

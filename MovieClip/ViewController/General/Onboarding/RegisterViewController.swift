@@ -19,7 +19,7 @@ class RegisterViewController: UIViewController {
     // MARK: - UI Component
     private let registerTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Create your Account"
+        label.text = "회원가입"
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .white
         return label
@@ -28,7 +28,7 @@ class RegisterViewController: UIViewController {
     private let emailTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
-            string: "Email",
+            string: "이메일 양식으로 입력해주세요 ",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
         )
         textField.keyboardType = .emailAddress
@@ -45,7 +45,7 @@ class RegisterViewController: UIViewController {
     private let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
-            string: "Password",
+            string: "비밀번호는 최소 8자 이상으로 입력해주세요",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
         )
         textField.isSecureTextEntry = true
@@ -60,7 +60,7 @@ class RegisterViewController: UIViewController {
     
     private let registerButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Create Account", for: .normal)
+        button.setTitle("계정 생성하기", for: .normal)
         button.tintColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
         button.backgroundColor = .systemBlue
@@ -127,8 +127,8 @@ class RegisterViewController: UIViewController {
     
     /// 경고창 뜨게하는 메서드
     private func presentAlert(with error: String) {
-        let alert = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
-        let okayButton = UIAlertAction(title: "OK", style: .default)
+        let alert = UIAlertController(title: "오류 발생", message: error, preferredStyle: .alert)
+        let okayButton = UIAlertAction(title: "확인", style: .default)
         alert.addAction(okayButton)
         present(alert, animated: true)
     }
