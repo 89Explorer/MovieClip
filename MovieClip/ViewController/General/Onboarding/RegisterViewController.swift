@@ -108,12 +108,29 @@ class RegisterViewController: UIViewController {
                 })
             }
             .store(in: &cancelable)
+        
+        viewModel.$error
+            .sink { [weak self] errorString in
+                guard let error = errorString else { return }
+                self?.presentAlert(with: error)
+            }
+            .store(in: &cancelable)
+        
     }
     
     /// 빈 곳을 누르면 키보드 내려가게 하는 메서드
     private func resigneKeyboard() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+    }
+    
+    
+    /// 경고창 뜨게하는 메서드
+    private func presentAlert(with error: String) {
+        let alert = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
+        let okayButton = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okayButton)
+        present(alert, animated: true)
     }
     
     
