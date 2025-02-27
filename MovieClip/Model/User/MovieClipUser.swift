@@ -18,6 +18,7 @@ struct MovieClipUser: Codable {
     var bio: String = ""
     var avatarPath: String = ""
     var clipMovies: [String] = []
+    var isUserOnboarded: Bool = false
     
     init(from user: User) {
         self.id = user.uid

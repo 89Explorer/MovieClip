@@ -7,10 +7,14 @@
 
 import UIKit
 import FirebaseAuth
+import Combine
 
 class HomeViewController: UIViewController {
     
     // MARK: - Variables
+    private var viewModel = HomeViewModel()
+    private var cancelable: Set<AnyCancellable> = []
+    
     /// 테이블의 섹션별 데이터를 static 프로퍼티로 선언
     static var homeSections: [HomeSection] = []
     
@@ -43,6 +47,8 @@ class HomeViewController: UIViewController {
         
         setupTableViewDelegate()
         homeFeedTableHeaderView()
+        
+        bindView()
         
         // ✅ 네비에기션 타이틀 설정
         navigationItem.title = "Home"
@@ -169,6 +175,25 @@ class HomeViewController: UIViewController {
         headerView = HomeTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 350))
         homeFeedTableView.tableHeaderView = headerView
         headerView?.delegate = self
+    }
+    
+    private func bindView() {
+        // 회원정보 가져오기 
+        viewModel.retrieveUser()
+        
+        viewModel.$user
+            .sink { [weak self] user in
+                guard let user = user else { return }
+                if !user.isUserOnboarded {
+                    self?.completeUserOnboarding()
+                }
+            }
+            .store(in: &cancelable)
+    }
+    
+    func completeUserOnboarding() {
+        let profileDataFormVC = ProfileDataFormViewController()
+        present(profileDataFormVC, animated: true)
     }
     
     
