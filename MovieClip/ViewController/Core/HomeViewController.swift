@@ -49,10 +49,8 @@ class HomeViewController: UIViewController {
         homeFeedTableHeaderView()
         bindView()
         
-        // ✅ 네비에기션 타이틀 설정
-        navigationItem.title = "Home"
-        navigationController?.navigationBar.prefersLargeTitles = true
         configureNavigationBarAppearance()
+        configureNavigationLeftTitle()
         
         self.fetchMediaData()
         
@@ -79,6 +77,17 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - Functions
+    private func configureNavigationLeftTitle() {
+        let titleLabel: UILabel = UILabel()
+        titleLabel.text = "Home"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 32)
+        titleLabel.textColor = .white
+        
+        let leftBarButton = UIBarButtonItem(customView: titleLabel)
+        navigationItem.leftBarButtonItem = leftBarButton
+    }
+    
+    
     private func configureNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

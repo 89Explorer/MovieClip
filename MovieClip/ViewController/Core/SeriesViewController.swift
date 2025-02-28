@@ -23,10 +23,8 @@ class SeriesViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         
-        // ✅ 네비에기션 타이틀 설정
-        navigationItem.title = "TV"
-        navigationController?.navigationBar.prefersLargeTitles = true
         configureNavigationBarAppearance()
+        configureNavigationLeftTitle()
         
         setupCollectionView()
         
@@ -36,6 +34,16 @@ class SeriesViewController: UIViewController {
     
     
     // MARK: - Function
+    private func configureNavigationLeftTitle() {
+        let titleLabel: UILabel = UILabel()
+        titleLabel.text = "TV Series"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 32)
+        titleLabel.textColor = .white
+        
+        let leftBarButton = UIBarButtonItem(customView: titleLabel)
+        navigationItem.leftBarButtonItem = leftBarButton
+    }
+    
     private func configureNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

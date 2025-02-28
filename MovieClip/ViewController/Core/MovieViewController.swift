@@ -20,10 +20,8 @@ class MovieViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         
-        // ✅ 네비에기션 타이틀 설정
-        navigationItem.title = "Movie"
-        navigationController?.navigationBar.prefersLargeTitles = true
         configureNavigationBarAppearance()
+        configureNavigationLeftTitle()
         
         setupCollectionView()
         
@@ -32,6 +30,19 @@ class MovieViewController: UIViewController {
         
         collectionView.delegate = self
     }
+    
+    
+    // MARK: - Function
+    private func configureNavigationLeftTitle() {
+        let titleLabel: UILabel = UILabel()
+        titleLabel.text = "Movie"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 32)
+        titleLabel.textColor = .white
+        
+        let leftBarButton = UIBarButtonItem(customView: titleLabel)
+        navigationItem.leftBarButtonItem = leftBarButton
+    }
+    
     
     private func configureNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()

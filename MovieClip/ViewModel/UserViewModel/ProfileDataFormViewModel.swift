@@ -38,7 +38,7 @@ final class ProfileDataFormViewModel: ObservableObject {
         isFormValid = true
     }
     
-    
+    /// 사용자의 프로필 사진을 Firebase Storage에 업로드하고, 업로드된 이미지의 다운로드 URL을 가져와 저장하는 메서드
     func uploadAvatar() {
         
         let userID = Auth.auth().currentUser?.uid ?? ""
@@ -64,7 +64,7 @@ final class ProfileDataFormViewModel: ObservableObject {
             .store(in: &cancelable)
     }
     
-    
+    /// 프로필에 작성된 내용을 파이어베이스 데이터베이스에 저장하는 메서드
     private func updateUserData() {
         guard let username,
               let bio,

@@ -18,6 +18,7 @@ class MainTabBarController: UITabBarController {
         let movieVC = UINavigationController(rootViewController: MovieViewController())
         let seriesVC = UINavigationController(rootViewController: SeriesViewController())
         let searchVC = UINavigationController(rootViewController: SearchViewController())
+        let profileVC = UINavigationController(rootViewController: ProfileViewController())
         
         
         homeVC.tabBarItem.image = UIImage(systemName: "newspaper")
@@ -31,10 +32,14 @@ class MainTabBarController: UITabBarController {
         
         searchVC.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         
+        profileVC.tabBarItem.image = UIImage(systemName: "person")
+        profileVC.tabBarItem.selectedImage = UIImage(systemName: "person.fill")
+        
         homeVC.tabBarItem.title = "투데이"
         movieVC.tabBarItem.title = "영화"
         seriesVC.tabBarItem.title = "시리즈"
         searchVC.tabBarItem.title = "검색"
+        profileVC.tabBarItem.title = "프로필"
         
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
@@ -43,7 +48,7 @@ class MainTabBarController: UITabBarController {
         tabBar.scrollEdgeAppearance = tabBar.standardAppearance
         tabBar.tintColor = .systemBlue
         
-        self.setViewControllers([homeVC, movieVC, seriesVC, searchVC], animated: true)
+        self.setViewControllers([homeVC, movieVC, seriesVC, searchVC, profileVC], animated: true)
         
     }
 }
