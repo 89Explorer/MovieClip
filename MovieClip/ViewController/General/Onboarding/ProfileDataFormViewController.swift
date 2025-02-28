@@ -36,6 +36,7 @@ class ProfileDataFormViewController: UIViewController {
         
         isModalInPresentation = true   // ✅ 창 내리기 방지
         view.addGestureRecognizer(UIGestureRecognizer(target: self, action: #selector(didTapToDismiss)))
+        submitButton.addTarget(self, action: #selector(didTapSubmit), for: .touchUpInside)
         
         configureAvatarImage()
         configureUI()
@@ -60,6 +61,18 @@ class ProfileDataFormViewController: UIViewController {
             }
             .store(in: &cancelable)
         
+        viewModel.$isOnboardingFinished
+            .sink { [weak self] success in
+                if success {
+                    // ✅ 기존의 모든 화면을 닫고, OnboardingViewController로 이동
+                    self?.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                            sceneDelegate.window?.rootViewController = MainTabBarController()
+                        }
+                    })
+                }
+            }
+            .store(in: &cancelable)
     }
     
     
@@ -82,6 +95,12 @@ class ProfileDataFormViewController: UIViewController {
         viewModel.username = usernameTextField.text
         viewModel.validateUserProfileForm()
     }
+    
+    @objc private func didTapSubmit() {
+        viewModel.uploadAvatar()
+    }
+    
+    
     
     // MARK: - UI Layout
     private func configureUI() {

@@ -47,7 +47,6 @@ class HomeViewController: UIViewController {
         
         setupTableViewDelegate()
         homeFeedTableHeaderView()
-        
         bindView()
         
         // ✅ 네비에기션 타이틀 설정
@@ -70,6 +69,12 @@ class HomeViewController: UIViewController {
         super.viewDidLayoutSubviews()
         // 테이블 뷰 적용
         homeFeedTableView.frame = view.bounds
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // ✅ 회원정보 가져오기
+        viewModel.retrieveUser()
     }
     
     
@@ -180,14 +185,12 @@ class HomeViewController: UIViewController {
     /// viewModel 바인딩 함수
     private func bindView() {
         
-        // ✅ 회원정보 가져오기
-        viewModel.retrieveUser()
-        
         // ✅ 회원정보가 수정이 안되었다면 ➡️ ProfileDataFormViewController 로 이동
         viewModel.$user
             .sink { [weak self] user in
                 guard let user = user else { return }
-                if !user.isUserOnboarded {
+                if !user.isUserOnboarded{
+                    dump(user.isUserOnboarded)
                     self?.completeUserOnboarding()
                 }
             }

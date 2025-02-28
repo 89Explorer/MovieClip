@@ -43,4 +43,17 @@ class DatabaseManager {
             .eraseToAnyPublisher()
     }
     
+    
+    func collectionUsers(updateFields: [String: Any], for id: String) -> AnyPublisher<Bool, Error> {
+        Future<Bool, Error> { promise in
+            self.db.collection(self.userPath).document(id).updateData(updateFields) { error in
+                if let error = error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(true))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
