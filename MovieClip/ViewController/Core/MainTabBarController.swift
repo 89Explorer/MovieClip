@@ -39,7 +39,7 @@ class MainTabBarController: UITabBarController {
         movieVC.tabBarItem.title = "영화"
         seriesVC.tabBarItem.title = "시리즈"
         searchVC.tabBarItem.title = "검색"
-        profileVC.tabBarItem.title = "프로필"
+        profileVC.tabBarItem.title = "나의 클립"
         
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
