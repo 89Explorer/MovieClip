@@ -7,8 +7,9 @@
 
 import UIKit
 import Combine
+import FirebaseAuth
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, ProfileDataFormViewControllerDelegate {
     
     
     // MARK: - Variable
@@ -31,6 +32,10 @@ class ProfileViewController: UIViewController {
         setupCollectionView()
         createDataSource()
         setupBindings()  // ✅ 사용자 정보 변경 시 자동으로 UI 업데이트
+        
+        // 로그아웃 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(didTapSignOut))
+        navigationItem.rightBarButtonItem?.tintColor = .white
         
     }
     
@@ -61,7 +66,12 @@ class ProfileViewController: UIViewController {
             
             switch section {
             case .profile:
-                return self.configure(ProfileCell.self, with: item, for: indexPath)
+                
+                let cell = self.configure(ProfileCell.self, with: item, for: indexPath)
+                cell.delegate = self
+                
+                return cell
+                
             default:
                 return self.configure(ProfileCell.self, with: item, for: indexPath)
                 
@@ -194,4 +204,44 @@ class ProfileViewController: UIViewController {
     }
     
     
+    // ✅ 프로필 수정 화면으로 이동
+    func navigateToProfileEdit() {
+        let editVC = ProfileDataFormViewController(user: viewModel.user, isInitialProfileSetup: false)
+        editVC.delegate = self // ✅ Delegate 설정
+        navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    // ✅ ProfileDataFormViewController에서 수정 완료 후 호출됨
+    func didUpdateUser(_ updatedUser: MovieClipUser) {
+        viewModel.user = updatedUser  // ✅ ViewModel 업데이트
+        reloadData()  // ✅ UI 업데이트
+
+        // ✅ Firebase에서 최신 데이터 다시 불러오기 (Optional)
+        viewModel.retreiveUser()
+    }
+    
+    
+    // MARK: - Action
+    @objc private func didTapSignOut() {
+        do {
+            try Auth.auth().signOut()
+            
+            // ✅ 기존의 모든 화면을 닫고, OnboardingViewController로 이동
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
+                }
+            })
+        } catch {
+            print("로그아웃 실패: \(error.localizedDescription)")
+        }
+    }
+}
+
+
+// MARK: - Extension: ProfileCellDelegate 구현
+extension ProfileViewController: ProfileCellDelegate {
+    func didTapEditButton() {
+        navigateToProfileEdit()
+    }
 }

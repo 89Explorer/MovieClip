@@ -57,9 +57,6 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
-        
-        // 로그아웃 버튼
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(didTapSignOut))
     
     }
     
@@ -207,27 +204,9 @@ class HomeViewController: UIViewController {
     }
     
     func completeUserOnboarding() {
-        let profileDataFormVC = ProfileDataFormViewController()
+        let profileDataFormVC = ProfileDataFormViewController(user: viewModel.user ?? MovieClipUser(), isInitialProfileSetup: true)
         present(profileDataFormVC, animated: true)
     }
-    
-    
-    // MARK: - Action
-    @objc private func didTapSignOut() {
-        do {
-            try Auth.auth().signOut()
-            
-            // ✅ 기존의 모든 화면을 닫고, OnboardingViewController로 이동
-            self.view.window?.rootViewController?.dismiss(animated: true, completion: {
-                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-                    sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
-                }
-            })
-        } catch {
-            print("로그아웃 실패: \(error.localizedDescription)")
-        }
-    }
-
 }
 
 // MARK: - Extension: TableView Delegate

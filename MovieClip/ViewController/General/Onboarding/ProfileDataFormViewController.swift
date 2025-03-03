@@ -8,6 +8,7 @@
 import UIKit
 import PhotosUI
 import Combine
+import SDWebImage
 
 
 class ProfileDataFormViewController: UIViewController {
@@ -15,6 +16,9 @@ class ProfileDataFormViewController: UIViewController {
     // MARK: - Variable
     private var viewModel = ProfileDataFormViewModel()
     private var cancelable: Set<AnyCancellable> = []
+    
+    weak var delegate: ProfileDataFormViewControllerDelegate?
+    var user: MovieClipUser
     
     
     // MARK: - UI Component
@@ -26,6 +30,19 @@ class ProfileDataFormViewController: UIViewController {
     private let submitButton: UIButton = UIButton()
 
     
+    // MARK: - Init
+    init(user: MovieClipUser, isInitialProfileSetup: Bool = false) {
+        self.user = user
+        //self.viewModel = ProfileDataFormViewModel()   // viewModel 초기화
+        self.viewModel.isInitialProfileSetup = isInitialProfileSetup
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,16 +52,36 @@ class ProfileDataFormViewController: UIViewController {
         bioTextView.delegate = self
         
         isModalInPresentation = true   // ✅ 창 내리기 방지
+        bindViews()
         view.addGestureRecognizer(UIGestureRecognizer(target: self, action: #selector(didTapToDismiss)))
         submitButton.addTarget(self, action: #selector(didTapSubmit), for: .touchUpInside)
         
         configureAvatarImage()
         configureUI()
-        bindViews()
+        
+        setUserData()
     }
     
     
     // MARK: - Functio
+    private func setUserData() {
+        usernameTextField.text = user.username
+        bioTextView.text = user.bio
+        if let avatarPath = URL(string: user.avatarPath) {
+            avatarPlaceholderImageView.sd_setImage(with: avatarPath)
+        }
+        
+        // 기존 프로필 이미지 ViewModel에 저장
+        viewModel.existingAvatarPath = user.avatarPath
+        
+        // viewModel에도 기존 데이터 반영
+        viewModel.username = user.username
+        viewModel.bio = user.bio
+        viewModel.avatarPath = user.avatarPath
+    }
+    
+    
+    
     /// 프로필 이미지 선택 메서드
     private func configureAvatarImage() {
         let imageTapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapToUpload))
@@ -57,6 +94,7 @@ class ProfileDataFormViewController: UIViewController {
         viewModel.$isFormValid
             .sink { [weak self] buttonState in
                 self?.submitButton.isEnabled = buttonState
+                dump("\(self!.submitButton.isEnabled)")
                 self?.submitButton.backgroundColor = buttonState ? .systemBlue : .systemGray
             }
             .store(in: &cancelable)
@@ -99,8 +137,7 @@ class ProfileDataFormViewController: UIViewController {
     @objc private func didTapSubmit() {
         viewModel.uploadAvatar()
     }
-    
-    
+
     
     // MARK: - UI Layout
     private func configureUI() {
@@ -108,6 +145,7 @@ class ProfileDataFormViewController: UIViewController {
         // 스크롤뷰 설정
         basicScrollView.alwaysBounceVertical = true
         basicScrollView.keyboardDismissMode = .onDrag
+        basicScrollView.isScrollEnabled = true
         basicScrollView.translatesAutoresizingMaskIntoConstraints = false
         
         
@@ -136,8 +174,9 @@ class ProfileDataFormViewController: UIViewController {
         avatarPlaceholderImageView.layer.masksToBounds = true
         avatarPlaceholderImageView.clipsToBounds = true
         avatarPlaceholderImageView.backgroundColor = .white
-        avatarPlaceholderImageView.image = UIImage(systemName: "camera.fill")
-        avatarPlaceholderImageView.contentMode = .scaleAspectFit
+        let url = URL(string: "https://ssl.pstatic.net/static/pwe/address/img_profile.png")
+        avatarPlaceholderImageView.sd_setImage(with: url)
+        avatarPlaceholderImageView.contentMode = .scaleAspectFill
         avatarPlaceholderImageView.tintColor = .gray
         avatarPlaceholderImageView.isUserInteractionEnabled = true
         avatarPlaceholderImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -147,9 +186,10 @@ class ProfileDataFormViewController: UIViewController {
         bioTextView.backgroundColor = .white
         bioTextView.layer.cornerRadius = 10
         bioTextView.layer.masksToBounds = true
-        bioTextView.textContainerInset = .init(top: 15, left: 15, bottom: 15, right: 15)
+        bioTextView.textContainerInset = .init(top: 10, left: 10, bottom: 10, right: 10)
         bioTextView.text = "간단한 자기 소개 글을 3자 이상 작성해주세요" + "\n" + "예: 액션 영화를 좋아하는 토끼"
-        bioTextView.textColor = .gray
+        bioTextView.textColor = viewModel.isInitialProfileSetup ? .gray : .black
+        //bioTextView.textColor = .gray
         bioTextView.font = .systemFont(ofSize: 16, weight: .bold)
         bioTextView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -217,7 +257,7 @@ extension ProfileDataFormViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         
-        basicScrollView.setContentOffset(CGPoint(x: 0, y: bioTextView.bounds.origin.y + 100), animated: true)
+        basicScrollView.setContentOffset(CGPoint(x: 0, y: bioTextView.bounds.origin.y), animated: true)
         
         if bioTextView.textColor == .gray {
             bioTextView.textColor = .black
@@ -250,7 +290,6 @@ extension ProfileDataFormViewController: PHPickerViewControllerDelegate {
             result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self ] object, error in
                 if let image = object as? UIImage {
                     DispatchQueue.main.async {
-                        self?.avatarPlaceholderImageView.contentMode = .scaleAspectFill
                         self?.avatarPlaceholderImageView.image = image
                         self?.viewModel.imageData = image
                         self?.viewModel.validateUserProfileForm()
@@ -259,4 +298,10 @@ extension ProfileDataFormViewController: PHPickerViewControllerDelegate {
             }
         }
     }
+}
+
+
+// MARK: - Protocol
+protocol ProfileDataFormViewControllerDelegate: AnyObject {
+    func didUpdateUser(_ updatedUser: MovieClipUser)
 }
