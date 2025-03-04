@@ -56,4 +56,18 @@ class DatabaseManager {
         }
         .eraseToAnyPublisher()
     }
+    
+    /// 특정 유저 ID를 받아 해당 유저의 Firestore 데이터를 삭제
+    func collectionUsers(deleteUser userID: String) -> AnyPublisher<Void, Error> {
+        return Future<Void, Error> { promise in
+            self.db.collection(self.userPath).document(userID).delete { error in
+                if let error = error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }

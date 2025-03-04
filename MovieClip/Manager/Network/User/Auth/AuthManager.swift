@@ -42,12 +42,31 @@ class AuthManager {
             .map(\.user)
             .eraseToAnyPublisher()
     }
-
     
-//    func register(email: String, password: String) -> AnyPublisher<User, Error> {
-//        return Auth.auth().createUser(withEmail: email, password: password)
-//            .map(\.user)
-//            .eraseToAnyPublisher()
-//    }
+    /// Firebase Authentication에서 회원 탈퇴
+    func deleteUser() -> AnyPublisher<Void, Error> {
+        guard let user = Auth.auth().currentUser else {
+            return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자가 로그인되어 있지 않습니다."]))
+                .eraseToAnyPublisher()
+        }
+        
+        return Future<Void, Error> { promise in
+            user.delete { error in
+                if let error = error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    
+    //    func register(email: String, password: String) -> AnyPublisher<User, Error> {
+    //        return Auth.auth().createUser(withEmail: email, password: password)
+    //            .map(\.user)
+    //            .eraseToAnyPublisher()
+    //    }
     
 }

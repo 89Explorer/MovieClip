@@ -34,7 +34,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         setupBindings()  // ✅ 사용자 정보 변경 시 자동으로 UI 업데이트
         
         // 로그아웃 버튼
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(didTapSignOut))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.vertical.3"), style: .plain, target: self, action: #selector(didTapSetting))
         navigationItem.rightBarButtonItem?.tintColor = .white
         
     }
@@ -68,6 +68,8 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
             case .profile:
                 
                 let cell = self.configure(ProfileCell.self, with: item, for: indexPath)
+                
+                // ✅ ProfileCell 델리게이트 대리자 할당
                 cell.delegate = self
                 
                 return cell
@@ -215,9 +217,44 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
     func didUpdateUser(_ updatedUser: MovieClipUser) {
         viewModel.user = updatedUser  // ✅ ViewModel 업데이트
         reloadData()  // ✅ UI 업데이트
-
+        
         // ✅ Firebase에서 최신 데이터 다시 불러오기 (Optional)
         viewModel.retreiveUser()
+    }
+    
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+            
+            // ✅ 기존의 모든 화면을 닫고, OnboardingViewController로 이동
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
+                }
+            })
+        } catch {
+            print("로그아웃 실패: \(error.localizedDescription)")
+        }
+    }
+    
+    /// 회원탈퇴
+    private func deleteUser() {
+        viewModel.deleteUser()
+        
+        viewModel.$isUserDeleted
+            .sink { isDeleted in
+                if isDeleted {
+                    print("회원 탈퇴")
+                    DispatchQueue.main.async {
+                        self.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                                sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
+                            }
+                        })
+                    }
+                }
+            }
+            .store(in: &cancelable)
     }
     
     
@@ -235,6 +272,27 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         } catch {
             print("로그아웃 실패: \(error.localizedDescription)")
         }
+    }
+    
+    
+    @objc private func didTapSetting() {
+        
+        let actionSheet = UIAlertController(title: "설정", message: nil, preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "로그아웃", style: .default, handler: { _ in
+            print("로그아웃")
+            self.signOut()
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "회원탈퇴", style: .default, handler: { _ in
+            print("회원탈퇴")
+            self.deleteUser()
+            
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: nil))
+        
+        present(actionSheet, animated: true)
     }
 }
 

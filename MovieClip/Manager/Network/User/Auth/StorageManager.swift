@@ -43,6 +43,27 @@ final class StorageManager {
             .print()
             .eraseToAnyPublisher()
     }
+    
+    
+    /// 특정 유저 ID를 받아 해당 유저의 프로필 이미지를 Firebase Storage에서 삭제
+    func deleteProfilePhoto(for userID: String) -> AnyPublisher<Void, Error> {
+        return getDownloadURL(for: "images/\(userID)/profileImage/profileImage.jpg") // ✅ Firebase에서 이미지 URL 가져오기
+            .flatMap { imageURL in
+                let reference = Storage.storage().reference(forURL: imageURL.absoluteString)
+                
+                return Future<Void, Error> { promise in
+                    reference.delete { error in
+                        if let error = error {
+                            promise(.failure(error))
+                        } else {
+                            promise(.success(()))  // ✅ 성공 시 Void 반환
+                        }
+                    }
+                }
+            }
+            .catch { _ in Just(()).setFailureType(to: Error.self) } // ✅ 이미지가 없을 경우 삭제 실패해도 계속 진행
+            .eraseToAnyPublisher()
+    }
 }
 
 

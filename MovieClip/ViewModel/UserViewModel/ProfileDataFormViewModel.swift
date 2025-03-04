@@ -23,7 +23,7 @@ final class ProfileDataFormViewModel: ObservableObject {
     @Published var isFormValid: Bool = false
     @Published var error: String = ""
     @Published var isOnboardingFinished: Bool = false
-    @Published var isInitialProfileSetup: Bool = false
+    @Published var isInitialProfileSetup: Bool = false  
     
     private var cancelable: Set<AnyCancellable> = []
 

@@ -14,6 +14,7 @@ final class ProfileViewModel: ObservableObject {
     
     @Published var user: MovieClipUser   // ✅ 유저 정보 (초기값 기본값으로 설정)
     @Published var error: String?
+    @Published var isUserDeleted: Bool = false  // ✅ 회원 탈퇴 완료 여부
     
     
     private var cancellable: Set<AnyCancellable> = []
@@ -36,6 +37,27 @@ final class ProfileViewModel: ObservableObject {
             } receiveValue: { [weak self] user in
                 self?.user = user     // ✅ Firebase에서 유저 정보 받아서 업데이트 
             }
+            .store(in: &cancellable)
+    }
+    
+    
+    func deleteUser() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            self.error = "유저 정보 없음"
+            return
+        }
+        
+        StorageManager.shared.deleteProfilePhoto(for: userID)
+            .flatMap { DatabaseManager.shared.collectionUsers(deleteUser: userID) }
+            .flatMap { AuthManager.shared.deleteUser() }
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.error = "회원 탈퇴 실패: \(error.localizedDescription)"
+                case .finished:
+                    self?.isUserDeleted = true  // 회원 탈퇴 완료 처리
+                }
+            } receiveValue: { }
             .store(in: &cancellable)
     }
 }
