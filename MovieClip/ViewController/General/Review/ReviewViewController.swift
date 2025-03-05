@@ -10,27 +10,37 @@ import UIKit
 class ReviewViewController: UIViewController {
 
     
+    // MARK: - UI Component
+    private var reviewCollectionView: UICollectionView!
+    
+    
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBlue
-        
-        //configureNavigationLeftTitle()
+        view.backgroundColor = .black
+    
         configureNavigationBarAppearance()
+        setupCollectionView()
+        
+        
     }
 
     
     
     // MARK: - Function
-    private func configureNavigationLeftTitle() {
-        let titleLabel: UILabel = UILabel()
-        titleLabel.text = "Review"
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 32)
-        titleLabel.textColor = .white
+    private func setupCollectionView() {
+        reviewCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
+        reviewCollectionView.backgroundColor = .black
+        reviewCollectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        reviewCollectionView.showsVerticalScrollIndicator = false
         
-        let leftBarButton = UIBarButtonItem(customView: titleLabel)
-        navigationItem.leftBarButtonItem = leftBarButton
+        view.addSubview(reviewCollectionView)
+        
     }
+    
+    
+    
     
     
     private func configureNavigationBarAppearance() {
