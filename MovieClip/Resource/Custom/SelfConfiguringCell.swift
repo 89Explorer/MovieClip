@@ -24,3 +24,8 @@ protocol SelfConfiguringSearchCell {
     static var reuseIdentifier: String { get }
     func configure(with data: SearchItem)
 }
+
+protocol SelfConfiguringReviewCell {
+    static var reuseIdentifier: String { get }
+    func configure(with item: ReviewSectionItem)
+}
