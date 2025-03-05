@@ -11,6 +11,8 @@
 - UICollectionViewDiffableDataSource 와 CompositionalLayout 을 활용하여 동적인 UI를 구성했습니다.
 - 검색 기능에서는 MVVM, Combine 을 적용하여 다양한 비동기 처리 함수로 부터 데이터 처리 흐름을 유연하게 할 수 있도록 구현하였습니다. 
 - Google API 를 활용하여 영화, 티비 프로그램, 인물 관련 개요 부분에 대해 번역 기능을 제공하고 있습니다.
+  <추가>
+- Firebase를 통한 회원관리 서비스를 제공하고 있습니다.
 
 <br />
 <br />
@@ -20,6 +22,7 @@
 - 영화 및 티비 프로그램에 대한 상세 정보(개요, 예고편, 포스터), 해당 프로그램과 유사한 작품 목록을 제공합니다.
 - 인물에 대한 상세 정보(이름, 출생일, 개요, 소셜미디어, 출연작품)을 제공합니다.
 - 프로그램 및 인물 소개 등 TMDB에서 제공하지 않는 "한국어" 서비스 경우, Google API를 통해 번역을 했습니다.
+- Firebase를 통해 회원관리 서비스를 제공하고 있습니다. (프로필 작성)
 
 <br />
 <br />
@@ -27,6 +30,8 @@
 ## 📸 스크린샷
 <img src = "https://github.com/user-attachments/assets/dfaf24fa-0856-433e-ab6b-4397eba29277" height="400"/>
 <img src = "https://github.com/user-attachments/assets/8906b69c-76e1-4711-98c6-e293ebd1e685" height="400"/>
+<img src = "https://github.com/user-attachments/assets/14cb9ae9-b0c5-4f0c-a85d-7bb8617f5b13" height="400"/>
+
 
 <br />
 <br />
@@ -42,6 +47,13 @@
 |상세페이지-영화|상세페이지-인물|상세페이지-검색화면|
 |:---:|:---:|:---:|
 |<img src = "https://github.com/user-attachments/assets/68fad0bd-f511-4d82-90e2-83246c934cb7" height="400"/>|<img src = "https://github.com/user-attachments/assets/cd593d2a-27a5-49b6-9b21-1b8cd529359b" height="400"/>|<img src = "https://github.com/user-attachments/assets/8146f333-c45f-4586-96b2-e662c8447a04" height="400"/>|
+
+<br />
+
+|회원가입-프로필작성|로그인-회원탈퇴|
+|:---:|:----:|
+|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>
+
 
 <br />
 <br />
@@ -72,6 +84,10 @@
 - Google 번역 API를 적용하여 한국어 지원 기능 추가
    - TMDB에서 기본 언어는 한국어로 설정할 수 있지만, 특정 정본는 한국어 제공이 되지 않습니다.
    - Google 번역 API를 통해 영어 ➡️ 한국어로 번역합니다.
+ 
+<추가>
+- Firebase를 통한 회원관리 서비스 제공합니다.
+   - 이메일, 비밀번호를 통해 회원가입을 하고, 로그인, 로그아웃, 회원탈퇴 및 프로필을 작성하여 Firebase에서 관리할 수 있도록 합니다. 
 
 <br />
 <br />
@@ -262,8 +278,8 @@ func fetchMovies() async throws -> [Movie] {
 
 1. 회원 가입
    - 소셜 미디어 회원가입 (구글, 카카오, 애플)
-   - 로그인, 로그아웃, 회원 탈퇴 
-   - 회원 정보 입력 (프로필 이미지, 닉네임, 소개)
+   - ~~로그인, 로그아웃, 회원 탈퇴~~ 
+   - ~~회원 정보 입력 (프로필 이미지, 닉네임, 소개)~~
 
 2. 즐겨찾기, 평점 부여
 
