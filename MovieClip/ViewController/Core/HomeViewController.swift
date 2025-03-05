@@ -57,7 +57,21 @@ class HomeViewController: UIViewController {
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .systemBlue
         self.navigationItem.backBarButtonItem = backBarButton
+        
+        let configuration = UIImage.SymbolConfiguration(pointSize: 20)
+        let addReviewImage = UIImage(systemName: "plus", withConfiguration: configuration)
+        
+        let addReviewButton = UIBarButtonItem(image: addReviewImage, style: .plain, target: self, action: #selector(didTapAddReview))
+        addReviewButton.tintColor = .white
+        self.navigationItem.rightBarButtonItem = addReviewButton
     
+    }
+    
+    @objc private func didTapAddReview() {
+        print("didTapAddReview - called")
+        
+        let reviewVC = ReviewViewController()
+        self.navigationController?.pushViewController(reviewVC, animated: true)
     }
     
     override func viewDidLayoutSubviews() {
@@ -69,7 +83,7 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // ✅ 회원정보 가져오기
-        viewModel.retrieveUser()
+        // viewModel.retrieveUser()
     }
     
     
