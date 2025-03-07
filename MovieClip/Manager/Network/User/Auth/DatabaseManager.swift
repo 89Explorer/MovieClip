@@ -70,4 +70,51 @@ class DatabaseManager {
         }
         .eraseToAnyPublisher()
     }
+    
+    
+    // MARK: - Review 관리
+    func collectionReviews(updateFields: [String: Any], userID: String, reviewID: String) -> AnyPublisher<Bool, Error> {
+        
+        let reviewPath = "\(userID)/reviews/\(reviewID)"
+        
+        return Future<Bool, Error> { promise in
+            self.db.collection(self.userPath).document(reviewPath).updateData(updateFields) {
+                error in
+                if let error = error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(true))
+                }
+            }
+        }
+        
+        .eraseToAnyPublisher()
+    }
+    
+    func collectionReviews(add review: ReviewItem) -> AnyPublisher<Bool, Error> {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인한 사용자가 없습니다."]))
+                .eraseToAnyPublisher()
+        }
+
+        let reviewID = review.id
+        
+        return db.collection("users") // ✅ users 컬렉션
+            .document(userID) // ✅ 특정 유저
+            .collection("reviews") // ✅ 해당 유저의 리뷰 목록
+            .document(reviewID) // ✅ 특정 리뷰 문서
+            .setData(from: review) // ✅ Firestore에 저장
+            .map { _ in true }
+            .eraseToAnyPublisher()
+    }
+
+    
+        
+    
+    
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy년 M월 d일"
+        return formatter.string(from: date)
+    }
 }

@@ -12,7 +12,7 @@ class ReviewPhotoCell: UICollectionViewCell, SelfConfiguringReviewCell {
     
     // MARK: - Variable
     static var reuseIdentifier: String = "ReviewPhotoCell"
-    private var images: [UIImage] = []
+    private var images: [String] = []
     weak var delegate: ReviewPhotoCellDelegate?
     
     
@@ -69,17 +69,17 @@ class ReviewPhotoCell: UICollectionViewCell, SelfConfiguringReviewCell {
     
     
     func configure(with item: ReviewSectionItem) {
-        if case .photo(let array) = item {
-            self.images = array
-            print("Received images count:", images.count)
-            
+        if case .photo(let imageArray) = item {
+            self.images = imageArray
             DispatchQueue.main.async {
                 self.photoCollectionView.isHidden = false
-                self.photoCollectionView.reloadData() // ✅ 데이터 갱신
+                self.photoCollectionView.reloadData()
             }
         }
     }
     
+    
+
     
     // MARK: - Constraints
     private func setupLayout() {

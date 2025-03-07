@@ -13,20 +13,19 @@ import UIKit
 enum ReviewSection: CaseIterable {
     case photos
     case content
-    case date
-    case rating
+    case options    // 하나의 섹션으로 날짜 & 평점 포함
 }
 
 
 // ✅ 한 개의 리뷰를 저장하는 모델
-struct ReviewItem: Hashable {
+struct ReviewItem: Codable {
     let id: String
-    var photos: [UIImage]     // 여러 개의 사진
+    var photos: [String]     // 여러 개의 사진
     var content: String       // 리뷰 내용
     var date: Date            // 작성 날짜
     var rating: Double        // 별점
     
-    init(id: String = UUID().uuidString, photos: [UIImage] = [], content: String = "", date: Date = Date(), rating: Double = 0.0) {
+    init(id: String = UUID().uuidString, photos: [String] = [], content: String = "", date: Date = Date(), rating: Double = 0.0) {
         self.id = id
         self.photos = photos
         self.content = content
@@ -38,8 +37,32 @@ struct ReviewItem: Hashable {
 
 // ✅ 각 셀에서 받을 데이터 타입을 정의 하는 열거형
 enum ReviewSectionItem: Hashable {
-    case photo([UIImage])
+    case photo([String])
     case content(String)
+    case options(ReviewOptionType, String)    // 날짜 & 평점 타입을 포함
+}
+
+/// ✅ UI 업데이트용 (셀에 전달하는 데이터)
+enum ReviewSectionItemUI: Hashable {
+    case photo([UIImage])      // UI에 UIImage 사용
+    case content(String)
+    case options(ReviewOptionType, String)
+}
+
+
+enum ReviewOptionType: Hashable {
     case date(Date)
     case rating(Double)
 }
+
+// MARK: - enum ProfileItem 에서 Hashable, Equatable 프로토콜을 준수하기 위함
+extension ReviewItem: Hashable {
+    static func == (lhs: ReviewItem, rhs: ReviewItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+

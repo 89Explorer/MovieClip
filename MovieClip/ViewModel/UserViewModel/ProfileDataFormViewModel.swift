@@ -79,6 +79,7 @@ final class ProfileDataFormViewModel: ObservableObject {
         
 
         guard let imageData = imageData?.jpegData(compressionQuality: 0.5) else { return }
+        
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         
