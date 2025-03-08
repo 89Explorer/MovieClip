@@ -12,7 +12,7 @@ class ReviewPhotoCell: UICollectionViewCell, SelfConfiguringReviewCell {
     
     // MARK: - Variable
     static var reuseIdentifier: String = "ReviewPhotoCell"
-    private var images: [String] = []
+    private var images: [UIImage] = []
     weak var delegate: ReviewPhotoCellDelegate?
     
     
@@ -70,7 +70,13 @@ class ReviewPhotoCell: UICollectionViewCell, SelfConfiguringReviewCell {
     
     func configure(with item: ReviewSectionItem) {
         if case .photo(let imageArray) = item {
-            self.images = imageArray
+            switch imageArray {
+            case .image(let images):
+                self.images = images
+            case .string(_):
+                break
+            }
+            
             DispatchQueue.main.async {
                 self.photoCollectionView.isHidden = false
                 self.photoCollectionView.reloadData()

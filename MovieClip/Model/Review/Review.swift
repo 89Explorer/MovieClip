@@ -37,16 +37,14 @@ struct ReviewItem: Codable {
 
 // ✅ 각 셀에서 받을 데이터 타입을 정의 하는 열거형
 enum ReviewSectionItem: Hashable {
-    case photo([String])
+    case photo(PhotoType)
     case content(String)
     case options(ReviewOptionType, String)    // 날짜 & 평점 타입을 포함
 }
 
-/// ✅ UI 업데이트용 (셀에 전달하는 데이터)
-enum ReviewSectionItemUI: Hashable {
-    case photo([UIImage])      // UI에 UIImage 사용
-    case content(String)
-    case options(ReviewOptionType, String)
+enum PhotoType: Hashable {
+    case image([UIImage])
+    case string([String])
 }
 
 

@@ -32,7 +32,7 @@ class RatingViewController: UIViewController {
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
         
         slider.minimumValueImage = UIImage(systemName: "0.square", withConfiguration: largeConfig)
-        slider.maximumValueImage = UIImage(systemName: "10.square", withConfiguration: largeConfig)
+        slider.maximumValueImage = UIImage(systemName: "5.square", withConfiguration: largeConfig)
         
         slider.backgroundColor = .black
         slider.thumbTintColor = .systemGray

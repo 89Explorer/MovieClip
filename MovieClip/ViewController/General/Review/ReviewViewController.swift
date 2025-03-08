@@ -43,15 +43,6 @@ class ReviewViewController: UIViewController {
     // MARK: - Function
     // ✅ viewModel 바인딩 설정
     private func setupBindings() {
-        viewModel.$isReviewSuccess
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] success in
-                if success {
-                    print("🎉 리뷰 저장 완료")
-                    self?.navigationController?.popViewController(animated: true)
-                }
-            }
-            .store(in: &cancellables )
         
         viewModel.$errorMessage
             .receive(on: DispatchQueue.main)
@@ -126,11 +117,17 @@ class ReviewViewController: UIViewController {
         
         snapshot.appendSections(ReviewSection.allCases)
         
-        snapshot.appendItems([.photo(viewModel.uploadedPhotoURLs)], toSection: .photos)
+        if let selectedImages = viewModel.selectedImages, !selectedImages.isEmpty {
+            snapshot.appendItems([.photo(.image(selectedImages))], toSection: .photos)
+        } else {
+            snapshot.appendItems([.photo(.string(viewModel.uploadedPhotoURLs))], toSection: .photos)
+        }
+        
+        
         snapshot.appendItems([.content(review.content)], toSection: .content)
         snapshot.appendItems([
-            .options(.date(review.date), "시청한 날짜 *"),
-            .options(.rating(review.rating), "평점 *")
+            .options(.date(review.date), "시청한 날짜 "),
+            .options(.rating(review.rating), "평점 ")
         ], toSection: .options)
         
         print("Applying snapshot with \(review.photos.count) photos")
@@ -334,13 +331,26 @@ class ReviewViewController: UIViewController {
         let slider = UISlider(frame: CGRect(x: 10, y: 50, width: alert.view.bounds.width - 40, height: 30))
         slider.minimumValue = 0
         slider.maximumValue = 5
+        
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        
+        slider.minimumValueImage = UIImage(systemName: "0.square", withConfiguration: largeConfig)
+        slider.maximumValueImage = UIImage(systemName: "5.square", withConfiguration: largeConfig)
+        
+        slider.maximumTrackTintColor = .systemYellow
+        slider.minimumTrackTintColor = .systemGreen
+        slider.tintColor = .black
+        
         slider.value = Float(review.rating)
-        slider.tintColor = .systemYellow
+        slider.isContinuous = true // ✅ 슬라이더를 특정 값에서 멈추도록 설정
+        
+        slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         
         alert.view.addSubview(slider)
         
         let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
-            self.review.rating = Double(round(slider.value * 2) / 2) // 반올림하여 0.5 단위 설정
+            self.review.rating = Double(round(slider.value))
+            
             self.reloadData(for: self.review)
         }
         
@@ -356,6 +366,11 @@ class ReviewViewController: UIViewController {
     // MARK: - Action
     @objc private func didTapToDismiss() {
         view.endEditing(true)
+    }
+    
+    // ✅ 슬라이더 값 변경 시 1 단위로 반올림
+    @objc private func sliderValueChanged(_ sender: UISlider) {
+        sender.value = round(sender.value) // ✅ 1 단위로 값 조정
     }
 }
 

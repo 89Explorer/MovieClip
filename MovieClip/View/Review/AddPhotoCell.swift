@@ -46,8 +46,8 @@ class AddPhotoCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             addPhotoButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             addPhotoButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            addPhotoButton.widthAnchor.constraint(equalToConstant: 120),
-            addPhotoButton.heightAnchor.constraint(equalToConstant: 140)
+            addPhotoButton.widthAnchor.constraint(equalToConstant: 100),
+            addPhotoButton.heightAnchor.constraint(equalToConstant: 120)
             
         ])
         

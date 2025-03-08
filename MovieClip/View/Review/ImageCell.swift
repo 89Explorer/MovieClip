@@ -39,30 +39,26 @@ class ImageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with imageURL: String) {
-        downloadImages(from: imageURL) { [weak self] image in
-            DispatchQueue.main.async {
-                self?.imageView.image = image
-            }
-        }
+    func configure(with image: UIImage) {
+        imageView.image = image
     }
     
     
-    private func downloadImages(from urlString: String, completion: @escaping (UIImage?) -> Void) {
-        
-        guard let url = URL(string: urlString) else {
-            completion(nil)
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let data = data, error == nil, let image = UIImage(data: data) {
-                completion(image)
-            } else {
-                completion(nil)
-            }
-        }
-        .resume()
-    }
+//    private func downloadImages(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+//        
+//        guard let url = URL(string: urlString) else {
+//            completion(nil)
+//            return
+//        }
+//        
+//        URLSession.shared.dataTask(with: url) { data, _, error in
+//            if let data = data, error == nil, let image = UIImage(data: data) {
+//                completion(image)
+//            } else {
+//                completion(nil)
+//            }
+//        }
+//        .resume()
+//    }
     
 }
