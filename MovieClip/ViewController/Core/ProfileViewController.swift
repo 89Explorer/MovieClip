@@ -51,6 +51,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         
         profileCollectionView.register(ProfileSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileSectionHeader.reuseIdentifier)
         profileCollectionView.register(ProfileCell.self, forCellWithReuseIdentifier: ProfileCell.reuseIdentifier)
+        profileCollectionView.register(ReviewCell.self, forCellWithReuseIdentifier: ReviewCell.reuseIdentifier)
         
     }
     
@@ -73,10 +74,9 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
                 cell.delegate = self
                 
                 return cell
-                
-            default:
-                return self.configure(ProfileCell.self, with: item, for: indexPath)
-                
+            case .myReviews:
+                let cell = self.configure(ReviewCell.self, with: item, for: indexPath)
+                return cell
             }
         }
         
@@ -101,6 +101,14 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
                 self?.reloadData()  // ✅ user가 변경될 때 자동으로 데이터 업데이트
             }
             .store(in: &cancelable)
+        
+        viewModel.fetchUserReviews()
+        
+        viewModel.$reviews
+            .sink { [weak self] _ in
+                self?.reloadData()
+            }
+            .store(in: &cancelable)
     }
     
     
@@ -113,14 +121,14 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         snapshot.appendItems([.profile(currentUser)], toSection: .profile)
         
         // ✅ 평점 준 작품,
-        snapshot.appendSections([.ratedMovies])
-        let ratedMovies = [WorkOfMedia(id: 0, backdropPath: "", posterPath: "", releaseDate: "", voteAverage: 0, overview: "", name: "", title: "", firstAirDate: "")]
-        snapshot.appendItems([.ratedMovies(ratedMovies)], toSection: .ratedMovies)
+//        snapshot.appendSections([.ratedMovies])
+//        let ratedMovies = [WorkOfMedia(id: 0, backdropPath: "", posterPath: "", releaseDate: "", voteAverage: 0, overview: "", name: "", title: "", firstAirDate: "")]
+//        snapshot.appendItems([.ratedMovies(ratedMovies)], toSection: .ratedMovies)
         
         // ✅ 리뷰 작성
         snapshot.appendSections([.myReviews])
-        let reviews = [Review(id: 0)]
-        snapshot.appendItems([.review(reviews)], toSection: .myReviews)
+        let reviews = viewModel.reviews.map { ProfileItem.review($0) }
+        snapshot.appendItems(reviews, toSection: .myReviews)
         
         // ✅ dataSource가 nil이 아닐때만 업데이트 적용
         guard dataSource != nil else { return }
@@ -138,7 +146,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
             case .profile:
                 return self.createFeaturedSection(using: .profile)
             default:
-                return self.createFeaturedSection(using: .profile)
+                return self.createReviewSection(using: .myReviews)
             }
         }
         
@@ -168,6 +176,25 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
         
         return layoutSection
+    }
+    
+    private func createReviewSection(using section: ProfileSection) -> NSCollectionLayoutSection {
+        
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1/3))
+        
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(200))
+        
+        let layoutGroup = NSCollectionLayoutGroup.horizontal(layoutSize: layoutGroupSize, subitems: [layoutItem, layoutItem, layoutItem])
+        
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        
+        let layoutSectionHeader = createSectionHeader()
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
+        
+        return layoutSection
+        
     }
     
     

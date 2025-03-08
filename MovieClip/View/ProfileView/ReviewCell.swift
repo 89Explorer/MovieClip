@@ -1,33 +1,32 @@
 //
-//  ImageCell.swift
+//  ReviewCell.swift
 //  MovieClip
 //
-//  Created by 권정근 on 3/6/25.
+//  Created by 권정근 on 3/9/25.
 //
 
 import UIKit
+import SDWebImage
 
-class ImageCell: UICollectionViewCell {
+
+class ReviewCell: UICollectionViewCell, SelfConfiguringProfileCell {
+    static var reuseIdentifier: String = "ReviewCell"
     
-    
-    // MARK: - Variable
-    static let reuseIdentifier: String = "ImageCell"
-    
-    
-    private let imageView: UIImageView = {
+    private var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 10
-        imageView.layer.masksToBounds = true
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 5
         return imageView
     }()
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
+            
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -39,7 +38,18 @@ class ImageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with image: UIImage) {
-        imageView.image = image
-    }    
+    
+    func configure(with data: ProfileItem) {
+        switch data {
+        case .profile(_):
+            break
+        case .review(let reviews):
+            let firstImageURL = reviews.photos[0]
+            let url = URL(string: firstImageURL)
+            
+            imageView.sd_setImage(with: url)
+        }
+    }
+    
+    
 }

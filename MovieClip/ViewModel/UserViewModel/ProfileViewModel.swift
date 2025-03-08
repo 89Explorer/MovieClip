@@ -12,6 +12,8 @@ import FirebaseAuth
 
 final class ProfileViewModel: ObservableObject {
     
+    @Published var reviews: [ReviewItem] = []
+    
     @Published var user: MovieClipUser   // ✅ 유저 정보 (초기값 기본값으로 설정)
     @Published var error: String?
     @Published var isUserDeleted: Bool = false  // ✅ 회원 탈퇴 완료 여부
@@ -23,6 +25,24 @@ final class ProfileViewModel: ObservableObject {
     init(user: MovieClipUser = MovieClipUser()) {
         self.user = user
         retreiveUser()
+    }
+    
+    
+    func fetchUserReviews() {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        
+        DatabaseManager.shared.collectionReviews(retrieve: userID)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("❌ 실패.... \(error.localizedDescription)")
+                    self?.error = error.localizedDescription
+                }
+            } receiveValue: { [weak self] fetchedReviews in
+                self?.reviews = fetchedReviews
+                print("✅ 성공...: \(fetchedReviews)")
+            }
+            .store(in: &cancellable)
+
     }
     
     

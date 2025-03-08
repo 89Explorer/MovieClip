@@ -103,9 +103,6 @@ class ReviewViewController: UIViewController {
                 let cell = self.configure(ReviewOptionCell.self, with: item, for: indexPath)
                 cell.delegate = self
                 return cell
-            default:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-                return cell
             }
             
         }
@@ -153,8 +150,6 @@ class ReviewViewController: UIViewController {
                 return self.createContentSection(using: .content)
             case .options:
                 return self.createOptionsSection(using: .options)
-            default:
-                return self.createDefaultSection()
             }
         }
         
@@ -303,7 +298,7 @@ class ReviewViewController: UIViewController {
     
     
     private func showDatePicker() {
-        let alert = UIAlertController(title: "방문한 날짜 선택", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "시청한 날짜", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
         
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date

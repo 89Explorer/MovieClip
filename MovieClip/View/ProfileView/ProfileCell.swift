@@ -56,8 +56,6 @@ class ProfileCell: UICollectionViewCell, SelfConfiguringProfileCell {
             usernameLabel.text = profile.username
             overviewTextView.text = profile.bio
             
-        case .ratedMovies(_):
-            break
         case .review(_):
             break
         }

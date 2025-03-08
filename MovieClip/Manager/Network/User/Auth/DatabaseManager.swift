@@ -91,6 +91,7 @@ class DatabaseManager {
         .eraseToAnyPublisher()
     }
     
+    
     func collectionReviews(add review: ReviewItem) -> AnyPublisher<Bool, Error> {
         guard let userID = Auth.auth().currentUser?.uid else {
             return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인한 사용자가 없습니다."]))
@@ -109,8 +110,19 @@ class DatabaseManager {
     }
 
     
-        
-    
+    /// Firestore에서 리뷰 목록을 가져오는 메서드
+    func collectionReviews(retrieve userID: String) -> AnyPublisher<[ReviewItem], Error> {
+        db.collection(userPath)
+            .document(userID)
+            .collection("reviews")
+            .getDocuments()
+            .tryMap { snapshot in
+                try snapshot.documents.map { document in      // Firestore에서 데이터를 가져오는 과정
+                    try document.data(as: ReviewItem.self)    // 가져온 데이터를 ReviewItem으로 변환
+                }
+            }
+            .eraseToAnyPublisher()
+    }
     
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()

@@ -11,15 +11,15 @@ import Foundation
 // MARK: - Enum으로 섹션 정의
 enum ProfileSection: String, CaseIterable {
     case profile = "프로필"
-    case ratedMovies = "평점 준 작품"
+    //case ratedMovies = "평점 준 작품"
     case myReviews = "내가 쓴 리뷰"
 }
 
 // MARK: - 데이터 모델(item) 만들기
 enum ProfileItem: Hashable {
     case profile(MovieClipUser)      // ✅ 기존 모델 사용
-    case ratedMovies([WorkOfMedia])
-    case review ([Review])
+    //case ratedMovies([WorkOfMedia])
+    case review (ReviewItem)
 }
 
 // MARK: - 각 데이터 타입 정의

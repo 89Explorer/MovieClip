@@ -137,10 +137,7 @@ class ReviewOptionCell: UICollectionViewCell, SelfConfiguringReviewCell {
             valueLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
             
         ])
-        
     }
-    
-    
 }
 
 
