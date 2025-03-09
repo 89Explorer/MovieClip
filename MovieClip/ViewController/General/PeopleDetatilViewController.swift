@@ -86,14 +86,14 @@ class PeopleDetatilViewController: UIViewController {
                 let tvCredits = try await NetworkManager.shared.getTVCredits(peopleID: peopleID)
                 
                 // ✅ biography 번역
-                let translatedBio = await GoogleTranslateAPI.translateText(peopleInfo.biography ?? "정보 없음 😅")
+                //let translatedBio = await GoogleTranslateAPI.translateText(peopleInfo.biography ?? "정보 없음 😅")
                 
                 
                 DispatchQueue.main.async { [self] in
                     
                     self.peopleDetail = peopleInfo
                     self.socialLinks = socialLinks
-                    self.koreanBio = translatedBio
+                    //self.koreanBio = translatedBio
                     self.movieCredits = movieCredits.cast
                     self.tvCredits = tvCredits.cast
                     

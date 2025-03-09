@@ -78,7 +78,7 @@ class FeaturedCell: UICollectionViewCell, SelfConfiguringCell {
     // MARK: - Function
     func configure(with data: MainResults) {
         titleLabel.text = data.title
-        overviewLabel.text = "번역 중..." // 기본값 설정
+        overviewLabel.text = data.overview
         
         if let posterPath = data.poster_path,
            let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
@@ -86,11 +86,5 @@ class FeaturedCell: UICollectionViewCell, SelfConfiguringCell {
         }
         
         // 비동기적으로 번역 수행
-        Task {
-            let translatedText = await GoogleTranslateAPI.translateText(data.overview)
-            DispatchQueue.main.async {
-                self.overviewLabel.text = translatedText.isEmpty ? "정보 없음 😅" : translatedText
-            }
-        }
     }
 }

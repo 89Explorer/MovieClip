@@ -36,7 +36,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/trending/movie/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "language", value: "en-US"),
             URLQueryItem(name: "adult", value: "true")
             
         ]
@@ -92,7 +92,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/trending/tv/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "language", value: "en-US"),
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
         
@@ -119,7 +119,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/genre/tv/list")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko"),
+            URLQueryItem(name: "language", value: "en-US"),
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
         
@@ -173,7 +173,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/trending/movie/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "language", value: "en-US"),
             URLQueryItem(name: "page", value: "1") // ✅ 1페이지 요청 (총 페이지 수 확인 목적)
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
@@ -204,7 +204,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/trending/movie/week")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR"),
+            URLQueryItem(name: "language", value: "en-US"),
             URLQueryItem(name: "page", value: "\(randomPage)") // ✅ 3. 랜덤 페이지 요청
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
@@ -237,7 +237,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/movie/\(movieID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR")
+            URLQueryItem(name: "language", value: "en-US")
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
         
@@ -264,7 +264,7 @@ class NetworkManager {
         let url = URL(string: "\(Constants.baseURL)/tv/\(tvID)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         let queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "language", value: "ko-KR")
+            URLQueryItem(name: "language", value: "en-US")
         ]
         components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
         

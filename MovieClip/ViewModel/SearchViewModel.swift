@@ -163,9 +163,9 @@ class SearchViewModel: ObservableObject {
         case .movie(let movies):
             for movie in movies {
                 Task {
-                    let translatedText = await GoogleTranslateAPI.translateText(movie.overview ?? "정보 없음 😅")
+//                    let translatedText = await GoogleTranslateAPI.translateText(movie.overview ?? "정보 없음 😅")
                     DispatchQueue.main.async {
-                        self.translatedMovieOverviews[movie.id] = translatedText
+                        self.translatedMovieOverviews[movie.id] = movie.overview
                     }
                 }
             }
@@ -173,9 +173,9 @@ class SearchViewModel: ObservableObject {
         case .tv(let tvs):
             for tv in tvs {
                 Task {
-                    let translatedText = await GoogleTranslateAPI.translateText(tv.overview ?? "정보 없음 😅")
+                    //let translatedText = await GoogleTranslateAPI.translateText(tv.overview ?? "정보 없음 😅")
                     DispatchQueue.main.async {
-                        self.translatedTVOverviews[tv.id] = translatedText
+                        self.translatedTVOverviews[tv.id] = tv.overview
                     }
                 }
             }

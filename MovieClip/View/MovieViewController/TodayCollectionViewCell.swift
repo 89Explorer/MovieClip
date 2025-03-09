@@ -90,9 +90,9 @@ class TodayCollectionViewCell: UICollectionViewCell,SelfConfiguringCell {
         
         // 비동기적으로 번역 수행
         Task {
-            let translatedText = await GoogleTranslateAPI.translateText(model.overview)
+//            let translatedText = await GoogleTranslateAPI.translateText(model.overview)
             DispatchQueue.main.async {
-                self.overview.text = translatedText.isEmpty ? "정보 없음 😅" : translatedText
+                self.overview.text = model.overview
             }
         }
     }
