@@ -50,9 +50,9 @@
 
 <br />
 
-|회원가입-프로필작성|로그인-회원탈퇴|
-|:---:|:----:|
-|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>
+|회원가입-프로필작성|로그인-회원탈퇴|리뷰 작성|
+|:---:|:----:|:----:|
+|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>|<img src = "https://github.com/user-attachments/assets/3904f9f5-81ba-4c04-91f8-5564e27e6833" height="400"/>
 
 
 <br />
@@ -283,7 +283,7 @@ func fetchMovies() async throws -> [Movie] {
 
 2. 즐겨찾기, 평점 부여
 
-3. 리뷰 작성
+3. ~~리뷰 작성~~
 
 4. 리뷰 불러오기 (예: 네이버 영화 리뷰)
 
