@@ -38,6 +38,8 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.vertical.3"), style: .plain, target: self, action: #selector(didTapSetting))
         navigationItem.rightBarButtonItem?.tintColor = .white
         
+        profileCollectionView.delegate = self
+        
     }
     
 
@@ -115,6 +117,8 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
                 self?.reloadData()
             }
             .store(in: &cancelable)
+        
+        viewModel.fetchUserReviews()
     }
     
     
@@ -188,9 +192,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1))
 
-        
         let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
-        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 0, trailing: 2)
         
         let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(150))
         
@@ -338,3 +340,27 @@ extension ProfileViewController: ProfileCellDelegate {
         navigateToProfileEdit()
     }
 }
+
+
+extension ProfileViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let section = ProfileSection.allCases[indexPath.section]
+        
+        switch section {
+        case .profile:
+            print("프로필 섹션 눌림")
+            return
+        case .review:
+            let selectedReview = viewModel.reviews[indexPath.item]
+            navigateToReviewDetail(with: selectedReview)
+        }
+    }
+    
+    
+    private func navigateToReviewDetail(with review: ReviewItem) {
+        let detailVC = ReviewDetailViewController(review: review)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+

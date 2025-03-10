@@ -25,7 +25,7 @@ final class ProfileViewModel: ObservableObject {
     init(user: MovieClipUser = MovieClipUser()) {
         self.user = user
         retreiveUser()
-        fetchUserReviews()
+        //fetchUserReviews()
     }
     
     
