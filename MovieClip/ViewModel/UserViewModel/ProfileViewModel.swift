@@ -25,6 +25,7 @@ final class ProfileViewModel: ObservableObject {
     init(user: MovieClipUser = MovieClipUser()) {
         self.user = user
         retreiveUser()
+        fetchUserReviews()
     }
     
     
@@ -32,6 +33,7 @@ final class ProfileViewModel: ObservableObject {
         guard let userID = Auth.auth().currentUser?.uid else { return }
         
         DatabaseManager.shared.collectionReviews(retrieve: userID)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
                     print("❌ 실패.... \(error.localizedDescription)")
@@ -39,7 +41,7 @@ final class ProfileViewModel: ObservableObject {
                 }
             } receiveValue: { [weak self] fetchedReviews in
                 self?.reviews = fetchedReviews
-                print("✅ 성공...: \(fetchedReviews)")
+                //print("✅ 성공...: \(self?.reviews)")
             }
             .store(in: &cancellable)
 

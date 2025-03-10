@@ -83,7 +83,7 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // ✅ 회원정보 가져오기
-        // viewModel.retrieveUser()
+        viewModel.retrieveUser()
     }
     
     

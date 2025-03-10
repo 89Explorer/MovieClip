@@ -12,7 +12,7 @@ import Foundation
 enum ProfileSection: String, CaseIterable {
     case profile = "프로필"
     //case ratedMovies = "평점 준 작품"
-    case myReviews = "내가 쓴 리뷰"
+    case review = "내가 쓴 리뷰"
 }
 
 // MARK: - 데이터 모델(item) 만들기

@@ -24,6 +24,7 @@ class PeopleDetatilViewController: UIViewController {
     private var expandedCells: Set<Int> = [] // ✅ 확장된 셀 저장
     
     private var koreanBio: String = ""
+    private var originalBio: String = ""
     
     private var movieCredits: [MovieCreditCast] = []
     private var tvCredits: [TVCreditCast] = []
@@ -87,6 +88,7 @@ class PeopleDetatilViewController: UIViewController {
                 
                 // ✅ biography 번역
                 //let translatedBio = await GoogleTranslateAPI.translateText(peopleInfo.biography ?? "정보 없음 😅")
+                let originalBio = peopleInfo.biography
                 
                 
                 DispatchQueue.main.async { [self] in
@@ -94,6 +96,8 @@ class PeopleDetatilViewController: UIViewController {
                     self.peopleDetail = peopleInfo
                     self.socialLinks = socialLinks
                     //self.koreanBio = translatedBio
+                    
+                    self.originalBio = originalBio ?? "정보 없음 😅"
                     self.movieCredits = movieCredits.cast
                     self.tvCredits = tvCredits.cast
                     
@@ -160,7 +164,7 @@ extension PeopleDetatilViewController: UITableViewDelegate, UITableViewDataSourc
             if koreanBio.count != 0 {
                 cell.configure(with: koreanBio, isExpanded: isExpanded)
             } else {
-                cell.configure(with: "정보 없음 😅", isExpanded: isExpanded)
+                cell.configure(with: originalBio, isExpanded: isExpanded)
             }
         
             cell.delegate = self

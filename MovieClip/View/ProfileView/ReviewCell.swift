@@ -14,6 +14,7 @@ class ReviewCell: UICollectionViewCell, SelfConfiguringProfileCell {
     
     private var imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.image = UIImage(named: "poster")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 5
@@ -41,13 +42,14 @@ class ReviewCell: UICollectionViewCell, SelfConfiguringProfileCell {
     
     func configure(with data: ProfileItem) {
         switch data {
-        case .profile(_):
-            break
         case .review(let reviews):
             let firstImageURL = reviews.photos[0]
             let url = URL(string: firstImageURL)
             
             imageView.sd_setImage(with: url)
+        case .profile(_):
+            break
+
         }
     }
     

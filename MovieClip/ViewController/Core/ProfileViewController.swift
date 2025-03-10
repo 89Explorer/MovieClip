@@ -26,17 +26,24 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        
+               
         configureNavigationBarAppearance()
         configureNavigationLeftTitle()
         setupCollectionView()
         createDataSource()
+
         setupBindings()  // ✅ 사용자 정보 변경 시 자동으로 UI 업데이트
         
         // 로그아웃 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.vertical.3"), style: .plain, target: self, action: #selector(didTapSetting))
         navigationItem.rightBarButtonItem?.tintColor = .white
         
+    }
+    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.fetchUserReviews()
     }
     
     
@@ -74,7 +81,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
                 cell.delegate = self
                 
                 return cell
-            case .myReviews:
+            case .review:
                 let cell = self.configure(ReviewCell.self, with: item, for: indexPath)
                 return cell
             }
@@ -102,10 +109,9 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
             }
             .store(in: &cancelable)
         
-        viewModel.fetchUserReviews()
-        
         viewModel.$reviews
-            .sink { [weak self] _ in
+            .sink { [weak self] item in
+                print("리뷰 아이템: \(self?.viewModel.reviews.count)")
                 self?.reloadData()
             }
             .store(in: &cancelable)
@@ -126,10 +132,10 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
 //        snapshot.appendItems([.ratedMovies(ratedMovies)], toSection: .ratedMovies)
         
         // ✅ 리뷰 작성
-        snapshot.appendSections([.myReviews])
+        snapshot.appendSections([.review])
         let reviews = viewModel.reviews.map { ProfileItem.review($0) }
-        snapshot.appendItems(reviews, toSection: .myReviews)
-        
+        snapshot.appendItems(reviews, toSection: .review)
+        print("📸 리뷰 섹션에 추가되는 아이템 개수: \(reviews.count)")
         // ✅ dataSource가 nil이 아닐때만 업데이트 적용
         guard dataSource != nil else { return }
         dataSource.apply(snapshot, animatingDifferences: true)
@@ -145,8 +151,8 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
             switch section {
             case .profile:
                 return self.createFeaturedSection(using: .profile)
-            default:
-                return self.createReviewSection(using: .myReviews)
+            case .review:
+                return self.createReviewSection(using: .review)
             }
         }
         
@@ -180,11 +186,13 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
     
     private func createReviewSection(using section: ProfileSection) -> NSCollectionLayoutSection {
         
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1/3))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1))
+
         
         let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 0, trailing: 2)
         
-        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(200))
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(150))
         
         let layoutGroup = NSCollectionLayoutGroup.horizontal(layoutSize: layoutGroupSize, subitems: [layoutItem, layoutItem, layoutItem])
         
