@@ -97,7 +97,7 @@ class DatabaseManager {
             return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인한 사용자가 없습니다."]))
                 .eraseToAnyPublisher()
         }
-
+        
         let reviewID = review.id
         
         return db.collection("users") // ✅ users 컬렉션
@@ -108,7 +108,32 @@ class DatabaseManager {
             .map { _ in true }
             .eraseToAnyPublisher()
     }
-
+    
+    
+    func collectionReviews(delete reviewID: String) -> AnyPublisher<Void, Error> {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인한 사용자가 없습니다."]))
+                .eraseToAnyPublisher()
+        }
+        
+        return Future<Void, Error> { promise in
+            self.db.collection("users")
+                .document(userID)
+                .collection("reviews")
+                .document(reviewID)
+                .delete { error in
+                    if let error = error {
+                        promise(.failure(error))
+                    } else {
+                        promise(.success(()))
+                    }
+                }
+        }
+        .eraseToAnyPublisher()
+        
+    }
+    
+    
     
     /// Firestore에서 리뷰 목록을 가져오는 메서드
     func collectionReviews(retrieve userID: String) -> AnyPublisher<[ReviewItem], Error> {
@@ -124,9 +149,12 @@ class DatabaseManager {
             .eraseToAnyPublisher()
     }
     
+    
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy년 M월 d일"
         return formatter.string(from: date)
     }
+    
+    
 }

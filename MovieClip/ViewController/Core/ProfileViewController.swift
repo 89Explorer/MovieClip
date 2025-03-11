@@ -114,7 +114,9 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         viewModel.$reviews
             .sink { [weak self] item in
                 print("리뷰 아이템: \(self?.viewModel.reviews.count)")
-                self?.reloadData()
+                DispatchQueue.main.async {
+                    self?.reloadData()
+                }
             }
             .store(in: &cancelable)
         
@@ -193,6 +195,7 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1))
 
         let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
         
         let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(150))
         

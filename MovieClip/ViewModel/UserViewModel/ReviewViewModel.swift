@@ -23,6 +23,9 @@ final class ReviewViewModel: ObservableObject {
     @Published var isUploading: Bool = false
     @Published var errorMessage: String?
     @Published var isReviewSuccess: Bool = false
+    @Published var error: String?
+    
+    @Published var isUserReviewDeleted: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -85,6 +88,31 @@ final class ReviewViewModel: ObservableObject {
             } receiveValue: { [weak self] reviewState in
                 self?.isReviewSuccess = reviewState
                 print("✅ 리뷰 저장 성공")
+            }
+            .store(in: &cancellables)
+    }
+    
+    
+    func deleteUserReview(reviewID: String) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            self.error = "유저 정보 없음 "
+            return
+        }
+        
+        StorageManager.shared.deleteReviewPhotos(userID: userID, reviewID: reviewID)
+            .flatMap {
+                DatabaseManager.shared.collectionReviews(delete: reviewID)
+            }
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.error = "리뷰 삭제 실패: \(error.localizedDescription)"
+                case .finished:
+                    
+                    self?.isUserReviewDeleted = true
+                }
+            } receiveValue: {[weak self] in
+                self?.isUserReviewDeleted = true
             }
             .store(in: &cancellables)
     }

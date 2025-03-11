@@ -6,10 +6,15 @@
 //
 
 import UIKit
+import Combine
 
 class ReviewDetailViewController: UIViewController {
     
     private var selectedReview: ReviewItem?
+    private var viewModel = ReviewViewModel()
+    
+    private var cancellables: Set<AnyCancellable> = []
+    
     
     // MARK: - UI Component
     private var reviewDetailTableView: UITableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -38,12 +43,50 @@ class ReviewDetailViewController: UIViewController {
         reviewDetailTableView.register(TitleTableCell.self, forCellReuseIdentifier: TitleTableCell.reuseIdentifier)
         reviewDetailTableView.register(ContentTableCell.self, forCellReuseIdentifier: ContentTableCell.reuseIdentifier)
         
+        // 로그아웃 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "slider.vertical.3"), style: .plain, target: self, action: #selector(didTapSetting))
+        navigationItem.rightBarButtonItem?.tintColor = .white
+        
+        viewModel.$isUserReviewDeleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDeleted in
+                print("삭제 상태: \(isDeleted)")
+                if isDeleted {
+                    print("리뷰 삭제 완료")
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         reviewDetailTableView.frame = view.bounds
     }
+    
+
+    @objc private func didTapSetting() {
+        
+        let actionSheet = UIAlertController(title: "설정", message: nil, preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "수정하기", style: .default, handler: { _ in
+            print("수정하기")
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "삭제하기", style: .default, handler: { _ in
+            print("삭제하기")
+            
+            
+            self.viewModel.deleteUserReview(reviewID: self.selectedReview?.id ?? "")
+            
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .destructive, handler: nil))
+        
+        present(actionSheet, animated: true)
+    }
+    
+    
     
 }
 
@@ -84,7 +127,7 @@ extension ReviewDetailViewController: UITableViewDelegate, UITableViewDataSource
                 cell.configure(reviewItem: reviewItem)
             }
             
-            return cell 
+            return cell
             
         default:
             break

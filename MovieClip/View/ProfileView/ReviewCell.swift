@@ -52,6 +52,4 @@ class ReviewCell: UICollectionViewCell, SelfConfiguringProfileCell {
 
         }
     }
-    
-    
 }

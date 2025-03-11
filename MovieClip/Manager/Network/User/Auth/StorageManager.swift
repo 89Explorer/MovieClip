@@ -111,12 +111,81 @@ final class StorageManager {
         }
         .eraseToAnyPublisher()
     }
-    
+//    
+//    
+//    func deleteReviewPhotos(userID: String, reviewID: String) -> AnyPublisher<Void, Error> {
+//        return getReviewPhotosURL(userID: userID, reviewID: reviewID)
+//            .flatMap { imagePaths in
+//                let deleteRequests = imagePaths.map { path in
+//                    Future<Void, Error> { promise in
+//                        let reference = Storage.storage().reference().child(path)
+//                        reference.delete { error in
+//                            if let error = error {
+//                                print("❌ 이미지 삭제 실패: \(error.localizedDescription)")
+//                                promise(.failure(error))
+//                            } else {
+//                                print("✅ 이미지 삭제 성공: \(path)")
+//                                promise(.success(()))
+//                            }
+//                        }
+//                    }
+//                }
+//                
+//                return Publishers.MergeMany(deleteRequests)
+//                    .collect() // ✅ 모든 삭제 요청 완료 후 결과 반환
+//                    .map { _ in } // ✅ Void 반환
+//            }
+//            .eraseToAnyPublisher()
+//    }
+
     
     /// ✅ Firebase Storage의 listAll()을 활용하여 동적으로 이미지 목록을 불러옴
+//    func getReviewPhotosURL(userID: String, reviewID: String) -> AnyPublisher<[String], Error> {
+//        
+//        let storageRef = storage.reference()
+//        let folderPath = "users/\(userID)/reviews/\(reviewID)/"
+//        
+//        return Future<[String], Error> { promise in
+//            let reviewFolderRef = storageRef.child(folderPath)
+//            
+//            reviewFolderRef.listAll { result, error in
+//                if let error = error {
+//                    promise(.failure(error))
+//                    return
+//                }
+//                
+//                guard let items = result?.items,
+//                      !items.isEmpty else {
+//                    promise(.failure(NSError(domain: "FirebaseStorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "이미지가 없습니다."])))
+//                    return
+//                }
+//                
+//                var downloadURLs: [String] = []
+//                let dispatchGroup = DispatchGroup()
+//                
+//                for item in items {
+//                    dispatchGroup.enter()
+//                    
+//                    item.downloadURL { url, error in
+//                        if let url = url {
+//                            downloadURLs.append(url.absoluteString)
+//                        }
+//                        dispatchGroup.leave()
+//                    }
+//                }
+//                
+//                dispatchGroup.notify(queue: .main) {
+//                    promise(.success(downloadURLs))
+//                }
+//            }
+//        }
+//        .eraseToAnyPublisher()
+//    }
+    
+    
+    
     func getReviewPhotosURL(userID: String, reviewID: String) -> AnyPublisher<[String], Error> {
-        
-        let storageRef = storage.reference()
+        let storageRef = Storage.storage().reference()
         let folderPath = "users/\(userID)/reviews/\(reviewID)/"
         
         return Future<[String], Error> { promise in
@@ -128,33 +197,71 @@ final class StorageManager {
                     return
                 }
                 
-                guard let items = result?.items,
-                      !items.isEmpty else {
+                let paths = result?.items.map { $0.fullPath } // ✅ `fullPath` 사용
+                if ((paths?.isEmpty) != nil) {
                     promise(.failure(NSError(domain: "FirebaseStorageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "이미지가 없습니다."])))
-                    return
-                }
-                
-                var downloadURLs: [String] = []
-                let dispatchGroup = DispatchGroup()
-                
-                for item in items {
-                    dispatchGroup.enter()
-                    
-                    item.downloadURL { url, error in
-                        if let url = url {
-                            downloadURLs.append(url.absoluteString)
-                        }
-                        dispatchGroup.leave()
-                    }
-                }
-                
-                dispatchGroup.notify(queue: .main) {
-                    promise(.success(downloadURLs))
+                } else {
+                    promise(.success(paths!))
                 }
             }
         }
         .eraseToAnyPublisher()
     }
+
+    
+    func deleteReviewPhotos(userID: String, reviewID: String) -> AnyPublisher<Void, Error> {
+        let storageRef = Storage.storage().reference()
+        let folderPath = "users/\(userID)/reviews/\(reviewID)/"
+        let reviewFolderRef = storageRef.child(folderPath)
+
+        return Future<Void, Error> { promise in
+            reviewFolderRef.listAll { result in
+                switch result {
+                case .success(let storageListResult):
+                    let items = storageListResult.items
+                    if items.isEmpty {
+                        print("✅ 삭제할 이미지 없음 (리뷰만 삭제)")
+                        promise(.success(())) // ✅ 이미지가 없어도 Firestore 리뷰 삭제 진행
+                        return
+                    }
+
+                    let dispatchGroup = DispatchGroup()
+                    var deletionErrors: [Error] = []
+
+                    for item in items {
+                        dispatchGroup.enter()
+                        item.delete { error in
+                            if let error = error {
+                                print("❌ 이미지 삭제 실패: \(error.localizedDescription)")
+                                deletionErrors.append(error)
+                            } else {
+                                print("✅ 이미지 삭제 성공: \(item.fullPath)")
+                            }
+                            dispatchGroup.leave()
+                        }
+                    }
+
+                    dispatchGroup.notify(queue: .main) {
+                        if deletionErrors.isEmpty {
+                            print("✅ 모든 이미지 삭제 완료")
+                            promise(.success(()))
+                        } else {
+                            print("❌ 일부 이미지 삭제 실패")
+                        }
+                    }
+
+                case .failure(let error):
+                    print("❌ 이미지 목록 불러오기 실패: \(error.localizedDescription)")
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+
+
+
     
 }
 
