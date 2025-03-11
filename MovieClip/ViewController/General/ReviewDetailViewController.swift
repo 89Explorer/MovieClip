@@ -74,6 +74,15 @@ extension ReviewDetailViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 300
+        switch indexPath.section {
+        case 0:
+            return 300
+        case 1:
+            return 100
+        case 2:
+            return 300
+        default:
+            return 100
+        }
     }
 }

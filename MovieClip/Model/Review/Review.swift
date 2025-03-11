@@ -21,11 +21,11 @@ enum ReviewSection: CaseIterable {
 struct ReviewItem: Codable {
     let id: String
     var photos: [String]     // 여러 개의 사진
-    var content: String       // 리뷰 내용
+    var content: ReviewContent       // 리뷰 내용
     var date: Date            // 작성 날짜
     var rating: Double        // 별점
     
-    init(id: String = UUID().uuidString, photos: [String] = [], content: String = "", date: Date = Date(), rating: Double = 0.0) {
+    init(id: String = UUID().uuidString, photos: [String] = [], content: ReviewContent = ReviewContent(reviewTitle: "", reviewContent: ""), date: Date = Date(), rating: Double = 0.0) {
         self.id = id
         self.photos = photos
         self.content = content
@@ -38,7 +38,7 @@ struct ReviewItem: Codable {
 // ✅ 각 셀에서 받을 데이터 타입을 정의 하는 열거형
 enum ReviewSectionItem: Hashable {
     case photo(PhotoType)
-    case content(String)
+    case content(ReviewContent)
     case options(ReviewOptionType, String)    // 날짜 & 평점 타입을 포함
 }
 
@@ -46,6 +46,13 @@ enum PhotoType: Hashable {
     case image([UIImage])
     case string([String])
 }
+
+struct ReviewContent: Hashable, Codable {
+    var reviewTitle: String
+    var reviewContent: String
+}
+
+
 
 
 enum ReviewOptionType: Hashable {

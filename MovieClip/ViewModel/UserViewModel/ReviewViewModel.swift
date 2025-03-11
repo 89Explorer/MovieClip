@@ -15,7 +15,7 @@ import FirebaseStorage
 final class ReviewViewModel: ObservableObject {
     
     // 리뷰 작성 시 필요한 데이터
-    @Published var reviewContent: String = ""
+    @Published var reviewContent: ReviewContent = ReviewContent(reviewTitle: "", reviewContent: "")
     @Published var selectedImages: [UIImage]?
     @Published var uploadedPhotoURLs: [String] = []
     @Published var reviewDate: Date = Date()
@@ -89,84 +89,3 @@ final class ReviewViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 }
-
-
-/*
-final class ReviewViewModel: ObservableObject {
-    
-    // 리뷰 작성 시 필요한 데이터
-    @Published var reviewContent: String = ""
-    @Published var selectedImages: [UIImage]?
-    @Published var uploadedPhotoURLs: [String] = []
-    @Published var reviewDate: Date = Date()
-    @Published var reviewRating: Double = 0.0
-    @Published var isUploading: Bool = false
-    @Published var errorMessage: String?
-    @Published var isReviewSuccess: Bool = false
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    
-    // Firestore에 리뷰 저장
-    func uploadPhoto(reviewID: String) {
-        guard let userID = Auth.auth().currentUser?.uid else {
-            self.errorMessage = "로그인 정보를 확인해주세요"
-            return
-        }
-        
-        let imageData = selectedImages?.compactMap({ image in
-            image.jpegData(compressionQuality: 0.5)
-        }) ?? []
-        
-        let metaData = StorageMetadata()
-        metaData.contentType = "image/jpeg"
-        
-        if !(selectedImages?.isEmpty ?? false) {
-            isUploading = true
-            StorageManager.shared.uploadReviewPhotos(with: userID, reviewID: reviewID, images: imageData, metaData: metaData)
-                .flatMap { metaData in
-                    StorageManager.shared.getReviewPhotosURL(userID: userID, reviewID: reviewID)
-                }
-                .sink { [weak self] completion in
-                    switch completion {
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                        self?.errorMessage = error.localizedDescription
-                    case .finished:
-                        print("리뷰 이미지 저장 및 불러오기 성공")
-                        self?.updateReview(reviewID: reviewID)
-                    }
-                } receiveValue: { [weak self] url in
-                    self?.uploadedPhotoURLs.append(contentsOf: url)
-                }
-                .store(in: &cancellables)
-        }
-    }
-    
-    
-    // 작성된 리뷰 업데이트
-    private func updateReview(reviewID: String) {
-        
-        let newReview = ReviewItem(
-            id: reviewID,
-            photos: uploadedPhotoURLs,
-            content: reviewContent,
-            date: reviewDate,
-            rating: reviewRating
-        )
-
-        DatabaseManager.shared.collectionReviews(add: newReview)
-            .sink { [weak self] completion in
-                if case .failure(let error) =
-                    completion {
-                    print("Error updating review: \(error)")
-                    self?.errorMessage = error.localizedDescription
-                }
-            } receiveValue: { [weak self] reviewState in
-                self?.isReviewSuccess = reviewState
-            }
-            .store(in: &cancellables)
-
-    }
-}
-*/

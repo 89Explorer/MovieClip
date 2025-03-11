@@ -122,6 +122,7 @@ class ReviewViewController: UIViewController {
         
         
         snapshot.appendItems([.content(review.content)], toSection: .content)
+        
         snapshot.appendItems([
             .options(.date(review.date), "시청한 날짜 "),
             .options(.rating(review.rating), "평점 ")
@@ -183,7 +184,7 @@ class ReviewViewController: UIViewController {
         let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
         layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5)
         
-        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(300))
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(400))
         
         let layoutGroup = NSCollectionLayoutGroup.horizontal(layoutSize: layoutGroupSize, subitems: [layoutItem])
         
@@ -380,13 +381,18 @@ extension ReviewViewController: ReviewPhotoCellDelegate {
 
 
 extension ReviewViewController: ReviewContentCellDelegate {
-    func didUpdateContent(_ text: String) {
-        if text != "" {    // ✅ 빈 값은 저장하지 않음
-            self.review.content = text
-        } else {
-            self.review.content = ""   // ✅ 안내문구를 저장하지 않도록 빈 값 처리
-        }
-        viewModel.reviewContent = review.content
+    func didUpdateContent(_ content: ReviewContent) {
+        
+        self.review.content.reviewTitle = content.reviewTitle
+        self.review.content.reviewContent = content.reviewContent
+//        
+//        if content.reviewContent != "", content.reviewTitle != "" {
+//            self.review.content = content
+//        } else {
+//            self.review.content = ReviewContent(reviewTitle: "", reviewContent: "")
+//        }
+        
+        viewModel.reviewContent = content
         self.reloadData(for: self.review)
     }
 }

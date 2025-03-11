@@ -19,7 +19,7 @@ class ReviewContentCell: UICollectionViewCell, SelfConfiguringReviewCell {
     
     // MARK: - UI Component
     private let reviewTextView: UITextView = UITextView()
-    
+    private let reviewTitleTextField: UITextField = UITextField(frame: .zero)
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -36,15 +36,30 @@ class ReviewContentCell: UICollectionViewCell, SelfConfiguringReviewCell {
         reviewTextView.textColor = .gray
         reviewTextView.translatesAutoresizingMaskIntoConstraints = false
         
+        reviewTitleTextField.font = .systemFont(ofSize: 18, weight: .bold)
+        reviewTitleTextField.placeholder = "영화나 티비를 보고 한 줄 평을 남겨주세요"
+        reviewTitleTextField.leftViewMode = .always
+        reviewTitleTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 0))
+        reviewTitleTextField.textColor = .black
+        reviewTitleTextField.backgroundColor = .white
+        reviewTitleTextField.layer.cornerRadius = 10
+        reviewTitleTextField.translatesAutoresizingMaskIntoConstraints = false
+        
         contentView.addSubview(reviewTextView)
+        contentView.addSubview(reviewTitleTextField)
         
         NSLayoutConstraint.activate([
             
             reviewTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             reviewTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             reviewTextView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            reviewTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            reviewTextView.bottomAnchor.constraint(equalTo: reviewTitleTextField.topAnchor, constant: -20),
             
+            reviewTitleTextField.heightAnchor.constraint(equalToConstant: 50),
+            reviewTitleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            reviewTitleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            reviewTitleTextField.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        
         ])
         
     }
@@ -57,13 +72,15 @@ class ReviewContentCell: UICollectionViewCell, SelfConfiguringReviewCell {
     // MARK: - Function
     func configure(with item: ReviewSectionItem) {
         if case .content(let string) = item {
-            if string.isEmpty || string == placeholderText {
+            if string.reviewContent.isEmpty || string.reviewContent == placeholderText {
                 reviewTextView.text = placeholderText
                 reviewTextView.textColor = .gray
             } else {
-                reviewTextView.text = string
+                reviewTextView.text = string.reviewContent
                 reviewTextView.textColor = .black
             }
+            
+            reviewTitleTextField.text = string.reviewTitle
         }
     }
 }
@@ -85,11 +102,11 @@ extension ReviewContentCell: UITextViewDelegate {
             reviewTextView.textColor = .gray
         }
         
-        delegate?.didUpdateContent(reviewTextView.text == placeholderText ? "" : reviewTextView.text)  // 델리게이트 호출
+        delegate?.didUpdateContent(ReviewContent(reviewTitle: reviewTitleTextField.text ?? "", reviewContent: reviewTextView.text ?? ""))
     }
 }
 
 
 protocol ReviewContentCellDelegate: AnyObject {
-    func didUpdateContent(_ text: String)
+    func didUpdateContent(_ content: ReviewContent)
 }

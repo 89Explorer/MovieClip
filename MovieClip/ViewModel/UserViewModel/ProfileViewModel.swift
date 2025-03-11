@@ -36,15 +36,14 @@ final class ProfileViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 if case .failure(let error) = completion {
-                    print("❌ 실패.... \(error.localizedDescription)")
+                    print("❌ 리뷰 가져오기 실패.... \(error.localizedDescription)")
                     self?.error = error.localizedDescription
                 }
             } receiveValue: { [weak self] fetchedReviews in
                 self?.reviews = fetchedReviews
-                //print("✅ 성공...: \(self?.reviews)")
+                //print("✅ 성공...: \(self?.reviews ??)
             }
             .store(in: &cancellable)
-
     }
     
     

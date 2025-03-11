@@ -126,6 +126,5 @@ final class ProfileDataFormViewModel: ObservableObject {
                 self?.isOnboardingFinished = onboardingState
             }
             .store(in: &cancelable)
-
     }
 }
