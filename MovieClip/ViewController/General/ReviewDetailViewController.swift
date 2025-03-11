@@ -27,7 +27,7 @@ class ReviewDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(reviewDetailTableView)
-        view.backgroundColor = .systemRed
+        view.backgroundColor = .black
         
         reviewDetailTableView.backgroundColor = .black
         
@@ -35,6 +35,8 @@ class ReviewDetailViewController: UIViewController {
         reviewDetailTableView.dataSource = self
         
         reviewDetailTableView.register(ImageTableViewCell.self, forCellReuseIdentifier: ImageTableViewCell.reuseIdentifier)
+        reviewDetailTableView.register(TitleTableCell.self, forCellReuseIdentifier: TitleTableCell.reuseIdentifier)
+        reviewDetailTableView.register(ContentTableCell.self, forCellReuseIdentifier: ContentTableCell.reuseIdentifier)
         
     }
     
@@ -67,6 +69,23 @@ extension ReviewDetailViewController: UITableViewDelegate, UITableViewDataSource
             }
             
             return cell
+        case 1:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: TitleTableCell.reuseIdentifier, for: indexPath) as? TitleTableCell else { return UITableViewCell() }
+            
+            if let reviewItem = selectedReview {
+                cell.configure(reviewItem: reviewItem)
+            }
+            
+            return cell
+        case 2:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContentTableCell.reuseIdentifier, for: indexPath) as? ContentTableCell else { return UITableViewCell() }
+            
+            if let reviewItem = selectedReview {
+                cell.configure(reviewItem: reviewItem)
+            }
+            
+            return cell 
+            
         default:
             break
         }
@@ -78,7 +97,7 @@ extension ReviewDetailViewController: UITableViewDelegate, UITableViewDataSource
         case 0:
             return 300
         case 1:
-            return 100
+            return 80
         case 2:
             return 300
         default:

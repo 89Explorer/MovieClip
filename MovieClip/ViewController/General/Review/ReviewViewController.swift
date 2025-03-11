@@ -385,13 +385,7 @@ extension ReviewViewController: ReviewContentCellDelegate {
         
         self.review.content.reviewTitle = content.reviewTitle
         self.review.content.reviewContent = content.reviewContent
-//        
-//        if content.reviewContent != "", content.reviewTitle != "" {
-//            self.review.content = content
-//        } else {
-//            self.review.content = ReviewContent(reviewTitle: "", reviewContent: "")
-//        }
-        
+
         viewModel.reviewContent = content
         self.reloadData(for: self.review)
     }

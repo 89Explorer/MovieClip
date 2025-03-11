@@ -22,17 +22,17 @@ class TitleTableCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.backgroundColor = .black
+        contentView.backgroundColor = .white
         
-        titleLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         titleLabel.textColor = .black
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .left
 
-        ratingLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        ratingLabel.font = .systemFont(ofSize: 18, weight: .regular)
         ratingLabel.numberOfLines = 1
         
-        createOnLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        createOnLabel.font = .systemFont(ofSize: 18, weight: .regular)
         createOnLabel.textColor = .black
         createOnLabel.numberOfLines = 1
         
@@ -47,7 +47,20 @@ class TitleTableCell: UITableViewCell {
         totalStackView.addArrangedSubview(innerStackView)
         totalStackView.axis = .vertical
         totalStackView.distribution = .fill
-        totalStackView.spacing = 10
+        totalStackView.spacing = 5
+        
+        contentView.addSubview(totalStackView)
+        totalStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            
+            totalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            totalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            totalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            totalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            
+        ])
+        
     }
     
     required init?(coder: NSCoder) {
@@ -56,7 +69,23 @@ class TitleTableCell: UITableViewCell {
     
     
     func configure(reviewItem: ReviewItem) {
+        titleLabel.text = reviewItem.content.reviewTitle
+        createOnLabel.text = formattedDate(reviewItem.date)
+        ratingLabel.text = ratingString(reviewItem.rating)
         
     }
     
+    
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy년 M월 d일"
+        return formatter.string(from: date)
+    }
+    
+    
+    private func ratingString(_ rating: Double) -> String {
+        let fullStar = Int(rating)
+        let emptyStars = 5 - fullStar
+        return String(repeating: "🌟", count: fullStar) + String(repeating: "☆", count: emptyStars)
+    }
 }
