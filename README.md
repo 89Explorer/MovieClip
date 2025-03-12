@@ -278,6 +278,17 @@ func fetchMovies() async throws -> [Movie] {
 이번 프로젝트를 통해 iOS 개발 트렌드을 적용하여 학습할 수 있었고, CompositionalLayout, DiffableDataSource, async/await, Combine 에 대해 좀 더 알게 된 프로젝트이었습니다.
 추후 진행 사항에 나온 대로 업데이트할 예정입니다.
 
+<br />
+<br />
+
+<추가>
+리뷰의 CRUD 기능을 구현하면서 MVVM 패턴과 Combine을 활용한 데이터 흐름 관리의 중요성을 알게 되었습니다. 특히 Firebase를 활용하면서 데이터를 저장하고 불러오는 과정에서 시점 관리의 필요성을 체감했습니다. 
+
+예를 들어, 리뷰를 저장할 때 String, Int 같은 데이터는 바로 저장할 수 있지만, UIImage(사진 데이터)는 바로 저장할 수 없어서 먼저 Firebase Storage에 업로드한 후, 다운로드 URL을 받아 Firestore에 저장해야 했습니다. 이 과정에서 비동기 작업의 순서를 올바르게 설정하지 않으면, URL이 저장되기 전에 Firestore에 기록되어 이미지가 누락되는 문제가 발생할 수 있었습니다. 
+이를 해결하고자 flatMap을 활용하여 이미지를 업로드 후 , 이미지의 URL 주소를 반환하여 String 타입으로 Database에 저장했습니다. 
+
+다시 한 번 MVVM 패턴을 사용하면서 ViewController에서 직접 API 호출을 하지 않고, ViewModel을 통해 데이터를 처리하도록 설계하면서 코드의 의존성이 줄어들고 유지보수가 용이했습니다. 이번 프로젝트를 통해 Firebase, MVVM, Combine을 실제로 적용하며 데이터 흐름과 시점 관리의 중요성을 같이 이해할 수 있었습니다. 
+
 
 
 ### 🔨 추후 진행 사항
