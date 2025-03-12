@@ -13,6 +13,7 @@
 - Google API 를 활용하여 영화, 티비 프로그램, 인물 관련 개요 부분에 대해 번역 기능을 제공하고 있습니다.
   <추가>
 - Firebase를 통한 회원관리 서비스를 제공하고 있습니다.
+- Firebase 내의 Storage, Database에 리뷰 이미지와 리뷰 작성, 업로드, 수정, 삭제 서비스 제공하고 있습니다. 
 
 <br />
 <br />
@@ -21,8 +22,9 @@
 - TMDB 에서 제공하는 API를 통해 영화, 티피 프로그램, 인물 정보를 제공합니다.
 - 영화 및 티비 프로그램에 대한 상세 정보(개요, 예고편, 포스터), 해당 프로그램과 유사한 작품 목록을 제공합니다.
 - 인물에 대한 상세 정보(이름, 출생일, 개요, 소셜미디어, 출연작품)을 제공합니다.
-- 프로그램 및 인물 소개 등 TMDB에서 제공하지 않는 "한국어" 서비스 경우, Google API를 통해 번역을 했습니다.
-- Firebase를 통해 회원관리 서비스를 제공하고 있습니다. (프로필 작성)
+- ~~프로그램 및 인물 소개 등 TMDB에서 제공하지 않는 "한국어" 서비스 경우, Google API를 통해 번역을 했습니다.~~
+- Firebase를 통해 회원관리 서비스를 제공하고 있습니다.
+- Firebase내의 Storage, Database 를 통해 리뷰 이미지, 텍스트 관리 서비스 제공합니다. 
 
 <br />
 <br />
@@ -31,7 +33,7 @@
 <img src = "https://github.com/user-attachments/assets/dfaf24fa-0856-433e-ab6b-4397eba29277" height="400"/>
 <img src = "https://github.com/user-attachments/assets/8906b69c-76e1-4711-98c6-e293ebd1e685" height="400"/>
 <img src = "https://github.com/user-attachments/assets/14cb9ae9-b0c5-4f0c-a85d-7bb8617f5b13" height="400"/>
-
+<img src = "https://github.com/user-attachments/assets/6cb40d88-6f96-4203-85b5-d4a6f87da147" height="400"/>
 
 <br />
 <br />
@@ -50,9 +52,10 @@
 
 <br />
 
-|회원가입-프로필작성|로그인-회원탈퇴|리뷰 작성|
-|:---:|:----:|:----:|
-|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>|<img src = "https://github.com/user-attachments/assets/3904f9f5-81ba-4c04-91f8-5564e27e6833" height="400"/>
+|회원가입-프로필작성|로그인-회원탈퇴|리뷰 작성|리뷰 관리|
+|:---:|:----:|:----:|:----:|
+|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>|<img src = "https://github.com/user-attachments/assets/aa18d805-133b-4250-b7dc-55a6e8efc440" height="400"/>|<img src = "https://github.com/user-attachments/assets/60fcb6b8-9960-4989-b55a-fbd71b6d91ff" height="400"/>|
+
 
 
 <br />
@@ -81,13 +84,15 @@
    - Combine 을 사용한 경우: 먼저 받아온 데이터부터 즉시 UI 반영 가능
       > 예를 들어 영화 / TV / 인물 데이터 중 "영화" 데이터가 먼저 받아지면, 그 즉시 화면에 표시 이후 받아오는 순서대로 표시 
    - 검색 결과를 더 빠르고 자연스럽게 보여줄 수 있어 사용자 경험(UX) 향상  
-- Google 번역 API를 적용하여 한국어 지원 기능 추가
-   - TMDB에서 기본 언어는 한국어로 설정할 수 있지만, 특정 정본는 한국어 제공이 되지 않습니다.
-   - Google 번역 API를 통해 영어 ➡️ 한국어로 번역합니다.
+- ~~Google 번역 API를 적용하여 한국어 지원 기능 추가~~
+   - ~~TMDB에서 기본 언어는 한국어로 설정할 수 있지만, 특정 정본는 한국어 제공이 되지 않습니다.~~
+   - ~~Google 번역 API를 통해 영어 ➡️ 한국어로 번역합니다.~~
+   - 비용 발생으로 API 정지
  
 <추가>
 - Firebase를 통한 회원관리 서비스 제공합니다.
-   - 이메일, 비밀번호를 통해 회원가입을 하고, 로그인, 로그아웃, 회원탈퇴 및 프로필을 작성하여 Firebase에서 관리할 수 있도록 합니다. 
+   - 이메일, 비밀번호를 통해 회원가입을 하고, 로그인, 로그아웃, 회원탈퇴 및 프로필을 작성하여 Firebase에서 관리할 수 있도록 합니다.
+- Firebase 내의 파일 관리 서비스를 제공합니다.
 
 <br />
 <br />
@@ -272,6 +277,7 @@ func fetchMovies() async throws -> [Movie] {
 
 이번 프로젝트를 통해 iOS 개발 트렌드을 적용하여 학습할 수 있었고, CompositionalLayout, DiffableDataSource, async/await, Combine 에 대해 좀 더 알게 된 프로젝트이었습니다.
 추후 진행 사항에 나온 대로 업데이트할 예정입니다.
+
 
 
 ### 🔨 추후 진행 사항
