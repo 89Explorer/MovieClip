@@ -144,7 +144,9 @@ class ReviewViewController: UIViewController {
         }
         
         
-        snapshot.appendItems([.content(review.content)], toSection: .content)
+        let updatedContent = ReviewContent(reviewTitle: review.content.reviewTitle, reviewContent: review.content.reviewContent)
+        
+        snapshot.appendItems([.content(updatedContent)], toSection: .content)
         
         snapshot.appendItems([
             .options(.date(review.date), "시청한 날짜 "),
@@ -296,7 +298,6 @@ class ReviewViewController: UIViewController {
         viewModel.reviewRating = review.rating
         
         viewModel.uploadPhoto(reviewID: review.id)
-        self.reloadData(for: self.review)
         
         // ✅ 서버로 데이터 전송 or 저장 로직 추가 가능
         navigationController?.popViewController(animated: true) // ✅ 현재 화면 닫기
@@ -435,8 +436,6 @@ extension ReviewViewController: PHPickerViewControllerDelegate {
         }
         
         group.notify(queue: .main) {
-            //self.review.photos = Array(self.selectedImages.keys) // ✅ 경로만 저장
-            //self.review.photos = self.viewModel.uploadedPhotoURLs
             self.viewModel.selectedImages = tempSelectedImages
             print("✅ 선택된 이미지 경로: \(self.review.photos)")
             self.reloadData(for: self.review)

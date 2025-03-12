@@ -26,13 +26,16 @@ class ReviewContentCell: UICollectionViewCell, SelfConfiguringReviewCell {
         super.init(frame: frame)
         contentView.backgroundColor = .black
         
+        
         reviewTextView.delegate = self
+        reviewTitleTextField.delegate = self // ✅ UITextField 델리게이트 추가
+
         
         reviewTextView.backgroundColor = .systemGray6
         reviewTextView.layer.cornerRadius = 10
         reviewTextView.layer.masksToBounds = true
         reviewTextView.textContainerInset = .init(top: 10, left: 10, bottom: 10, right: 10)
-        reviewTextView.font = .systemFont(ofSize: 16, weight: .bold)
+        reviewTextView.font = .systemFont(ofSize: 18, weight: .bold)
         reviewTextView.textColor = .gray
         reviewTextView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -83,6 +86,13 @@ class ReviewContentCell: UICollectionViewCell, SelfConfiguringReviewCell {
             reviewTitleTextField.text = string.reviewTitle
         }
     }
+    
+    private func moveViewForKeyboard(up: Bool) {
+        let movement: CGFloat = up ? -150 : 150 // ✅ 키보드 크기에 맞춰 조정
+        UIView.animate(withDuration: 0.3, animations: {
+            self.contentView.frame.origin.y += movement
+        })
+    }
 }
 
 
@@ -94,6 +104,8 @@ extension ReviewContentCell: UITextViewDelegate {
             reviewTextView.text = ""
             reviewTextView.textColor = .black
         }
+        
+        moveViewForKeyboard(up: true)
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -102,7 +114,22 @@ extension ReviewContentCell: UITextViewDelegate {
             reviewTextView.textColor = .gray
         }
         
+        moveViewForKeyboard(up: false)
+        
         delegate?.didUpdateContent(ReviewContent(reviewTitle: reviewTitleTextField.text ?? "", reviewContent: reviewTextView.text ?? ""))
+    }
+}
+
+
+extension ReviewContentCell: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("📝 텍스트 필드 입력 시작됨: \(textField.text ?? "")")
+        moveViewForKeyboard(up: true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        print("✅ 텍스트 필드 입력 완료: \(textField.text ?? "")")
+        moveViewForKeyboard(up: false)
     }
 }
 
