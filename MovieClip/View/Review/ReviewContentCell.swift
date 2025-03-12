@@ -115,8 +115,6 @@ extension ReviewContentCell: UITextViewDelegate {
         }
         
         moveViewForKeyboard(up: false)
-        
-        delegate?.didUpdateContent(ReviewContent(reviewTitle: reviewTitleTextField.text ?? "", reviewContent: reviewTextView.text ?? ""))
     }
 }
 
@@ -130,6 +128,8 @@ extension ReviewContentCell: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         print("✅ 텍스트 필드 입력 완료: \(textField.text ?? "")")
         moveViewForKeyboard(up: false)
+        
+        delegate?.didUpdateContent(ReviewContent(reviewTitle: reviewTitleTextField.text ?? "", reviewContent: reviewTextView.text ?? ""))
     }
 }
 

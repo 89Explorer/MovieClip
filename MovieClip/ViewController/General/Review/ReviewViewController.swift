@@ -144,7 +144,9 @@ class ReviewViewController: UIViewController {
         }
         
         
-        let updatedContent = ReviewContent(reviewTitle: review.content.reviewTitle, reviewContent: review.content.reviewContent)
+        let updatedContent = ReviewContent(
+            reviewTitle: review.content.reviewTitle,
+            reviewContent: review.content.reviewContent)
         
         snapshot.appendItems([.content(updatedContent)], toSection: .content)
         
@@ -293,7 +295,8 @@ class ReviewViewController: UIViewController {
         print("📅 날짜: \(formattedDate(review.date))")
         print("⭐ 평점: \(review.rating)")
         
-        viewModel.reviewContent = review.content
+        viewModel.reviewContent.reviewContent = review.content.reviewContent
+        viewModel.reviewContent.reviewTitle = review.content.reviewTitle
         viewModel.reviewDate = review.date
         viewModel.reviewRating = review.rating
         
