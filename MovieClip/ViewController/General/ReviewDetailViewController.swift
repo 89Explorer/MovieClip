@@ -12,6 +12,7 @@ class ReviewDetailViewController: UIViewController {
     
     private var selectedReview: ReviewItem?
     private var viewModel = ReviewViewModel()
+    var profileViewModel = ProfileViewModel()
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -64,13 +65,30 @@ class ReviewDetailViewController: UIViewController {
         reviewDetailTableView.frame = view.bounds
     }
     
-
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        let disPatchGroup = DispatchGroup()
+//        disPatchGroup.enter()
+//        profileViewModel.fetchUserReviews()
+//        disPatchGroup.leave()
+//        
+//        disPatchGroup.notify(queue: .main) {
+//            self.reviewDetailTableView.reloadData()
+//        }
+//    }
+    
     @objc private func didTapSetting() {
         
         let actionSheet = UIAlertController(title: "설정", message: nil, preferredStyle: .actionSheet)
         
         actionSheet.addAction(UIAlertAction(title: "수정하기", style: .default, handler: { _ in
             print("수정하기")
+            
+            guard let review = self.selectedReview else { return }
+            
+            let reviewVC = ReviewViewController(review: review)
+            self.navigationController?.pushViewController(reviewVC, animated: true)
+            
         }))
         
         actionSheet.addAction(UIAlertAction(title: "삭제하기", style: .default, handler: { _ in

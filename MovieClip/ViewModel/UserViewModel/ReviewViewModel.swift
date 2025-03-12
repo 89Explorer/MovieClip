@@ -69,7 +69,7 @@ final class ReviewViewModel: ObservableObject {
     }
     
     // 🔹 작성된 리뷰 Firestore에 저장
-    private func updateReview(reviewID: String) {
+    func updateReview(reviewID: String) {
         
         let newReview = ReviewItem(
             id: reviewID,
@@ -116,4 +116,24 @@ final class ReviewViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    
+    func fetchReviewImages(reviewID: String) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+
+        StorageManager.shared.getReviewImages(userID: userID, reviewID: reviewID)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                if case .failure(let error) = completion {
+                    print("❌ 이미지 불러오기 실패: \(error.localizedDescription)")
+                    self?.errorMessage = "이미지 불러오기 실패: \(error.localizedDescription)"
+                }
+            } receiveValue: { [weak self] images in
+                print("✅ Storage에서 이미지 가져오기 성공: \(images.count)개")
+                self?.selectedImages = images // ✅ 로드된 이미지 저장
+            }
+            .store(in: &cancellables)
+    }
+    
+    
 }

@@ -46,6 +46,9 @@ class ProfileViewController: UIViewController, ProfileDataFormViewControllerDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.fetchUserReviews()
+        DispatchQueue.main.async {
+            self.profileCollectionView.reloadData()
+        }
     }
     
     

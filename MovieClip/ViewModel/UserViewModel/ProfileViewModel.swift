@@ -46,6 +46,20 @@ final class ProfileViewModel: ObservableObject {
             .store(in: &cancellable)
     }
     
+//    func fetchUserReviews() -> AnyPublisher<[ReviewItem], Error> {
+//        guard let userID = Auth.auth().currentUser?.uid else {
+//            return Fail(error: NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인한 사용자가 없습니다."]))
+//                .eraseToAnyPublisher()
+//        }
+//
+//        return DatabaseManager.shared.collectionReviews(retrieve: userID)
+//            .receive(on: DispatchQueue.main)
+//            .handleEvents(receiveOutput: { [weak self] newReviews in
+//                self?.reviews = newReviews // ✅ 데이터가 변경될 때 자동으로 UI 업데이트 가능
+//            })
+//            .eraseToAnyPublisher()
+//    }
+    
     
     func retreiveUser() {
         guard let id = Auth.auth().currentUser?.uid else { return }

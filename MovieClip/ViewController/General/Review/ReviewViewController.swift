@@ -15,13 +15,23 @@ class ReviewViewController: UIViewController {
     
     // MARK: - Variable
     private var dataSource: UICollectionViewDiffableDataSource<ReviewSection, ReviewSectionItem>?
-    private var review: ReviewItem = ReviewItem()
-    private var viewModel = ReviewViewModel()
+    private var review: ReviewItem
+    var viewModel = ReviewViewModel()
     private var cancellables = Set<AnyCancellable>()
     private var selectedImages: [UIImage] = []
     
     // MARK: - UI Component
     private var reviewCollectionView: UICollectionView!
+    
+    init(review: ReviewItem = ReviewItem()) {
+        self.review = review
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
     // MARK: - Life Cycle
@@ -32,14 +42,17 @@ class ReviewViewController: UIViewController {
         configureNavigationBarAppearance()
         setupCollectionView()
         
+        if !review.photos.isEmpty {
+            viewModel.fetchReviewImages(reviewID: review.id) // ✅ Storage에서 이미지 불러오기
+        }
+        
         createDataSource()
         reloadData(for: review)
         
         setupTapGesture()
-        
+        setupBindings()
     }
-    
-    
+
     // MARK: - Function
     // ✅ viewModel 바인딩 설정
     private func setupBindings() {
@@ -49,6 +62,16 @@ class ReviewViewController: UIViewController {
             .sink { error in
                 if let error = error {
                     print("❌ 리뷰 저장 오류: \(error)")
+                }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$selectedImages
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] images in
+                if let images = images, !images.isEmpty {
+                    dump("변경된 이미지: \(images)")
+                    self?.reloadData(for: self!.review)
                 }
             }
             .store(in: &cancellables)
@@ -273,6 +296,7 @@ class ReviewViewController: UIViewController {
         viewModel.reviewRating = review.rating
         
         viewModel.uploadPhoto(reviewID: review.id)
+        self.reloadData(for: self.review)
         
         // ✅ 서버로 데이터 전송 or 저장 로직 추가 가능
         navigationController?.popViewController(animated: true) // ✅ 현재 화면 닫기
