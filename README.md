@@ -54,7 +54,7 @@
 
 |회원가입-프로필작성|로그인-회원탈퇴|리뷰 작성|리뷰 관리|
 |:---:|:----:|:----:|:----:|
-|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/3607033d-e743-4d92-ac2e-df7e74be526d" height="400"/>|<img src = "https://github.com/user-attachments/assets/aa18d805-133b-4250-b7dc-55a6e8efc440" height="400"/>|<img src = "https://github.com/user-attachments/assets/60fcb6b8-9960-4989-b55a-fbd71b6d91ff" height="400"/>|
+|<img src = "https://github.com/user-attachments/assets/f7fe8437-f0ef-43d8-9c26-09cbd0833c8e" height="400"/>|<img src = "https://github.com/user-attachments/assets/51f36038-404c-4f88-8ce7-13ad738bbf7c" height="400"/>|<img src = "https://github.com/user-attachments/assets/aa18d805-133b-4250-b7dc-55a6e8efc440" height="400"/>|<img src = "https://github.com/user-attachments/assets/60fcb6b8-9960-4989-b55a-fbd71b6d91ff" height="400"/>|
 
 
 
