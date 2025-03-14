@@ -19,12 +19,58 @@
 <br />
 
 ## ✨ 주요 기능
-- TMDB 에서 제공하는 API를 통해 영화, 티피 프로그램, 인물 정보를 제공합니다.
-- 영화 및 티비 프로그램에 대한 상세 정보(개요, 예고편, 포스터), 해당 프로그램과 유사한 작품 목록을 제공합니다.
-- 인물에 대한 상세 정보(이름, 출생일, 개요, 소셜미디어, 출연작품)을 제공합니다.
-- ~~프로그램 및 인물 소개 등 TMDB에서 제공하지 않는 "한국어" 서비스 경우, Google API를 통해 번역을 했습니다.~~
-- Firebase를 통해 회원관리 서비스를 제공하고 있습니다.
-- Firebase내의 Storage, Database 를 통해 리뷰 이미지, 텍스트 관리 서비스 제공합니다. 
+### 1. 홈 화면 (HomeViewcontroller)
+- 기능
+  - 영화 및 TV 장르 데이터 불러오기
+  - 인기 영화, 인기 TV, 인기 배우 목록 표시
+  - 헤더에 랜덤 영화 또는 TV 프로그램 추천
+- 사용된 기술
+  - UITableView → 섹션별 리스트 구성
+  - FirebaseAuth → 사용자 인증 정보 활용
+  - Combine → 데이터 바인딩 및 구독 패턴 사용
+  
+<br />
+
+### 2. 검색 화면 (SearchViewController)
+- 기능
+  - UISearchController를 활용한 실시간 검색
+  - 검색 결과를 SearchResultViewController에서 표시
+- 사용된 기술
+  - Combine → 검색어 입력 시 실시간 반영
+  - UISearchController → 검색 UX 개선
+  - DiffableDataSource → 검색 결과 리스트 업데이트 최적화
+
+<br />
+
+### 3. 리뷰 화면 (ReviewViewController)
+- 기능
+  - 사용자가 영화에 대한 리뷰 작성 가능 
+  - 평점, 감상 날짜, 이미지 업로드 기능 포함 
+- 사용된 기술
+  - UICollectionViewCompositionalLayout + UICollectionViewDiffableDataSource → 리뷰 화면 UI 구성
+  - PHPickerViewController → 갤러리에서 사진 선택
+  - Combine → 데이터 바인딩 (리뷰 상태 변경 시 UI 업데이트)
+ 
+<br />
+
+### 4. 상세 정보 화면 (DetailViewController)
+- 기능
+  - 특정 영화 또는 TV 프로그램의 상세 정보 표시
+  - 캐스트 정보 및 관련 미디어 표시
+- 사용된 기술
+  - UICollectionViewCompositionalLayout → 관련 미디어 및 캐스트 리스트 UI 최적화
+  - Combine → API 데이터 바인딩
+
+### 5. Firebase 
+- 사용자 인증 관리 (FirebaseAuth)
+  - HomeViewController, HomeViewModel에서 로그인된 사용자의 정보를 가져옴.
+  - FirebaseAuth를 통해 사용자의 로그인 상태를 유지.
+- 리뷰 데이터 저장 (Firebase Firestore)
+  - 사용자가 작성한 리뷰(텍스트, 평점, 감상 날짜)를 Firestore에 저장.
+  - ReviewViewModel.swift에서 Firebase Firestore를 활용하여 리뷰 데이터를 관리.
+- 리뷰 이미지 업로드 (Firebase Storage)
+  - 사용자가 리뷰에 첨부한 이미지는 Firebase Storage에 업로드.
+  - 이미지의 다운로드 URL을 Firestore에 저장하여 앱 내에서 표시 가능.
 
 <br />
 <br />
